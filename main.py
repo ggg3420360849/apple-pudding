@@ -5,8 +5,10 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
+from pathlib import Path
 
 load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
 
 API_KEY = (os.getenv("XUANJI_API_KEY") or "").strip()
 API_URL = (os.getenv("XUANJI_API_URL") or "").strip()
@@ -31,16 +33,26 @@ class ChatRequest(BaseModel):
 
 @app.get("/")
 def home():
+     return FileResponse(
+        BASE_DIR / "static" / "index.html",
+        media_type="text/html"
+    )
+
+@app.get("/demo")
+def demo_page():
+     return FileResponse(
+        BASE_DIR / "static" / "index.html",
+        media_type="text/html"
+    )
+
+@app.get("/api/status")
+def status():
     return {
         "message": "后端启动成功",
         "docs": "打开 http://127.0.0.1:8000/docs 测试接口",
         "default_model": DEFAULT_MODEL,
         "allowed_models": ALLOWED_MODELS,
     }
-
-@app.get("/demo")
-def demo_page():
-    return FileResponse("static/index.html")
 
 @app.get("/api/models")
 def get_models():
