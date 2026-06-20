@@ -2,224 +2,2989 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>动物乐园 AI 问答 Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苹果布丁动物乐园</title>
     <style>
+        :root {
+            --ink: #1f2933;
+            --muted: #61707d;
+            --line: #d9e5df;
+            --paper: #fffdf7;
+            --surface: #ffffff;
+            --sky: #dff4ff;
+            --green: #3f9a68;
+            --green-dark: #237351;
+            --blue: #2678c7;
+            --blue-soft: #e4f4ff;
+            --yellow: #f4c542;
+            --coral: #ef7d61;
+            --purple: #7b68b3;
+            --shadow: 0 14px 34px rgba(36, 55, 69, 0.13);
+            --radius: 8px;
+            --bottom-nav-height: 74px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             margin: 0;
-            font-family: "Microsoft YaHei", Arial, sans-serif;
-            background: #f4fbff;
-            color: #222;
+            width: 100%;
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background:
+                linear-gradient(180deg, #dff4ff 0, #eff9f0 44%, #fff8e3 100%);
+            letter-spacing: 0;
+            overflow-x: hidden;
         }
 
-        .app {
-            width: 390px;
-            min-height: 844px;
-            margin: 40px auto;
-            background: white;
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+            max-width: 100%;
+            min-width: 0;
         }
 
-        h1 {
-            margin-top: 0;
-            text-align: center;
-            color: #2b7cff;
+        button {
+            border: 0;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+        .app-root {
+            max-width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .animal-list {
+        .login-screen {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(340px, 0.86fr) minmax(420px, 1.14fr);
+            gap: 24px;
+            align-items: stretch;
+            padding: 26px;
+        }
+
+        .login-panel,
+        .login-map,
+        .panel,
+        .animal-tile,
+        .metric,
+        .collection-item,
+        .story-item,
+        .activity-item,
+        .answer-panel {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(130, 157, 145, 0.28);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .login-panel {
+            padding: 28px;
+            align-self: center;
+        }
+
+        .brand {
             display: flex;
+            align-items: center;
             gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
             margin-bottom: 24px;
         }
 
-        .animal-btn {
-            border: 2px solid #d8e9ff;
-            background: #f7fbff;
-            border-radius: 14px;
-            padding: 14px 20px;
-            font-size: 18px;
-            cursor: pointer;
+        .brand-mark {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: #ffe7a6;
+            border: 1px solid #e9c769;
+            font-size: 28px;
         }
 
-        .animal-btn.active {
-            background: #2b7cff;
-            color: white;
-            border-color: #2b7cff;
+        .brand h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.18;
         }
 
-        .form-row {
+        .brand p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .field {
             margin-bottom: 18px;
+            min-width: 0;
+            max-width: 100%;
         }
 
-        label {
+        .field label,
+        .section-label {
             display: block;
-            font-weight: bold;
             margin-bottom: 8px;
+            font-weight: 700;
+            color: #243746;
         }
 
-        select,
-        textarea {
+        .text-input,
+        .select-input,
+        .textarea-input {
+            display: block;
             width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #ccd8e0;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 16px;
+            max-width: 100%;
+            min-width: 0;
+            min-height: 46px;
+            border: 1px solid #cbd9d3;
+            border-radius: 8px;
+            padding: 11px 12px;
+            background: #ffffff;
+            color: var(--ink);
             outline: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        textarea {
-            min-height: 100px;
+        .textarea-input {
+            min-height: 118px;
             resize: vertical;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            overflow-x: hidden;
+            text-overflow: clip;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
-        button.ask-btn {
-            width: 100%;
-            border: none;
-            border-radius: 14px;
-            padding: 14px;
-            font-size: 18px;
-            background: #2b7cff;
-            color: white;
+        .text-input:focus,
+        .select-input:focus,
+        .textarea-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(38, 120, 199, 0.16);
+        }
+
+        .role-grid,
+        .chip-row,
+        .model-row,
+        .quick-grid,
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .role-option,
+        .chip,
+        .nav-item,
+        .animal-chip,
+        .choice-button,
+        .tool-button {
+            min-height: 42px;
+            border-radius: 8px;
+            border: 1px solid #cbd9d3;
+            background: #ffffff;
+            color: var(--ink);
             cursor: pointer;
+            transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, color 120ms ease;
         }
 
-        button.ask-btn:disabled {
-            background: #9bbcea;
+        .role-option {
+            flex: 1 1 140px;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .role-option strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .role-option span {
+            display: block;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .role-option.active,
+        .chip.active,
+        .nav-item.active,
+        .animal-chip.active,
+        .choice-button.active {
+            background: #e6f5ee;
+            border-color: var(--green);
+            color: var(--green-dark);
+        }
+
+        .primary-button,
+        .secondary-button,
+        .danger-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 100%;
+            min-width: 0;
+            min-height: 46px;
+            border-radius: 8px;
+            padding: 0 16px;
+            cursor: pointer;
+            font-weight: 700;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+
+        .primary-button {
+            background: var(--green);
+            color: #ffffff;
+        }
+
+        .primary-button:disabled {
+            background: #9bbbad;
             cursor: not-allowed;
         }
 
-        .answer-box {
-            margin-top: 24px;
-            padding: 20px;
-            border-radius: 14px;
-            background: #f1f8ff;
-            border-left: 6px solid #2b7cff;
-            min-height: 80px;
-            line-height: 1.8;
+        .secondary-button {
+            background: #f8faf8;
+            color: var(--green-dark);
+            border: 1px solid #bbd3c5;
+        }
+
+        .danger-button {
+            background: #fff2ed;
+            color: #9f3b25;
+            border: 1px solid #f0b49f;
+        }
+
+        .login-map {
+            position: relative;
+            min-height: 540px;
+            overflow: hidden;
+            background:
+                linear-gradient(180deg, rgba(216, 242, 255, 0.92) 0 32%, rgba(242, 248, 223, 0.9) 32% 100%);
+        }
+
+        .login-map .map-canvas {
+            height: 100%;
+            min-height: 540px;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 238px minmax(0, 1fr);
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 20px 16px;
+            background: rgba(255, 253, 247, 0.96);
+            border-right: 1px solid rgba(118, 150, 134, 0.28);
+            overflow: auto;
+        }
+
+        .mini-brand {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .mini-brand .brand-mark {
+            width: 42px;
+            height: 42px;
+            font-size: 23px;
+        }
+
+        .mini-brand strong {
+            display: block;
+            line-height: 1.25;
+        }
+
+        .mini-brand span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .nav-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .nav-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            text-align: left;
+            background: transparent;
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 7px;
+            background: #eef6f1;
+            font-size: 17px;
+            flex: 0 0 auto;
+        }
+
+        .profile-box {
+            margin-top: 18px;
+            padding: 12px;
+            background: #f6fbf8;
+            border: 1px solid #d9e8df;
+            border-radius: 8px;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .profile-meta {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .saved-sessions {
+            margin-bottom: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f6fbf8;
+            border: 1px solid #d9e8df;
+        }
+
+        .session-title {
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #243746;
+        }
+
+        .session-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .session-card {
+            min-height: 56px;
+            display: grid;
+            grid-template-columns: 38px minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #cbd9d3;
+            background: #ffffff;
+            color: var(--ink);
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .session-avatar {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: #ffe7a6;
+            font-size: 22px;
+        }
+
+        .session-name {
+            display: block;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .session-meta {
+            display: block;
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .session-enter {
+            color: var(--green-dark);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .main {
+            min-width: 0;
+            padding: 22px;
+        }
+
+        .topbar {
+            display: flex;
+            position: relative;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .settings-button {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            border: 1px solid #bbd3c5;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--green-dark);
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        .settings-menu {
+            position: absolute;
+            right: 10px;
+            top: calc(100% - 2px);
+            z-index: 30;
+            width: min(250px, calc(100vw - 28px));
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(130, 157, 145, 0.32);
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 16px 36px rgba(36, 55, 69, 0.18);
+        }
+
+        .settings-menu h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .settings-menu p {
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .page-title h2 {
+            margin: 0;
+            font-size: 26px;
+            line-height: 1.25;
+        }
+
+        .page-title p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .view {
+            display: grid;
+            gap: 16px;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+            gap: 16px;
+            align-items: start;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .panel {
+            padding: 16px;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+            min-width: 0;
+        }
+
+        .panel-title h3 {
+            margin: 0;
+            font-size: 18px;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .panel-title span {
+            color: var(--muted);
+            font-size: 13px;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .map-canvas {
+            position: relative;
+            min-height: 470px;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #b9d6cd;
+            background:
+                linear-gradient(180deg, #cfefff 0 27%, #f5f5cf 27% 100%);
+        }
+
+        .map-canvas::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(145deg, transparent 0 44%, rgba(44, 137, 92, 0.18) 44% 46%, transparent 46% 100%),
+                linear-gradient(18deg, transparent 0 58%, rgba(38, 120, 199, 0.18) 58% 63%, transparent 63% 100%);
+            pointer-events: none;
+        }
+
+        .biome {
+            position: absolute;
+            border-radius: 8px;
+            border: 1px solid rgba(45, 78, 65, 0.12);
+            box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.04);
+        }
+
+        .biome.forest {
+            left: -4%;
+            top: 30%;
+            width: 38%;
+            height: 48%;
+            background: #89c877;
+            clip-path: polygon(0 10%, 80% 0, 100% 70%, 38% 100%, 0 82%);
+        }
+
+        .biome.mountain {
+            left: 22%;
+            top: 21%;
+            width: 30%;
+            height: 40%;
+            background: #b6c3b6;
+            clip-path: polygon(4% 78%, 34% 8%, 54% 51%, 73% 16%, 100% 83%);
+        }
+
+        .biome.grassland {
+            left: 39%;
+            top: 44%;
+            width: 34%;
+            height: 36%;
+            background: #c8d96f;
+            clip-path: polygon(4% 22%, 92% 0, 100% 86%, 7% 100%);
+        }
+
+        .biome.ocean {
+            right: -5%;
+            top: 32%;
+            width: 39%;
+            height: 54%;
+            background: #75c9da;
+            clip-path: polygon(18% 0, 100% 0, 100% 100%, 5% 84%, 0 30%);
+        }
+
+        .biome.wetland {
+            left: 19%;
+            bottom: -4%;
+            width: 36%;
+            height: 30%;
+            background: #96c7a6;
+            clip-path: polygon(0 18%, 86% 0, 100% 68%, 8% 100%);
+        }
+
+        .biome.polar {
+            right: 4%;
+            top: 8%;
+            width: 31%;
+            height: 28%;
+            background: #f3fbff;
+            clip-path: polygon(0 40%, 27% 8%, 58% 28%, 100% 0, 96% 88%, 8% 100%);
+        }
+
+        .biome.desert {
+            left: 53%;
+            bottom: 2%;
+            width: 28%;
+            height: 27%;
+            background: #eecb74;
+            clip-path: polygon(0 18%, 68% 0, 100% 56%, 20% 100%);
+        }
+
+        .map-label {
+            position: absolute;
+            padding: 5px 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(104, 132, 120, 0.24);
+            color: #355244;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .marker {
+            position: absolute;
+            width: 82px;
+            min-height: 82px;
+            padding: 7px 5px;
+            display: grid;
+            place-items: center;
+            gap: 2px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid rgba(255, 255, 255, 0.94);
+            color: var(--ink);
+            box-shadow: 0 10px 22px rgba(34, 63, 73, 0.16);
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+        }
+
+        .marker.active {
+            border-color: var(--coral);
+            background: #fff3ec;
+        }
+
+        .marker .animal-face {
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        .marker .animal-name {
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 1.15;
+            text-align: center;
+        }
+
+        .animal-summary {
+            display: grid;
+            gap: 12px;
+        }
+
+        .animal-hero {
+            display: grid;
+            grid-template-columns: 78px minmax(0, 1fr);
+            gap: 14px;
+            align-items: center;
+        }
+
+        .animal-avatar {
+            width: 78px;
+            height: 78px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: #fff0c8;
+            border: 1px solid #ecd48d;
+            font-size: 42px;
+        }
+
+        .animal-hero h3 {
+            margin: 0 0 6px;
+            font-size: 24px;
+        }
+
+        .animal-hero p,
+        .detail-list p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .detail-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .detail-list strong {
+            color: var(--ink);
+        }
+
+        .animal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .animal-tile {
+            padding: 14px;
+            cursor: pointer;
+        }
+
+        .animal-tile.active {
+            border-color: var(--coral);
+            background: #fff8f3;
+        }
+
+        .animal-tile h4 {
+            margin: 8px 0 6px;
             font-size: 17px;
         }
 
-        .meta {
-            margin-top: 10px;
-            color: #777;
+        .animal-tile p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
             font-size: 14px;
         }
 
-        .error {
-            color: #d93025;
+        .animal-chip,
+        .chip,
+        .choice-button,
+        .tool-button {
+            padding: 9px 12px;
+        }
+
+        .animal-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .answer-panel {
+            padding: 16px;
+            min-height: 142px;
+            line-height: 1.75;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .answer-panel.loading {
+            color: var(--blue);
+            background: #eef8ff;
+        }
+
+        .answer-panel.error {
+            color: #a83d2b;
+            background: #fff4ef;
+            border-color: #efc6b6;
+        }
+
+        .meta-line {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 8px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .quiz-box {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-question {
+            margin: 0;
+            line-height: 1.6;
+            font-weight: 700;
+        }
+
+        .choice-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .choice-button {
+            text-align: left;
+            background: #ffffff;
+        }
+
+        .choice-button.correct {
+            background: #e6f5ee;
+            border-color: var(--green);
+        }
+
+        .choice-button.wrong {
+            background: #fff0ec;
+            border-color: var(--coral);
+        }
+
+        .doctor-note {
+            padding: 12px;
+            border-radius: 8px;
+            background: #fff6df;
+            border: 1px solid #eed38c;
+            color: #72520e;
+            line-height: 1.6;
+        }
+
+        .care-status-line {
+            display: grid;
+            grid-template-columns: 58px minmax(0, 1fr);
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .care-status-line .animal-avatar {
+            width: 58px;
+            height: 58px;
+            font-size: 32px;
+        }
+
+        .care-status-line strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .care-status-line p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .care-summary {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .care-stat {
+            padding: 11px 12px;
+            border-radius: 8px;
+            border: 1px solid #d7e6de;
+            background: #f8fbf8;
+        }
+
+        .care-stat strong {
+            display: block;
+            color: var(--green-dark);
+            font-size: 23px;
+            line-height: 1.15;
+        }
+
+        .care-stat span {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .care-answer {
+            min-height: 126px;
+        }
+
+        .imagine-stage {
+            min-height: 260px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            border: 1px solid #c8d8d0;
+            background:
+                linear-gradient(180deg, #dbf2ff 0 48%, #d8efcd 48% 100%);
+            overflow: hidden;
+        }
+
+        .creature-preview {
+            width: min(270px, 88%);
+            aspect-ratio: 1;
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+
+        .creature-body {
+            width: 150px;
+            height: 118px;
+            border-radius: 46% 46% 38% 38%;
+            background: var(--creature-color, #8ccf88);
+            border: 4px solid rgba(32, 56, 48, 0.18);
+            position: relative;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 16px 22px rgba(47, 83, 70, 0.18);
+        }
+
+        .creature-body::before,
+        .creature-body::after {
+            content: "";
+            position: absolute;
+            top: -28px;
+            width: 42px;
+            height: 48px;
+            border-radius: 50% 50% 20% 20%;
+            background: inherit;
+            border: 4px solid rgba(32, 56, 48, 0.18);
+        }
+
+        .creature-body::before {
+            left: 18px;
+            transform: rotate(-18deg);
+        }
+
+        .creature-body::after {
+            right: 18px;
+            transform: rotate(18deg);
+        }
+
+        .creature-face {
+            position: relative;
+            z-index: 1;
+            font-size: 44px;
+            line-height: 1;
+        }
+
+        .wing {
+            position: absolute;
+            width: 76px;
+            height: 100px;
+            top: 72px;
+            background: rgba(255, 255, 255, 0.62);
+            border: 3px solid rgba(38, 120, 199, 0.22);
+            border-radius: 78% 22% 78% 22%;
+        }
+
+        .wing.left {
+            left: 20px;
+            transform: rotate(-23deg);
+        }
+
+        .wing.right {
+            right: 20px;
+            transform: scaleX(-1) rotate(-23deg);
+        }
+
+        .tail {
+            position: absolute;
+            width: 82px;
+            height: 38px;
+            right: 20px;
+            bottom: 68px;
+            border-radius: 50%;
+            background: var(--creature-color, #8ccf88);
+            border: 4px solid rgba(32, 56, 48, 0.18);
+            transform: rotate(-14deg);
+        }
+
+        .horn {
+            position: absolute;
+            top: 31px;
+            left: 50%;
+            width: 34px;
+            height: 54px;
+            background: #ffe08b;
+            clip-path: polygon(50% 0, 100% 100%, 0 100%);
+            transform: translateX(-50%);
+            border-radius: 8px;
+        }
+
+        .collection-grid,
+        .story-list,
+        .activity-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .collection-item,
+        .story-item,
+        .activity-item {
+            padding: 12px;
+            box-shadow: none;
+        }
+
+        .collection-item h4,
+        .story-item h4 {
+            margin: 0 0 6px;
+        }
+
+        .collection-item p,
+        .story-item p,
+        .activity-item p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .metric {
+            padding: 14px;
+            box-shadow: none;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 28px;
+            line-height: 1.15;
+            color: var(--green-dark);
+        }
+
+        .metric span {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .bar-row {
+            display: grid;
+            grid-template-columns: 72px minmax(0, 1fr) 42px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .bar-track {
+            height: 12px;
+            border-radius: 8px;
+            background: #e7efe9;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--green), var(--yellow));
+        }
+
+        .empty-state {
+            padding: 18px;
+            border-radius: 8px;
+            background: #f8fbf8;
+            border: 1px dashed #bed3c7;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            z-index: 10;
+            max-width: min(520px, calc(100vw - 32px));
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #20342b;
+            color: #ffffff;
+            box-shadow: var(--shadow);
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        @media (max-width: 1020px) {
+            .login-screen,
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                border-right: 0;
+                border-bottom: 1px solid rgba(118, 150, 134, 0.28);
+            }
+
+            .nav-list {
+                grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+            }
+
+            .profile-box {
+                display: none;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .login-screen,
+            .main {
+                padding: 14px;
+            }
+
+            .login-map {
+                min-height: 430px;
+            }
+
+            .login-map .map-canvas,
+            .map-canvas {
+                min-height: 410px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-list {
+                grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .marker {
+                width: 70px;
+                min-height: 70px;
+            }
+
+            .marker .animal-face {
+                font-size: 25px;
+            }
+
+            .marker .animal-name {
+                font-size: 12px;
+            }
+        }
+
+        /* Mobile quick-app layout */
+        body {
+            min-height: 100dvh;
+            background: #dbeee5;
+        }
+
+        .app-root {
+            width: min(100vw, 430px);
+            min-height: 100dvh;
+            margin: 0 auto;
+            background:
+                linear-gradient(180deg, #dff4ff 0, #f2faec 44%, #fff8e3 100%);
+            box-shadow: 0 0 0 1px rgba(38, 66, 54, 0.06), 0 20px 50px rgba(29, 52, 42, 0.18);
+        }
+
+        .login-screen {
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 14px 12px 18px;
+        }
+
+        .login-panel {
+            order: 1;
+            padding: 18px;
+            align-self: stretch;
+        }
+
+        .login-map {
+            order: 2;
+            min-height: 280px;
+        }
+
+        .login-map .map-canvas {
+            min-height: 280px;
+        }
+
+        .brand {
+            margin-bottom: 16px;
+        }
+
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            font-size: 25px;
+        }
+
+        .brand h1 {
+            font-size: 22px;
+        }
+
+        .brand p {
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .role-option {
+            min-height: 86px;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .role-option strong {
+            font-size: 14px;
+        }
+
+        .role-option span {
+            font-size: 11px;
+            line-height: 1.35;
+        }
+
+        .text-input,
+        .select-input,
+        .textarea-input,
+        .primary-button,
+        .secondary-button,
+        .danger-button {
+            min-height: 48px;
+        }
+
+        .shell {
+            min-height: 100dvh;
+            display: block;
+        }
+
+        .main {
+            padding: 10px 10px calc(var(--bottom-nav-height) + 22px + env(safe-area-inset-bottom));
+            width: 100%;
+            min-width: 0;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 50%;
+            right: auto;
+            top: auto;
+            bottom: 0;
+            z-index: 20;
+            width: min(100vw, 430px);
+            min-height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+            padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+            overflow: hidden;
+            transform: translateX(-50%);
+            border-right: 0;
+            border-top: 1px solid rgba(118, 150, 134, 0.26);
+            background: rgba(255, 253, 247, 0.96);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 -12px 28px rgba(36, 55, 69, 0.12);
+        }
+
+        .mini-brand,
+        .profile-box {
+            display: none;
+        }
+
+        .nav-list {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 4px;
+            align-items: stretch;
+        }
+
+        .nav-item {
+            min-height: 56px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            padding: 5px 3px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            font-size: 11px;
+            line-height: 1.15;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .nav-item.active {
+            background: #e6f5ee;
+            color: var(--green-dark);
+        }
+
+        .nav-icon {
+            width: 25px;
+            height: 25px;
+            border-radius: 7px;
+            background: transparent;
+            font-size: 20px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 12;
+            min-width: 0;
+            align-items: center;
+            gap: 10px;
+            margin: 0 -10px 10px;
+            padding: 10px 10px 9px;
+            background: rgba(223, 244, 255, 0.92);
+            border-bottom: 1px solid rgba(118, 150, 134, 0.18);
+            backdrop-filter: blur(12px);
+        }
+
+        .page-title h2 {
+            font-size: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .page-title p {
+            max-width: min(260px, calc(100vw - 86px));
+            margin-top: 3px;
+            font-size: 12px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        .topbar .action-row {
+            flex: 0 0 auto;
+            gap: 6px;
+        }
+
+        .topbar .secondary-button {
+            min-height: 34px;
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
+        .view {
+            gap: 10px;
+        }
+
+        .grid-2,
+        .grid-3 {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .panel,
+        .answer-panel {
+            min-width: 0;
+            max-width: 100%;
+            padding: 12px;
+            box-shadow: 0 8px 20px rgba(36, 55, 69, 0.09);
+        }
+
+        .panel-title {
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+
+        .panel-title h3 {
+            font-size: 16px;
+            flex: 1 1 auto;
+        }
+
+        .panel-title span {
+            font-size: 12px;
+            flex: 0 1 auto;
+            text-align: right;
+        }
+
+        .select-input {
+            padding-right: 34px;
+        }
+
+        .field,
+        .quiz-box,
+        .choice-list,
+        .collection-grid,
+        .story-list,
+        .activity-list {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label,
+        .section-label {
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .textarea-input {
+            min-height: 104px;
+        }
+
+        .action-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr));
+            gap: 8px;
+        }
+
+        .action-row > button,
+        .action-row > .primary-button,
+        .action-row > .secondary-button,
+        .action-row > .danger-button {
+            width: 100%;
+        }
+
+        .chip-row,
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(96px, 100%), 1fr));
+            gap: 8px;
+            overflow: visible;
+            padding-bottom: 0;
+        }
+
+        .chip,
+        .animal-chip,
+        .choice-button,
+        .tool-button {
+            min-height: 40px;
+            width: 100%;
+            min-width: 0;
+            padding: 8px 10px;
+            font-size: 13px;
+            line-height: 1.25;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .quick-grid .chip {
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .map-canvas {
+            min-height: 315px;
+        }
+
+        .map-label {
+            display: none;
+        }
+
+        .marker {
+            width: 54px;
+            min-height: 54px;
+            padding: 4px 3px;
+            border-width: 1px;
+            box-shadow: 0 6px 14px rgba(34, 63, 73, 0.14);
+        }
+
+        .marker .animal-face {
+            font-size: 23px;
+        }
+
+        .marker .animal-name {
+            font-size: 10px;
+        }
+
+        .animal-hero {
+            grid-template-columns: 62px minmax(0, 1fr);
+            gap: 10px;
+        }
+
+        .animal-avatar {
+            width: 62px;
+            height: 62px;
+            font-size: 34px;
+        }
+
+        .animal-hero h3 {
+            font-size: 20px;
+        }
+
+        .animal-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .animal-tile {
+            padding: 10px;
+            box-shadow: 0 6px 16px rgba(36, 55, 69, 0.08);
+        }
+
+        .animal-tile h4 {
+            margin: 6px 0 4px;
+            font-size: 15px;
+        }
+
+        .animal-tile p {
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .answer-panel {
+            min-height: 118px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .imagine-stage {
+            min-height: 220px;
+        }
+
+        .creature-preview {
+            width: min(230px, 90%);
+        }
+
+        .metric {
+            padding: 12px;
+        }
+
+        .metric strong {
+            font-size: 24px;
+        }
+
+        .bar-row {
+            grid-template-columns: 64px minmax(0, 1fr) 34px;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .toast {
+            bottom: calc(var(--bottom-nav-height) + 14px + env(safe-area-inset-bottom));
+            max-width: min(390px, calc(100vw - 24px));
+        }
+
+        @media (min-width: 431px) {
+            body {
+                padding: 16px 0;
+            }
+
+            .app-root {
+                border-radius: 18px;
+                overflow: hidden;
+            }
+
+            .sidebar {
+                bottom: 16px;
+                border-radius: 0 0 18px 18px;
+            }
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+            }
+
+            .sidebar,
+            .topbar .action-row,
+            .no-print {
+                display: none !important;
+            }
+
+            .shell {
+                display: block;
+            }
+
+            .main {
+                padding: 0;
+            }
+
+            .panel,
+            .metric,
+            .activity-item {
+                box-shadow: none;
+            }
         }
     </style>
 </head>
 <body>
-<div class="app">
-    <h1>动物乐园 AI 问答 Demo</h1>
-    <div class="subtitle">选择一个动物，问 AI 一个问题</div>
-
-    <div class="animal-list">
-        <button class="animal-btn active" onclick="selectAnimal(this, '熊猫')">熊猫</button>
-        <button class="animal-btn" onclick="selectAnimal(this, '小猫')">小猫</button>
-        <button class="animal-btn" onclick="selectAnimal(this, '小狗')">小狗</button>
-        <button class="animal-btn" onclick="selectAnimal(this, '兔子')">兔子</button>
-        <button class="animal-btn" onclick="selectAnimal(this, '海豚')">海豚</button>
-        <button class="animal-btn" onclick="selectAnimal(this, '小鸟')">小鸟</button>
-    </div>
-
-    <div class="form-row">
-        <label>选择模型</label>
-        <select id="model">
-            <option value="Doubao-Seed-2.0-pro">Doubao-Seed-2.0-pro</option>
-            <option value="Doubao-Seed-2.0-mini">Doubao-Seed-2.0-mini</option>
-            <option value="Doubao-Seed-2.0-lite">Doubao-Seed-2.0-lite</option>
-            <option value="Volc-DeepSeek-V3.2">Volc-DeepSeek-V3.2</option>
-            <option value="qwen3.5-plus">qwen3.5-plus</option>
-        </select>
-    </div>
-
-    <div class="form-row">
-        <label>小朋友的问题</label>
-        <textarea id="question">熊猫为什么喜欢吃竹子？</textarea>
-    </div>
-
-    <button class="ask-btn" id="askBtn" onclick="askAI()">问问 AI</button>
-
-    <div class="answer-box" id="answerBox">
-        AI 的回答会显示在这里。
-    </div>
-
-    <div class="meta" id="metaBox"></div>
-</div>
-
+<div id="app" class="app-root"></div>
 <script>
-    let selectedAnimal = "熊猫";
+    const STORE_KEY = "applePuddingAnimalSessionsV3";
+    const LEGACY_STORE_KEY = "applePuddingAnimalStateV2";
+    const ACTIVE_SESSION_KEY = "applePuddingActiveSessionId";
 
-    function selectAnimal(button, animal) {
-        selectedAnimal = animal;
+    const models = [
+        "Doubao-Seed-2.0-pro",
+        "Doubao-Seed-2.0-mini",
+        "Doubao-Seed-2.0-lite",
+        "Volc-DeepSeek-V3.2",
+        "qwen3.5-plus"
+    ];
 
-        const buttons = document.querySelectorAll(".animal-btn");
-        buttons.forEach(btn => btn.classList.remove("active"));
+    const routes = [
+        { id: "map", label: "地图", icon: "🗺️", title: "动物地图", subtitle: "选择一个动物，打开它的栖息地和知识卡。" },
+        { id: "qa", label: "问答照护", icon: "❓", title: "知识问答与照护", subtitle: "答对小测验后喂养当前动物，答错时由AI医生给出照护建议。" },
+        { id: "imagine", label: "想象", icon: "🎨", title: "想象动物区", subtitle: "组合栖息地、能力和性格，创建自己的动物。" },
+        { id: "story", label: "故事", icon: "📖", title: "故事页", subtitle: "把动物知识变成睡前故事和探险故事。" },
+        { id: "report", label: "报告", icon: "📊", title: "家长报告", subtitle: "查看探索记录、兴趣动物和学习建议。" }
+    ];
 
-        button.classList.add("active");
+    const animals = [
+        {
+            id: "panda",
+            name: "大熊猫",
+            icon: "🐼",
+            habitat: "竹林山地",
+            biome: "森林",
+            x: 20,
+            y: 55,
+            color: "#8fcf7a",
+            diet: "竹子、竹笋，也会吃少量水果。",
+            fact: "大熊猫每天会花很久吃竹子，因为竹子能量不高，它需要慢慢补充力气。",
+            care: "安静、凉爽、干净的环境会让它更舒服。",
+            quiz: {
+                question: "大熊猫最常吃什么？",
+                options: ["竹子", "贝壳", "仙人掌"],
+                answer: 0
+            },
+            quick: ["熊猫为什么爱吃竹子？", "熊猫宝宝多大开始爬？", "熊猫住在哪里？"]
+        },
+        {
+            id: "dolphin",
+            name: "海豚",
+            icon: "🐬",
+            habitat: "温暖海洋",
+            biome: "海洋",
+            x: 80,
+            y: 58,
+            color: "#76c8dd",
+            diet: "小鱼、乌贼和甲壳类动物。",
+            fact: "海豚会用声音互相联系，还会用回声找到附近的东西。",
+            care: "海洋动物需要清洁水域和足够活动空间。",
+            quiz: {
+                question: "海豚常用什么寻找周围的东西？",
+                options: ["回声", "翅膀", "长鼻子"],
+                answer: 0
+            },
+            quick: ["海豚为什么会跳出水面？", "海豚怎么睡觉？", "海豚会互相说话吗？"]
+        },
+        {
+            id: "elephant",
+            name: "大象",
+            icon: "🐘",
+            habitat: "草原和森林",
+            biome: "草原",
+            x: 57,
+            y: 58,
+            color: "#c7d47a",
+            diet: "草、树叶、树皮和水果。",
+            fact: "大象的鼻子又像手又像吸管，可以拿食物、喝水、闻气味。",
+            care: "大象需要很多水、宽阔空间和同伴。",
+            quiz: {
+                question: "大象用鼻子可以做什么？",
+                options: ["拿食物和喝水", "像鸟一样飞", "发光"],
+                answer: 0
+            },
+            quick: ["大象鼻子有多灵活？", "大象为什么喜欢泥巴？", "小象怎么跟妈妈走路？"]
+        },
+        {
+            id: "penguin",
+            name: "企鹅",
+            icon: "🐧",
+            habitat: "寒冷海岸",
+            biome: "冰原",
+            x: 76,
+            y: 24,
+            color: "#dceef7",
+            diet: "小鱼、磷虾和乌贼。",
+            fact: "企鹅不会飞，但很会游泳，翅膀像小船桨。",
+            care: "企鹅喜欢低温和稳定的水质。",
+            quiz: {
+                question: "企鹅最擅长什么？",
+                options: ["游泳", "爬树", "织网"],
+                answer: 0
+            },
+            quick: ["企鹅为什么不会飞？", "企鹅怎么保暖？", "企鹅爸爸会照顾蛋吗？"]
+        },
+        {
+            id: "tiger",
+            name: "老虎",
+            icon: "🐯",
+            habitat: "森林和草丛",
+            biome: "森林",
+            x: 34,
+            y: 44,
+            color: "#f3b05b",
+            diet: "鹿、野猪等动物，是肉食动物。",
+            fact: "老虎身上的条纹像森林里的影子，可以帮助它隐藏自己。",
+            care: "猛兽需要专业保护，不适合私人饲养。",
+            quiz: {
+                question: "老虎身上的条纹有什么用？",
+                options: ["帮助隐藏", "变成翅膀", "装水"],
+                answer: 0
+            },
+            quick: ["老虎为什么有条纹？", "老虎会游泳吗？", "老虎怎么照顾幼崽？"]
+        },
+        {
+            id: "rabbit",
+            name: "兔子",
+            icon: "🐰",
+            habitat: "草地和洞穴",
+            biome: "草地",
+            x: 46,
+            y: 78,
+            color: "#e6c4d6",
+            diet: "草、叶子和少量蔬菜。",
+            fact: "兔子的长耳朵能帮助它听到远处声音，也能帮助散热。",
+            care: "家养兔子需要干草、清水、安静空间和安全咀嚼物。",
+            quiz: {
+                question: "兔子的长耳朵能帮助它做什么？",
+                options: ["听声音和散热", "游得更快", "挖金子"],
+                answer: 0
+            },
+            quick: ["兔子为什么总在咬东西？", "兔子能洗澡吗？", "兔子害怕时会怎样？"]
+        },
+        {
+            id: "camel",
+            name: "骆驼",
+            icon: "🐫",
+            habitat: "沙漠和戈壁",
+            biome: "沙漠",
+            x: 66,
+            y: 84,
+            color: "#e3bc6f",
+            diet: "干草、灌木和耐旱植物。",
+            fact: "骆驼的驼峰主要储存脂肪，可以在缺少食物时提供能量。",
+            care: "骆驼适应干燥环境，但仍需要饮水和休息。",
+            quiz: {
+                question: "骆驼的驼峰主要储存什么？",
+                options: ["脂肪", "冰块", "沙子"],
+                answer: 0
+            },
+            quick: ["骆驼为什么能走沙漠？", "骆驼睫毛有什么用？", "驼峰里是水吗？"]
+        },
+        {
+            id: "frog",
+            name: "青蛙",
+            icon: "🐸",
+            habitat: "池塘和湿地",
+            biome: "湿地",
+            x: 29,
+            y: 83,
+            color: "#73bd72",
+            diet: "小虫、蚊子和其他小型无脊椎动物。",
+            fact: "青蛙小时候是蝌蚪，长大后会长出腿，能在水边跳来跳去。",
+            care: "两栖动物需要干净水源和湿润环境。",
+            quiz: {
+                question: "青蛙小时候通常叫什么？",
+                options: ["蝌蚪", "小贝壳", "小羽毛"],
+                answer: 0
+            },
+            quick: ["蝌蚪怎么变成青蛙？", "青蛙为什么会叫？", "青蛙吃什么虫子？"]
+        }
+    ];
 
-        const questionBox = document.getElementById("question");
-        questionBox.value = animal + "有什么有趣的特点？";
+    const defaultState = {
+        profile: null,
+        pendingRole: "child",
+        route: "map",
+        selectedAnimalId: "panda",
+        model: models[0],
+        progress: {
+            visits: {},
+            questions: 0,
+            doctorChecks: 0,
+            feedings: 0,
+            treatments: 0,
+            quizCorrect: 0,
+            quizTotal: 0,
+            stories: 0,
+            creations: 0,
+            activities: []
+        },
+        answers: [],
+        doctorLogs: [],
+        feedingLogs: [],
+        lastQuiz: null,
+        creations: [],
+        stories: [],
+        draftCreature: {
+            name: "云朵跳跳兽",
+            habitat: "彩虹森林",
+            mood: "好奇",
+            color: "#8ccf88",
+            parts: ["wing", "tail"]
+        }
+    };
+
+    let sessionStore = loadSessionStore();
+    let state = loadState();
+    const app = document.getElementById("app");
+
+    function clone(value) {
+        return JSON.parse(JSON.stringify(value));
     }
 
-    async function askAI() {
-        const question = document.getElementById("question").value.trim();
-        const model = document.getElementById("model").value;
-        const answerBox = document.getElementById("answerBox");
-        const metaBox = document.getElementById("metaBox");
-        const askBtn = document.getElementById("askBtn");
+    function loadSessionStore() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+            if (saved && saved.sessions) return saved;
 
-        if (!question) {
-            answerBox.innerHTML = "<span class='error'>请先输入问题。</span>";
+            const legacy = JSON.parse(localStorage.getItem(LEGACY_STORE_KEY) || "null");
+            if (legacy && legacy.profile) {
+                const id = legacy.sessionId || makeSessionId();
+                const migrated = mergeState(clone(defaultState), legacy);
+                migrated.sessionId = id;
+                const store = { sessions: { [id]: migrated }, order: [id] };
+                localStorage.setItem(STORE_KEY, JSON.stringify(store));
+                sessionStorage.setItem(ACTIVE_SESSION_KEY, id);
+                return store;
+            }
+
+            return { sessions: {}, order: [] };
+        } catch (error) {
+            return { sessions: {}, order: [] };
+        }
+    }
+
+    function loadState() {
+        const activeId = sessionStorage.getItem(ACTIVE_SESSION_KEY);
+        if (activeId && sessionStore.sessions[activeId]) {
+            return mergeState(clone(defaultState), sessionStore.sessions[activeId]);
+        }
+        return clone(defaultState);
+    }
+
+    function mergeState(base, saved) {
+        const merged = { ...base, ...saved };
+        merged.progress = { ...base.progress, ...(saved.progress || {}) };
+        merged.draftCreature = { ...base.draftCreature, ...(saved.draftCreature || {}) };
+        return merged;
+    }
+
+    function saveState() {
+        if (!state.sessionId) return;
+        const persisted = clone(state);
+        delete persisted.settingsOpen;
+        sessionStore.sessions[state.sessionId] = mergeState(clone(defaultState), persisted);
+        sessionStore.order = [state.sessionId, ...sessionStore.order.filter((id) => id !== state.sessionId)];
+        localStorage.setItem(STORE_KEY, JSON.stringify(sessionStore));
+        sessionStorage.setItem(ACTIVE_SESSION_KEY, state.sessionId);
+    }
+
+    function makeSessionId() {
+        return `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function createSession(profile) {
+        const id = makeSessionId();
+        state = mergeState(clone(defaultState), {
+            sessionId: id,
+            profile,
+            route: profile.role === "parent" ? "report" : "map"
+        });
+        addActivity("登录", `${roleLabel(profile.role)} ${profile.name}`);
+        saveState();
+    }
+
+    function switchSession(id) {
+        if (!sessionStore.sessions[id]) return;
+        sessionStorage.setItem(ACTIVE_SESSION_KEY, id);
+        state = loadState();
+        render();
+    }
+
+    function logoutCurrentSession() {
+        sessionStorage.removeItem(ACTIVE_SESSION_KEY);
+        state = clone(defaultState);
+        render();
+    }
+
+    function savedSessions() {
+        return sessionStore.order
+            .map((id) => sessionStore.sessions[id])
+            .filter((item) => item && item.profile);
+    }
+
+    function getAnimal(id = state.selectedAnimalId) {
+        return animals.find((animal) => animal.id === id) || animals[0];
+    }
+
+    function getRoute(id = state.route) {
+        if (id === "doctor") id = "qa";
+        return routes.find((route) => route.id === id) || routes[0];
+    }
+
+    function setRoute(route) {
+        if (route === "doctor") route = "qa";
+        state.route = route;
+        saveState();
+        render();
+    }
+
+    function selectAnimal(id, source = "地图探索") {
+        state.selectedAnimalId = id;
+        state.lastQuiz = null;
+        state.progress.visits[id] = (state.progress.visits[id] || 0) + 1;
+        addActivity("探索", `${getAnimal(id).name}：${source}`, id);
+        saveState();
+        render();
+    }
+
+    function addActivity(type, label, animalId = state.selectedAnimalId) {
+        state.progress.activities.unshift({
+            type,
+            label,
+            animalId,
+            time: Date.now()
+        });
+        state.progress.activities = state.progress.activities.slice(0, 24);
+    }
+
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function formatTime(time) {
+        const date = new Date(time);
+        return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    }
+
+    function render() {
+        if (!state.profile) {
+            renderLogin();
             return;
         }
+        renderShell();
+    }
 
-        askBtn.disabled = true;
-        askBtn.innerText = "AI 正在思考...";
-        answerBox.innerText = "正在请求 AI，请稍等...";
-        metaBox.innerText = "";
+    function renderLogin() {
+        const selectedRole = state.pendingRole || "child";
+        const sessions = savedSessions();
+        app.innerHTML = `
+            <main class="login-screen">
+                <section class="login-panel">
+                    <div class="brand">
+                        <div class="brand-mark">🍎</div>
+                        <div>
+                            <h1>苹果布丁动物乐园</h1>
+                            <p>动物探索、AI问答、故事创作和家长报告。</p>
+                        </div>
+                    </div>
+
+                    ${sessions.length ? `
+                        <div class="saved-sessions">
+                            <div class="session-title">继续使用</div>
+                            <div class="session-list">
+                                ${sessions.map((session) => sessionCard(session)).join("")}
+                            </div>
+                        </div>
+                    ` : ""}
+
+                    <form id="loginForm">
+                        <div class="field">
+                            <label for="childName">昵称</label>
+                            <input class="text-input" id="childName" maxlength="12" placeholder="小探险家" value="${escapeHtml(state.pendingName || "")}">
+                        </div>
+                        <div class="field">
+                            <label for="childAge">年龄</label>
+                            <select class="select-input" id="childAge">
+                                ${[3, 4, 5, 6, 7, 8, 9, 10].map((age) => `<option value="${age}" ${age === Number(state.pendingAge || 6) ? "selected" : ""}>${age} 岁</option>`).join("")}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <span class="section-label">角色</span>
+                            <div class="role-grid">
+                                ${roleButton("child", "小探险家", "地图、问答和故事", selectedRole)}
+                                ${roleButton("parent", "家长", "报告和学习记录", selectedRole)}
+                            </div>
+                        </div>
+                        <button class="primary-button" type="submit" style="width: 100%;">进入乐园</button>
+                    </form>
+                </section>
+                <section class="login-map" aria-label="动物地图预览">
+                    ${mapCanvas(false)}
+                </section>
+            </main>
+        `;
+    }
+
+    function sessionCard(session) {
+        return `
+            <button class="session-card" type="button" data-session-id="${session.sessionId}">
+                <span class="session-avatar">${session.profile.role === "parent" ? "👨‍👩‍👧" : "🧒"}</span>
+                <span>
+                    <span class="session-name">${escapeHtml(session.profile.name)}</span>
+                    <span class="session-meta">${roleLabel(session.profile.role)}｜${session.profile.age} 岁｜探索 ${Object.keys(session.progress.visits || {}).length} 种动物</span>
+                </span>
+                <span class="session-enter">进入</span>
+            </button>
+        `;
+    }
+
+    function roleButton(id, title, desc, selectedRole) {
+        return `
+            <button class="role-option ${selectedRole === id ? "active" : ""}" type="button" data-role="${id}">
+                <strong>${title}</strong>
+                <span>${desc}</span>
+            </button>
+        `;
+    }
+
+    function renderShell() {
+        if (state.route === "doctor") state.route = "qa";
+        const route = getRoute();
+        app.innerHTML = `
+            <div class="shell">
+                <aside class="sidebar">
+                    <div class="mini-brand">
+                        <div class="brand-mark">🍎</div>
+                        <div>
+                            <strong>苹果布丁动物乐园</strong>
+                            <span>当前：${escapeHtml(getAnimal().name)}</span>
+                        </div>
+                    </div>
+                    <nav class="nav-list" aria-label="主导航">
+                        ${routes.map((item) => `
+                            <button class="nav-item ${state.route === item.id ? "active" : ""}" data-route="${item.id}" type="button">
+                                <span class="nav-icon">${item.icon}</span>
+                                <span>${item.label}</span>
+                            </button>
+                        `).join("")}
+                    </nav>
+                    <div class="profile-box">
+                        <div class="profile-name">${escapeHtml(state.profile.name)}</div>
+                        <div class="profile-meta">${roleLabel(state.profile.role)}｜${state.profile.age} 岁<br>已探索 ${Object.keys(state.progress.visits).length} 种动物</div>
+                    </div>
+                </aside>
+                <main class="main">
+                    <div class="topbar">
+                        <div class="page-title">
+                            <h2>${route.title}</h2>
+                            <p>${route.subtitle}</p>
+                        </div>
+                        <div class="action-row no-print">
+                            <button class="settings-button" type="button" data-action="toggle-settings" aria-label="设置">⚙</button>
+                        </div>
+                        ${state.settingsOpen ? settingsMenu() : ""}
+                    </div>
+                    ${renderRoute()}
+                </main>
+            </div>
+            <div id="toast" class="toast hide"></div>
+        `;
+    }
+
+    function settingsMenu() {
+        return `
+            <div class="settings-menu">
+                <h3>设置</h3>
+                <p>${escapeHtml(state.profile.name)}｜${roleLabel(state.profile.role)}｜${state.profile.age} 岁</p>
+                <button class="danger-button" type="button" data-action="logout" style="width: 100%;">退出登录</button>
+            </div>
+        `;
+    }
+
+    function roleLabel(role) {
+        return { child: "小探险家", parent: "家长" }[role] || "小探险家";
+    }
+
+    function renderRoute() {
+        if (state.route === "qa") return qaView();
+        if (state.route === "doctor") return qaView();
+        if (state.route === "imagine") return imagineView();
+        if (state.route === "story") return storyView();
+        if (state.route === "report") return reportView();
+        return mapView();
+    }
+
+    function mapView() {
+        const animal = getAnimal();
+        return `
+            <section class="view">
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>栖息地地图</h3>
+                            <span>${animals.length} 个动物点</span>
+                        </div>
+                        ${mapCanvas(true)}
+                    </div>
+                    <div class="panel animal-summary">
+                        <div class="animal-hero">
+                            <div class="animal-avatar" style="background: ${animal.color}33;">${animal.icon}</div>
+                            <div>
+                                <h3>${animal.name}</h3>
+                                <p>${animal.habitat}｜${animal.biome}</p>
+                            </div>
+                        </div>
+                        <div class="detail-list">
+                            <p><strong>有趣发现：</strong>${animal.fact}</p>
+                            <p><strong>食物：</strong>${animal.diet}</p>
+                            <p><strong>照护提示：</strong>${animal.care}</p>
+                        </div>
+                        <div class="action-row">
+                            <button class="primary-button" type="button" data-route="qa">问答照护</button>
+                            <button class="secondary-button" type="button" data-route="story">写故事</button>
+                            <button class="secondary-button" type="button" data-route="qa">医生治疗</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="animal-grid">
+                    ${animals.map((item) => `
+                        <button class="animal-tile ${item.id === animal.id ? "active" : ""}" type="button" data-animal="${item.id}">
+                            <div class="animal-face">${item.icon}</div>
+                            <h4>${item.name}</h4>
+                            <p>${item.habitat}</p>
+                        </button>
+                    `).join("")}
+                </div>
+            </section>
+        `;
+    }
+
+    function mapCanvas(clickable) {
+        return `
+            <div class="map-canvas">
+                <div class="biome forest"></div>
+                <div class="biome mountain"></div>
+                <div class="biome grassland"></div>
+                <div class="biome ocean"></div>
+                <div class="biome wetland"></div>
+                <div class="biome polar"></div>
+                <div class="biome desert"></div>
+                <div class="map-label" style="left: 6%; top: 35%;">竹林</div>
+                <div class="map-label" style="left: 45%; top: 48%;">草原</div>
+                <div class="map-label" style="right: 8%; top: 43%;">海洋</div>
+                <div class="map-label" style="right: 11%; top: 13%;">冰原</div>
+                ${animals.map((animal) => `
+                    <button class="marker ${animal.id === state.selectedAnimalId ? "active" : ""}" type="button" style="left:${animal.x}%; top:${animal.y}%;" ${clickable ? `data-animal="${animal.id}"` : "tabindex=\"-1\""}>
+                        <span class="animal-face">${animal.icon}</span>
+                        <span class="animal-name">${animal.name}</span>
+                    </button>
+                `).join("")}
+            </div>
+        `;
+    }
+
+    function animalChips() {
+        return `
+            <div class="chip-row">
+                ${animals.map((animal) => `
+                    <button class="animal-chip ${animal.id === state.selectedAnimalId ? "active" : ""}" type="button" data-animal="${animal.id}">
+                        <span>${animal.icon}</span><span>${animal.name}</span>
+                    </button>
+                `).join("")}
+            </div>
+        `;
+    }
+
+    function modelSelect(id) {
+        return `
+            <select class="select-input" id="${id}">
+                ${models.map((model) => `<option value="${model}" ${state.model === model ? "selected" : ""}>${model}</option>`).join("")}
+            </select>
+        `;
+    }
+
+    function quizChoiceButton(animal, option, index, currentQuiz) {
+        let className = "choice-button";
+        if (currentQuiz) {
+            if (index === animal.quiz.answer) className += " correct";
+            if (index === currentQuiz.choice && !currentQuiz.correct) className += " wrong";
+        }
+        return `<button class="${className}" type="button" data-quiz-choice="${index}" ${currentQuiz ? "disabled" : ""}>${escapeHtml(option)}</button>`;
+    }
+
+    function quizResultText(animal, currentQuiz) {
+        if (!currentQuiz) return `答对后会喂养${animal.name}，答错会请AI医生治疗。`;
+        if (currentQuiz.correct) return `答对了，已经给${animal.name}喂养：${currentQuiz.food}`;
+        return `答错了，正确答案是：${animal.quiz.options[animal.quiz.answer]}。AI医生已经开始治疗。`;
+    }
+
+    function qaView() {
+        const animal = getAnimal();
+        const lastAnswer = state.answers[0];
+        const lastDoctorLog = state.doctorLogs.find((item) => item.animalId === animal.id);
+        const lastFeeding = state.feedingLogs.find((item) => item.animalId === animal.id);
+        const currentQuiz = state.lastQuiz && state.lastQuiz.animalId === animal.id ? state.lastQuiz : null;
+        const animalFeedings = state.feedingLogs.filter((item) => item.animalId === animal.id).length;
+        const animalTreatments = state.doctorLogs.filter((item) => item.animalId === animal.id).length;
+        return `
+            <section class="view">
+                <div class="panel">
+                    <div class="panel-title">
+                        <h3>选择照护对象</h3>
+                        <span>${animal.icon} ${animal.name}</span>
+                    </div>
+                    ${animalChips()}
+                </div>
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>知识提问</h3>
+                            <span>先了解，再答题</span>
+                        </div>
+                        <div class="field">
+                            <label for="qaModel">模型</label>
+                            ${modelSelect("qaModel")}
+                        </div>
+                        <div class="field">
+                            <label for="qaQuestion">问题</label>
+                            <textarea class="textarea-input" id="qaQuestion">${animal.quick[0]}</textarea>
+                        </div>
+                        <div class="quick-grid">
+                            ${animal.quick.map((question) => `<button class="chip" type="button" data-fill-question="${escapeHtml(question)}">${question}</button>`).join("")}
+                        </div>
+                        <div class="action-row" style="margin-top: 14px;">
+                            <button class="primary-button" type="button" data-action="ask-qa">问问AI</button>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>回答</h3>
+                            <span>${lastAnswer ? formatTime(lastAnswer.time) : "等待提问"}</span>
+                        </div>
+                        <div id="qaAnswer" class="answer-panel">${lastAnswer ? escapeHtml(lastAnswer.reply) : "选择动物并提出问题，回答会显示在这里。"}</div>
+                        <div id="qaMeta" class="meta-line">${lastAnswer ? `动物：${escapeHtml(getAnimal(lastAnswer.animalId).name)}｜${escapeHtml(lastAnswer.source)}` : ""}</div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>答题喂养</h3>
+                            <span>正确 ${state.progress.quizCorrect}/${state.progress.quizTotal}</span>
+                        </div>
+                        <div class="quiz-box">
+                            <p class="quiz-question">${animal.quiz.question}</p>
+                            <div class="choice-list">
+                                ${animal.quiz.options.map((option, index) => quizChoiceButton(animal, option, index, currentQuiz)).join("")}
+                            </div>
+                            <div id="quizResult" class="meta-line">${escapeHtml(quizResultText(animal, currentQuiz))}</div>
+                            ${currentQuiz ? `<button class="secondary-button" type="button" data-action="reset-quiz">再答一次</button>` : ""}
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>照护状态</h3>
+                            <span>${lastFeeding ? formatTime(lastFeeding.time) : "等待喂养"}</span>
+                        </div>
+                        <div class="care-status-line">
+                            <div class="animal-avatar" style="background: ${animal.color}33;">${animal.icon}</div>
+                            <div>
+                                <strong>${animal.name}</strong>
+                                <p>${lastFeeding && lastFeeding.animalId === animal.id ? escapeHtml(lastFeeding.food) : `喜欢吃：${animal.diet}`}</p>
+                            </div>
+                        </div>
+                        <div class="care-summary">
+                            <div class="care-stat"><strong>${animalFeedings}</strong><span>本动物喂养</span></div>
+                            <div class="care-stat"><strong>${animalTreatments}</strong><span>本动物治疗</span></div>
+                        </div>
+                        <div class="meta-line">全园喂养 ${state.progress.feedings || 0} 次｜AI医生 ${state.progress.treatments || 0} 次</div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>AI医生治疗</h3>
+                            <span>${lastDoctorLog ? formatTime(lastDoctorLog.time) : "答错后自动生成"}</span>
+                        </div>
+                        <div class="field">
+                            <label for="symptomType">情况</label>
+                            <select class="select-input" id="symptomType">
+                                <option>答题紧张，需要安慰</option>
+                                <option>不爱吃东西</option>
+                                <option>一直挠痒</option>
+                                <option>走路没精神</option>
+                                <option>喝水变多</option>
+                                <option>看起来紧张</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="symptomDetail">补充</label>
+                            <textarea class="textarea-input" id="symptomDetail">${animal.name}答题时有点紧张，请给出温和的照护和鼓励。</textarea>
+                        </div>
+                        <button class="secondary-button" type="button" data-action="ask-doctor">手动治疗</button>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>医生建议</h3>
+                            <span>${lastDoctorLog ? escapeHtml(getAnimal(lastDoctorLog.animalId).name) : "未生成"}</span>
+                        </div>
+                        <div id="doctorAnswer" class="answer-panel care-answer">${lastDoctorLog ? escapeHtml(lastDoctorLog.reply) : "答错题后，这里会自动出现AI医生的治疗建议。"}</div>
+                        <div id="doctorMeta" class="meta-line">${lastDoctorLog ? `动物：${escapeHtml(getAnimal(lastDoctorLog.animalId).name)}｜${escapeHtml(lastDoctorLog.source)}` : ""}</div>
+                    </div>
+                </div>
+                <div class="panel doctor-note">AI动物医生只适合做儿童科普和初步照护学习。真实宠物出现呼吸困难、流血、抽搐、持续呕吐等情况，请马上联系兽医。</div>
+            </section>
+        `;
+    }
+
+    function doctorView() {
+        const animal = getAnimal();
+        const lastLog = state.doctorLogs[0];
+        return `
+            <section class="view">
+                <div class="panel doctor-note">AI动物医生只适合做儿童科普和初步照护学习。真实宠物出现呼吸困难、流血、抽搐、持续呕吐等情况，请马上联系兽医。</div>
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>问诊记录</h3>
+                            <span>${animal.icon} ${animal.name}</span>
+                        </div>
+                        ${animalChips()}
+                        <div class="field" style="margin-top: 16px;">
+                            <label for="doctorModel">模型</label>
+                            ${modelSelect("doctorModel")}
+                        </div>
+                        <div class="field">
+                            <label for="symptomType">情况</label>
+                            <select class="select-input" id="symptomType">
+                                <option>不爱吃东西</option>
+                                <option>一直挠痒</option>
+                                <option>走路没精神</option>
+                                <option>喝水变多</option>
+                                <option>看起来紧张</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="symptomDetail">补充</label>
+                            <textarea class="textarea-input" id="symptomDetail">${animal.name}今天有点没精神，想知道可能需要观察什么。</textarea>
+                        </div>
+                        <button class="primary-button" type="button" data-action="ask-doctor">生成照护建议</button>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>建议</h3>
+                            <span>${lastLog ? formatTime(lastLog.time) : "未生成"}</span>
+                        </div>
+                        <div id="doctorAnswer" class="answer-panel">${lastLog ? escapeHtml(lastLog.reply) : "照护建议会显示在这里。"}</div>
+                        <div id="doctorMeta" class="meta-line">${lastLog ? `动物：${escapeHtml(getAnimal(lastLog.animalId).name)}｜${escapeHtml(lastLog.source)}` : ""}</div>
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    function imagineView() {
+        const draft = state.draftCreature;
+        return `
+            <section class="view">
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>创建动物</h3>
+                            <span>${draft.name}</span>
+                        </div>
+                        <div class="field">
+                            <label for="creatureName">名字</label>
+                            <input class="text-input" id="creatureName" maxlength="16" value="${escapeHtml(draft.name)}">
+                        </div>
+                        <div class="field">
+                            <label for="creatureHabitat">栖息地</label>
+                            <input class="text-input" id="creatureHabitat" maxlength="18" value="${escapeHtml(draft.habitat)}">
+                        </div>
+                        <div class="field">
+                            <label for="creatureMood">性格</label>
+                            <select class="select-input" id="creatureMood">
+                                ${["好奇", "勇敢", "温柔", "爱唱歌", "慢悠悠"].map((mood) => `<option ${draft.mood === mood ? "selected" : ""}>${mood}</option>`).join("")}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <span class="section-label">颜色</span>
+                            <div class="chip-row">
+                                ${[
+                                    ["#8ccf88", "叶绿"],
+                                    ["#76c8dd", "海蓝"],
+                                    ["#f3b05b", "蜂蜜"],
+                                    ["#e6a1b6", "莓果"],
+                                    ["#b9a7e8", "星紫"]
+                                ].map(([color, label]) => `<button class="chip ${draft.color === color ? "active" : ""}" type="button" data-creature-color="${color}">${label}</button>`).join("")}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <span class="section-label">能力</span>
+                            <div class="chip-row">
+                                ${creaturePartButton("wing", "会滑翔")}
+                                ${creaturePartButton("tail", "会平衡")}
+                                ${creaturePartButton("horn", "会发光")}
+                            </div>
+                        </div>
+                        <div class="action-row">
+                            <button class="primary-button" type="button" data-action="save-creature">收藏动物</button>
+                            <button class="secondary-button" type="button" data-action="random-creature">随机组合</button>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>预览</h3>
+                            <span>${escapeHtml(draft.habitat)}</span>
+                        </div>
+                        ${creaturePreview(draft)}
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">
+                        <h3>想象动物收藏</h3>
+                        <span>${state.creations.length} 个</span>
+                    </div>
+                    <div class="collection-grid">
+                        ${state.creations.length ? state.creations.map((item) => `
+                            <article class="collection-item">
+                                <h4>${escapeHtml(item.name)}</h4>
+                                <p>${escapeHtml(item.mood)}，住在${escapeHtml(item.habitat)}。能力：${escapeHtml(item.parts.join("、") || "慢慢观察")}</p>
+                            </article>
+                        `).join("") : `<div class="empty-state">还没有收藏，创建一个新的想象动物吧。</div>`}
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    function creaturePartButton(part, label) {
+        const active = state.draftCreature.parts.includes(part);
+        return `<button class="chip ${active ? "active" : ""}" type="button" data-creature-part="${part}">${label}</button>`;
+    }
+
+    function creaturePreview(draft) {
+        return `
+            <div class="imagine-stage">
+                <div class="creature-preview" style="--creature-color: ${draft.color};">
+                    ${draft.parts.includes("wing") ? `<span class="wing left"></span><span class="wing right"></span>` : ""}
+                    ${draft.parts.includes("tail") ? `<span class="tail"></span>` : ""}
+                    ${draft.parts.includes("horn") ? `<span class="horn"></span>` : ""}
+                    <div class="creature-body"><span class="creature-face">◕‿◕</span></div>
+                </div>
+            </div>
+        `;
+    }
+
+    function storyView() {
+        const animal = getAnimal();
+        const lastStory = state.stories[0];
+        return `
+            <section class="view">
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>故事设置</h3>
+                            <span>${animal.icon} ${animal.name}</span>
+                        </div>
+                        ${animalChips()}
+                        <div class="field" style="margin-top: 16px;">
+                            <label for="storyModel">模型</label>
+                            ${modelSelect("storyModel")}
+                        </div>
+                        <div class="field">
+                            <label for="storyTheme">主题</label>
+                            <select class="select-input" id="storyTheme">
+                                <option>森林里的新朋友</option>
+                                <option>月光下的海边旅行</option>
+                                <option>帮助迷路的小伙伴</option>
+                                <option>第一次勇敢尝试</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="storyPrompt">故事愿望</label>
+                            <textarea class="textarea-input" id="storyPrompt">请写一个适合睡前听的短故事，要包含一个真实动物知识点。</textarea>
+                        </div>
+                        <div class="action-row">
+                            <button class="primary-button" type="button" data-action="make-story">生成故事</button>
+                            <button class="secondary-button" type="button" data-action="read-story">朗读</button>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>最新故事</h3>
+                            <span>${lastStory ? formatTime(lastStory.time) : "未生成"}</span>
+                        </div>
+                        <div id="storyAnswer" class="answer-panel">${lastStory ? escapeHtml(lastStory.text) : "故事会显示在这里。"}</div>
+                        <div id="storyMeta" class="meta-line">${lastStory ? `主角：${escapeHtml(getAnimal(lastStory.animalId).name)}｜${escapeHtml(lastStory.source)}` : ""}</div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">
+                        <h3>故事书架</h3>
+                        <span>${state.stories.length} 篇</span>
+                    </div>
+                    <div class="story-list">
+                        ${state.stories.length ? state.stories.slice(0, 6).map((story) => `
+                            <article class="story-item">
+                                <h4>${escapeHtml(story.title)}</h4>
+                                <p>${escapeHtml(story.text.slice(0, 120))}${story.text.length > 120 ? "..." : ""}</p>
+                            </article>
+                        `).join("") : `<div class="empty-state">还没有故事，生成第一篇动物故事吧。</div>`}
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    function reportView() {
+        const totals = reportTotals();
+        const favoriteAnimals = animals
+            .map((animal) => ({ ...animal, count: state.progress.visits[animal.id] || 0 }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+        const maxCount = Math.max(1, ...favoriteAnimals.map((item) => item.count));
+
+        return `
+            <section class="view">
+                <div class="grid-3">
+                    <div class="metric"><strong>${totals.explored}</strong><span>已探索动物</span></div>
+                    <div class="metric"><strong>${state.progress.questions}</strong><span>AI知识提问</span></div>
+                    <div class="metric"><strong>${state.progress.feedings || 0}</strong><span>答对喂养</span></div>
+                    <div class="metric"><strong>${state.progress.treatments || 0}</strong><span>AI医生治疗</span></div>
+                    <div class="metric"><strong>${Math.round(totals.quizRate)}%</strong><span>小测验正确率</span></div>
+                </div>
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>兴趣动物</h3>
+                            <span>按探索次数</span>
+                        </div>
+                        ${favoriteAnimals.map((item) => `
+                            <div class="bar-row">
+                                <span>${item.icon} ${item.name}</span>
+                                <span class="bar-track"><span class="bar-fill" style="width: ${(item.count / maxCount) * 100}%;"></span></span>
+                                <span>${item.count}</span>
+                            </div>
+                        `).join("")}
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">
+                            <h3>学习建议</h3>
+                            <span>${roleLabel(state.profile.role)}</span>
+                        </div>
+                        <div class="detail-list">
+                            <p><strong>优势：</strong>${reportStrength(totals)}</p>
+                            <p><strong>下一步：</strong>${reportSuggestion(totals)}</p>
+                            <p><strong>亲子话题：</strong>让孩子选一个最喜欢的动物，说出它的家、食物和一个保护方法。</p>
+                        </div>
+                        <div class="action-row no-print" style="margin-top: 14px;">
+                            <button class="secondary-button" type="button" data-action="print-report">打印报告</button>
+                            <button class="danger-button" type="button" data-action="reset-progress">清空记录</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">
+                        <h3>最近记录</h3>
+                        <span>${state.progress.activities.length} 条</span>
+                    </div>
+                    <div class="activity-list">
+                        ${state.progress.activities.length ? state.progress.activities.slice(0, 10).map((item) => `
+                            <article class="activity-item">
+                                <p><strong>${escapeHtml(item.type)}</strong> ${escapeHtml(item.label)}</p>
+                                <p>${formatTime(item.time)}</p>
+                            </article>
+                        `).join("") : `<div class="empty-state">还没有学习记录。</div>`}
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    function reportTotals() {
+        const explored = Object.values(state.progress.visits).filter((count) => count > 0).length;
+        const quizRate = state.progress.quizTotal ? (state.progress.quizCorrect / state.progress.quizTotal) * 100 : 0;
+        return { explored, quizRate };
+    }
+
+    function reportStrength(totals) {
+        if (state.progress.stories >= 2) return "能把知识点放进故事里，说明理解和表达都有进步。";
+        if (state.progress.questions >= 3) return "会主动提问，适合继续做比较和观察。";
+        if (totals.explored >= 4) return "愿意探索不同栖息地，已经开始建立动物分类意识。";
+        return "已经开始认识动物和栖息地，可以从最喜欢的动物继续深入。";
+    }
+
+    function reportSuggestion(totals) {
+        if (totals.explored < 4) return "先在地图上探索 4 种动物，再进行问答和故事。";
+        if (state.progress.quizTotal < 3) return "每天完成 1 道小测验，巩固食物、栖息地和身体特征。";
+        if (state.creations.length < 1) return "进入想象动物区，把真实动物特征组合成原创动物。";
+        return "尝试让孩子用自己的话讲一篇动物保护故事。";
+    }
+
+    async function askAI(mode, message, outputId, metaId, extra = {}) {
+        const output = document.getElementById(outputId);
+        const meta = document.getElementById(metaId);
+        const animal = getAnimal();
+        const model = extra.model || state.model;
+        output.className = "answer-panel loading";
+        output.textContent = "AI正在思考...";
+        meta.textContent = "";
 
         try {
             const response = await fetch("/api/animal/chat", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    message: question,
-                    animal: selectedAnimal,
-                    model: model
+                    mode,
+                    message,
+                    animal: animal.name,
+                    model
                 })
             });
-
             const data = await response.json();
-
-            if (data.success) {
-                answerBox.innerText = data.reply;
-                metaBox.innerText = "当前动物：" + data.animal + "｜使用模型：" + data.model;
-            } else {
-                answerBox.innerHTML = "<span class='error'>请求失败：" + data.error + "</span>";
-                console.log(data);
-            }
+            if (!data.success) throw new Error(data.error || "AI接口返回失败");
+            output.className = "answer-panel";
+            output.textContent = data.reply;
+            meta.textContent = `动物：${animal.name}｜模型：${data.model}`;
+            return { reply: data.reply, source: `模型：${data.model}` };
         } catch (error) {
-            answerBox.innerHTML = "<span class='error'>前端请求出错：" + error.message + "</span>";
-        } finally {
-            askBtn.disabled = false;
-            askBtn.innerText = "问问 AI";
+            const reply = fallbackReply(mode, animal, message, extra);
+            output.className = "answer-panel";
+            output.textContent = reply;
+            meta.textContent = `动物：${animal.name}｜离线回答：${error.message}`;
+            return { reply, source: "离线回答" };
         }
     }
+
+    function fallbackReply(mode, animal, message, extra) {
+        if (mode === "doctor") {
+            return `${animal.name}的情况可以先观察精神、食欲、饮水和排便。\n1. 保持安静和干净环境。\n2. 记录症状出现的时间。\n3. 如果持续不吃、呼吸困难、流血或明显疼痛，请马上联系兽医。`;
+        }
+        if (mode === "story") {
+            const theme = extra.theme || "小小探险";
+            return `《${animal.name}的${theme}》\n夜晚来临，${animal.name}在${animal.habitat}里发现了一条亮亮的小路。它一边前进，一边记得自己的本领：${animal.fact}后来，它帮助迷路的小伙伴找到回家的方向。睡觉前，它轻轻说：保护家园，就是保护每一个朋友。`;
+        }
+        return `${animal.name}生活在${animal.habitat}。${animal.fact}它常吃${animal.diet}如果你继续观察它的身体特点，就能发现动物和环境之间有很多有趣关系。`;
+    }
+
+    function showToast(text) {
+        const toast = document.getElementById("toast");
+        if (!toast) return;
+        toast.textContent = text;
+        toast.classList.remove("hide");
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(() => toast.classList.add("hide"), 2200);
+    }
+
+    document.addEventListener("click", async (event) => {
+        if (state.profile && state.settingsOpen && !event.target.closest(".settings-menu") && !event.target.closest("[data-action='toggle-settings']")) {
+            state.settingsOpen = false;
+            render();
+            return;
+        }
+
+        const sessionButton = event.target.closest("[data-session-id]");
+        if (sessionButton) {
+            switchSession(sessionButton.dataset.sessionId);
+            return;
+        }
+
+        const roleButtonEl = event.target.closest("[data-role]");
+        if (roleButtonEl) {
+            const nameInput = document.getElementById("childName");
+            const ageInput = document.getElementById("childAge");
+            if (nameInput) state.pendingName = nameInput.value;
+            if (ageInput) state.pendingAge = ageInput.value;
+            state.pendingRole = roleButtonEl.dataset.role;
+            renderLogin();
+            return;
+        }
+
+        const routeButton = event.target.closest("[data-route]");
+        if (routeButton && state.profile) {
+            setRoute(routeButton.dataset.route);
+            return;
+        }
+
+        const animalButton = event.target.closest("[data-animal]");
+        if (animalButton && state.profile) {
+            selectAnimal(animalButton.dataset.animal);
+            return;
+        }
+
+        const fillQuestion = event.target.closest("[data-fill-question]");
+        if (fillQuestion) {
+            const input = document.getElementById("qaQuestion");
+            if (input) input.value = fillQuestion.dataset.fillQuestion;
+            return;
+        }
+
+        const quizChoice = event.target.closest("[data-quiz-choice]");
+        if (quizChoice) {
+            await handleQuiz(Number(quizChoice.dataset.quizChoice));
+            return;
+        }
+
+        const colorButton = event.target.closest("[data-creature-color]");
+        if (colorButton) {
+            updateCreatureDraft();
+            state.draftCreature.color = colorButton.dataset.creatureColor;
+            saveState();
+            render();
+            return;
+        }
+
+        const partButton = event.target.closest("[data-creature-part]");
+        if (partButton) {
+            updateCreatureDraft();
+            const part = partButton.dataset.creaturePart;
+            if (state.draftCreature.parts.includes(part)) {
+                state.draftCreature.parts = state.draftCreature.parts.filter((item) => item !== part);
+            } else {
+                state.draftCreature.parts.push(part);
+            }
+            saveState();
+            render();
+            return;
+        }
+
+        const action = event.target.closest("[data-action]")?.dataset.action;
+        if (!action) return;
+
+        if (action === "toggle-settings") {
+            state.settingsOpen = !state.settingsOpen;
+            render();
+            return;
+        }
+        if (action === "logout") {
+            logoutCurrentSession();
+            return;
+        }
+        if (action === "reset-quiz") {
+            state.lastQuiz = null;
+            saveState();
+            render();
+            return;
+        }
+        if (action === "ask-qa") await handleAskQa();
+        if (action === "ask-doctor") await handleAskDoctor();
+        if (action === "save-creature") saveCreature();
+        if (action === "random-creature") randomCreature();
+        if (action === "make-story") await makeStory();
+        if (action === "read-story") readStory();
+        if (action === "print-report") window.print();
+        if (action === "reset-progress") resetProgress();
+    });
+
+    document.addEventListener("submit", (event) => {
+        if (event.target.id !== "loginForm") return;
+        event.preventDefault();
+        const name = document.getElementById("childName").value.trim() || "小探险家";
+        const age = Number(document.getElementById("childAge").value || 6);
+        const role = state.pendingRole || "child";
+        createSession({ name, age, role, createdAt: Date.now() });
+        render();
+    });
+
+    document.addEventListener("change", (event) => {
+        if (["qaModel", "doctorModel", "storyModel"].includes(event.target.id)) {
+            state.model = event.target.value;
+            saveState();
+        }
+    });
+
+    async function handleQuiz(choice) {
+        const animal = getAnimal();
+        const correct = choice === animal.quiz.answer;
+        state.progress.quizTotal += 1;
+        state.lastQuiz = {
+            animalId: animal.id,
+            choice,
+            correct,
+            food: animal.diet.replace(/[。.]$/, ""),
+            time: Date.now()
+        };
+
+        if (correct) {
+            state.progress.quizCorrect += 1;
+            feedAnimal(animal);
+            addActivity("测验", `${animal.name}：答对并喂养`, animal.id);
+        } else {
+            addActivity("测验", `${animal.name}：答错，进入AI医生治疗`, animal.id);
+        }
+
+        document.querySelectorAll("[data-quiz-choice]").forEach((button) => {
+            const index = Number(button.dataset.quizChoice);
+            button.classList.toggle("correct", index === animal.quiz.answer);
+            button.classList.toggle("wrong", index === choice && !correct);
+            button.disabled = true;
+        });
+        const result = document.getElementById("quizResult");
+        result.textContent = correct
+            ? `答对了，已经给${animal.name}喂养：${state.lastQuiz.food}`
+            : `答错了，正确答案是：${animal.quiz.options[animal.quiz.answer]}。AI医生正在治疗...`;
+
+        saveState();
+        if (correct) {
+            render();
+            showToast(`已喂养${animal.name}`);
+            return;
+        }
+
+        await treatAnimalAfterWrongAnswer(animal, choice);
+    }
+
+    function feedAnimal(animal) {
+        state.progress.feedings = (state.progress.feedings || 0) + 1;
+        state.feedingLogs.unshift({
+            animalId: animal.id,
+            food: animal.diet.replace(/[。.]$/, ""),
+            reason: "小测验答对",
+            time: Date.now()
+        });
+        state.feedingLogs = state.feedingLogs.slice(0, 24);
+    }
+
+    async function treatAnimalAfterWrongAnswer(animal, choice) {
+        const message = `孩子在小测验中答错了。题目：${animal.quiz.question}。孩子选择：${animal.quiz.options[choice]}。正确答案：${animal.quiz.options[animal.quiz.answer]}。请用AI动物医生的口吻，安慰${animal.name}，给出温和治疗和复习建议。`;
+        const result = await askAI("doctor", message, "doctorAnswer", "doctorMeta", { model: state.model });
+        state.progress.doctorChecks += 1;
+        state.progress.treatments = (state.progress.treatments || 0) + 1;
+        state.doctorLogs.unshift({
+            animalId: animal.id,
+            symptom: "答题错误",
+            detail: message,
+            reply: result.reply,
+            source: result.source,
+            time: Date.now()
+        });
+        state.doctorLogs = state.doctorLogs.slice(0, 10);
+        addActivity("治疗", `${animal.name}：AI医生复习照护`, animal.id);
+        saveState();
+        render();
+        showToast(`AI医生已治疗${animal.name}`);
+    }
+
+    async function handleAskQa() {
+        const question = document.getElementById("qaQuestion").value.trim();
+        const model = document.getElementById("qaModel").value;
+        if (!question) {
+            showToast("请先输入问题");
+            return;
+        }
+        state.model = model;
+        const result = await askAI("qa", question, "qaAnswer", "qaMeta", { model });
+        state.progress.questions += 1;
+        state.answers.unshift({
+            animalId: state.selectedAnimalId,
+            question,
+            reply: result.reply,
+            source: result.source,
+            time: Date.now()
+        });
+        state.answers = state.answers.slice(0, 12);
+        addActivity("问答", `${getAnimal().name}：${question}`, state.selectedAnimalId);
+        saveState();
+        render();
+    }
+
+    async function handleAskDoctor() {
+        const symptom = document.getElementById("symptomType").value;
+        const detail = document.getElementById("symptomDetail").value.trim();
+        const model = document.getElementById("doctorModel")?.value || document.getElementById("qaModel")?.value || state.model;
+        state.model = model;
+        const message = `${symptom}。${detail}`;
+        const result = await askAI("doctor", message, "doctorAnswer", "doctorMeta", { model });
+        state.progress.doctorChecks += 1;
+        state.progress.treatments = (state.progress.treatments || 0) + 1;
+        state.doctorLogs.unshift({
+            animalId: state.selectedAnimalId,
+            symptom,
+            detail,
+            reply: result.reply,
+            source: result.source,
+            time: Date.now()
+        });
+        state.doctorLogs = state.doctorLogs.slice(0, 10);
+        addActivity("治疗", `${getAnimal().name}：${symptom}`, state.selectedAnimalId);
+        saveState();
+        render();
+    }
+
+    function updateCreatureDraft() {
+        const name = document.getElementById("creatureName");
+        const habitat = document.getElementById("creatureHabitat");
+        const mood = document.getElementById("creatureMood");
+        if (name) state.draftCreature.name = name.value.trim() || "无名小动物";
+        if (habitat) state.draftCreature.habitat = habitat.value.trim() || "秘密花园";
+        if (mood) state.draftCreature.mood = mood.value;
+    }
+
+    function saveCreature() {
+        updateCreatureDraft();
+        const partsMap = { wing: "会滑翔", tail: "会平衡", horn: "会发光" };
+        const item = {
+            ...clone(state.draftCreature),
+            parts: state.draftCreature.parts.map((part) => partsMap[part] || part),
+            time: Date.now()
+        };
+        state.creations.unshift(item);
+        state.creations = state.creations.slice(0, 12);
+        state.progress.creations += 1;
+        addActivity("创作", item.name);
+        saveState();
+        render();
+        showToast("已收藏想象动物");
+    }
+
+    function randomCreature() {
+        const names = ["星星贝贝兽", "蒲公英飞飞兽", "果冻潜水兽", "月亮慢慢兽", "树洞眨眼兽"];
+        const habitats = ["云朵森林", "贝壳海湾", "薄荷草原", "月光山谷", "水晶湿地"];
+        const moods = ["好奇", "勇敢", "温柔", "爱唱歌", "慢悠悠"];
+        const colors = ["#8ccf88", "#76c8dd", "#f3b05b", "#e6a1b6", "#b9a7e8"];
+        const partSets = [["wing"], ["tail"], ["horn"], ["wing", "tail"], ["wing", "horn"], ["tail", "horn"]];
+        state.draftCreature = {
+            name: pick(names),
+            habitat: pick(habitats),
+            mood: pick(moods),
+            color: pick(colors),
+            parts: pick(partSets)
+        };
+        saveState();
+        render();
+    }
+
+    function pick(list) {
+        return list[Math.floor(Math.random() * list.length)];
+    }
+
+    async function makeStory() {
+        const theme = document.getElementById("storyTheme").value;
+        const prompt = document.getElementById("storyPrompt").value.trim();
+        const model = document.getElementById("storyModel").value;
+        state.model = model;
+        const message = `${theme}。${prompt}`;
+        const result = await askAI("story", message, "storyAnswer", "storyMeta", { model, theme });
+        const title = `《${getAnimal().name}和${theme}》`;
+        state.stories.unshift({
+            animalId: state.selectedAnimalId,
+            title,
+            text: result.reply,
+            source: result.source,
+            time: Date.now()
+        });
+        state.stories = state.stories.slice(0, 12);
+        state.progress.stories += 1;
+        addActivity("故事", title, state.selectedAnimalId);
+        saveState();
+        render();
+    }
+
+    function readStory() {
+        const text = document.getElementById("storyAnswer")?.textContent.trim();
+        if (!text || text === "故事会显示在这里。") {
+            showToast("请先生成故事");
+            return;
+        }
+        if (!window.speechSynthesis) {
+            showToast("当前浏览器不支持朗读");
+            return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "zh-CN";
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function resetProgress() {
+        if (!window.confirm("确定清空当前学习记录吗？")) return;
+        const profile = state.profile;
+        state = clone(defaultState);
+        state.profile = profile;
+        saveState();
+        render();
+    }
+
+    render();
 </script>
 </body>
 </html>
