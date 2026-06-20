@@ -1,30 +1,26 @@
-import os
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
+from app.config import get_settings
 
-API_KEY = (os.getenv("XUANJI_API_KEY") or "").strip()
-API_URL = (os.getenv("XUANJI_API_URL") or "").strip()
-DEFAULT_MODEL = (os.getenv("DEFAULT_MODEL") or "Doubao-Seed-2.0-pro").strip()
+settings = get_settings()
 
 
 def test_api():
-    if not API_KEY:
+    if not settings.xuanji_api_key:
         print("错误：没有读取到 XUANJI_API_KEY，请检查 .env")
         return
 
-    if not API_URL:
+    if not settings.xuanji_api_url:
         print("错误：没有读取到 XUANJI_API_URL，请检查 .env")
         return
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {API_KEY}",
+        "Authorization": f"Bearer {settings.xuanji_api_key}",
     }
 
     body = {
-        "model": DEFAULT_MODEL,
+        "model": settings.default_model,
         "messages": [
             {
                 "role": "user",
@@ -35,14 +31,14 @@ def test_api():
         "max_tokens": 300
     }
 
-    print("请求地址：", API_URL)
-    print("模型：", DEFAULT_MODEL)
-    print("API_KEY长度：", len(API_KEY))
+    print("请求地址：", settings.xuanji_api_url)
+    print("模型：", settings.default_model)
+    print("API_KEY长度：", len(settings.xuanji_api_key))
     print("发送请求中...")
 
     try:
         response = requests.post(
-            API_URL,
+            settings.xuanji_api_url,
             headers=headers,
             json=body,
             timeout=60
