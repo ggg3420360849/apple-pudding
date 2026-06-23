@@ -2854,6 +2854,630 @@
                 box-shadow: none;
             }
         }
+
+        /* Animal School New Design Styles */
+        .animal-selection-view {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+
+        .selection-container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .selection-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 0 0 32px 0;
+        }
+
+        .animal-selection-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .animal-selection-item {
+            width: 100%;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 2px solid rgba(130, 157, 145, 0.28);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(36, 55, 69, 0.08);
+        }
+
+        .animal-selection-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--green);
+            box-shadow: 0 8px 20px rgba(36, 55, 69, 0.12);
+        }
+
+        .selection-icon {
+            font-size: 48px;
+            line-height: 1;
+        }
+
+        .selection-name {
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        /* Loading Animation */
+        .animal-loading-view {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+
+        .loading-container {
+            text-align: center;
+        }
+
+        .loading-animal {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .animal-large-icon {
+            font-size: 120px;
+            line-height: 1;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .animal-action-indicator {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 32px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loading-text {
+            font-size: 20px;
+            color: var(--ink);
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .loading-subtext {
+            font-size: 16px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        /* Specific animal animations */
+        .panda-animation .animal-large-icon {
+            animation: eating 2s ease-in-out infinite;
+        }
+
+        @keyframes eating {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        .dolphin-animation .animal-action-indicator {
+            animation: bubble 2s ease-in-out infinite;
+        }
+
+        @keyframes bubble {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
+        }
+
+        .elephant-animation .animal-large-icon {
+            animation: doze 3s ease-in-out infinite;
+        }
+
+        @keyframes doze {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+        }
+
+        .penguin-animation .animal-large-icon {
+            animation: waddle 1s ease-in-out infinite;
+        }
+
+        @keyframes waddle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
+
+        .tiger-animation .animal-large-icon {
+            animation: run 0.8s ease-in-out infinite;
+        }
+
+        @keyframes run {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        .rabbit-animation .animal-large-icon {
+            animation: chew 1.5s ease-in-out infinite;
+        }
+
+        @keyframes chew {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(0.95); }
+        }
+
+        .camel-animation .animal-large-icon {
+            animation: walk 2s ease-in-out infinite;
+        }
+
+        @keyframes walk {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(-5px) translateY(-3px); }
+            75% { transform: translateX(5px) translateY(-3px); }
+        }
+
+        .frog-animation .animal-large-icon {
+            animation: hop 1.2s ease-in-out infinite;
+        }
+
+        @keyframes hop {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Demonstration animations (for correct answer display) */
+        .panda-demonstration .animal-large-icon {
+            animation: eating 2s ease-in-out infinite;
+        }
+
+        .dolphin-demonstration .animal-large-icon {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .elephant-demonstration .animal-large-icon {
+            animation: drinking 2s ease-in-out infinite;
+        }
+
+        @keyframes drinking {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(-10deg); }
+        }
+
+        .penguin-demonstration .animal-large-icon {
+            animation: swim 2s ease-in-out infinite;
+        }
+
+        @keyframes swim {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+        }
+
+        .tiger-demonstration .animal-large-icon {
+            animation: stealth 2s ease-in-out infinite;
+        }
+
+        @keyframes stealth {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        .rabbit-demonstration .animal-large-icon {
+            animation: listen 2s ease-in-out infinite;
+        }
+
+        @keyframes listen {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
+
+        .camel-demonstration .animal-large-icon {
+            animation: walk 2s ease-in-out infinite;
+        }
+
+        @keyframes walk {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-8px); }
+            75% { transform: translateY(-4px); }
+        }
+
+        .frog-demonstration .animal-large-icon {
+            animation: transform-grow 2s ease-in-out infinite;
+        }
+
+        @keyframes transform-grow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* Animal Care View */
+        .animal-care-view {
+            padding-bottom: 20px;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .care-header {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+
+        .animal-display {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            max-width: 100%;
+        }
+
+        .animal-large {
+            font-size: 80px;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .animal-display.sad .animal-large {
+            filter: grayscale(0.3);
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+        }
+
+        .doctor-help-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.2s ease;
+            animation: attention 2s ease-in-out infinite;
+        }
+
+        @keyframes attention {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6); }
+        }
+
+        .doctor-help-button:hover {
+            transform: scale(1.15);
+        }
+
+        .help-icon {
+            font-size: 20px;
+            filter: brightness(0) invert(1);
+        }
+
+        .animal-info-card {
+            background: rgba(255, 255, 255, 0.94);
+            border: 2px solid rgba(130, 157, 145, 0.28);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 8px 24px rgba(36, 55, 69, 0.1);
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .info-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .animal-name-edit {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .animal-name-input {
+            flex: 1;
+            min-width: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+            border: none;
+            background: transparent;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .animal-name-input:hover {
+            background: rgba(63, 154, 104, 0.08);
+        }
+
+        .animal-name-input:focus {
+            outline: none;
+            background: rgba(63, 154, 104, 0.12);
+            border: 1px solid var(--green);
+            padding: 3px 7px;
+        }
+
+        .save-nickname-btn {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            background: var(--green);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            opacity: 0;
+        }
+
+        .animal-name-input:focus + .save-nickname-btn,
+        .animal-name-input:hover + .save-nickname-btn,
+        .save-nickname-btn:hover {
+            opacity: 1;
+        }
+
+        .save-nickname-btn:hover {
+            background: var(--green-dark);
+            transform: scale(1.1);
+        }
+
+        .save-nickname-btn:active {
+            transform: scale(0.95);
+        }
+
+        .change-animal-btn {
+            padding: 4px 10px;
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .change-animal-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .animal-level {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .level-progress {
+            flex: 1;
+            height: 5px;
+            background: #e7e3da;
+            border-radius: 3px;
+            overflow: hidden;
+            min-width: 30px;
+        }
+
+        .level-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green) 0%, var(--green-dark) 100%);
+            transition: width 0.3s ease;
+        }
+
+        .care-stats-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item {
+            flex: 1;
+            padding: 6px;
+            background: #f8fbf8;
+            border: 1px solid #d7e6de;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--green-dark);
+            line-height: 1.2;
+        }
+
+        .animal-status-text {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .knowledge-qa-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 100%;
+        }
+
+        .knowledge-qa-section .panel {
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .qa-answer-box {
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+        }
+
+        .answer-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        /* Doctor Consultation View */
+        .doctor-consultation-view {
+            padding: 0 16px 20px;
+        }
+
+        .doctor-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 16px 0;
+        }
+
+        .doctor-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .back-button {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(130, 157, 145, 0.28);
+            border-radius: 8px;
+            color: var(--ink);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+        }
+
+        @media (max-width: 768px) {
+            .animal-display {
+                padding: 8px;
+            }
+
+            .animal-large {
+                font-size: 70px;
+            }
+
+            .selection-title {
+                font-size: 24px;
+            }
+
+            .animal-selection-item {
+                padding: 16px 20px;
+            }
+
+            .selection-icon {
+                font-size: 40px;
+            }
+
+            .selection-name {
+                font-size: 18px;
+            }
+
+            .animal-large-icon {
+                font-size: 80px;
+            }
+
+            .loading-animal {
+                width: 150px;
+                height: 150px;
+            }
+
+            .info-card-header h3 {
+                font-size: 16px;
+            }
+
+            .level-badge {
+                font-size: 11px;
+                padding: 2px 6px;
+            }
+
+            .stat-label {
+                font-size: 9px;
+            }
+
+            .stat-value {
+                font-size: 16px;
+            }
+
+            .animal-status-text {
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3076,6 +3700,9 @@
         pendingRole: "child",
         route: "map",
         selectedAnimalId: "panda",
+        selectedAnimal: null, // For new QA view
+        qaStage: 'selection', // 'selection', 'loading', 'care', 'doctor'
+        animalNicknames: {}, // Store custom names for animals {animalId: nickname}
         model: models[0],
         storyLength: "medium",
         readSpeed: 0.9,
@@ -3261,8 +3888,13 @@
             .filter((item) => item && item.profile);
     }
 
-    function getAnimal(id = state.selectedAnimalId) {
+    function getAnimal(id = state.selectedAnimal || state.selectedAnimalId) {
         return animals.find((animal) => animal.id === id) || animals[0];
+    }
+
+    function getAnimalDisplayName(id) {
+        const animal = getAnimal(id);
+        return state.animalNicknames[id] || animal.name;
     }
 
     function getAvailableRoutes() {
@@ -3292,9 +3924,10 @@
 
     function selectAnimal(id, source = "地图探索") {
         state.selectedAnimalId = id;
+        state.selectedAnimal = id; // Also set for new QA view
         state.lastQuiz = null;
         state.progress.visits[id] = (state.progress.visits[id] || 0) + 1;
-        addActivity("探索", `${getAnimal(id).name}：${source}`, id);
+        addActivity("探索", `${getAnimalDisplayName(id)}：${source}`, id);
         saveState();
         render();
     }
@@ -3415,7 +4048,7 @@
                         <div class="brand-mark">🍎</div>
                         <div>
                             <strong>苹果布丁动物乐园</strong>
-                            <span>当前：${escapeHtml(getAnimal().name)}</span>
+                            <span>当前：${escapeHtml(getAnimalDisplayName(state.selectedAnimalId))}</span>
                         </div>
                     </div>
                     <nav class="nav-list" aria-label="主导航">
@@ -3491,7 +4124,7 @@
                         <div class="animal-hero">
                             <div class="animal-avatar" style="background: ${animal.color}33;">${animal.icon}</div>
                             <div>
-                                <h3>${animal.name}</h3>
+                                <h3>${getAnimalDisplayName(animal.id)}</h3>
                                 <p>${animal.habitat}｜${animal.biome}</p>
                             </div>
                         </div>
@@ -3528,7 +4161,7 @@
                 ${animals.map((animal) => `
                     <button class="marker ${animal.id === state.selectedAnimalId ? "active" : ""}" type="button" style="left:${animal.x}%; top:${animal.y}%;" ${clickable ? `data-animal="${animal.id}"` : "tabindex=\"-1\""}>
                         <span class="animal-face">${animal.icon}</span>
-                        <span class="animal-name">${animal.name}</span>
+                        <span class="animal-name">${getAnimalDisplayName(animal.id)}</span>
                     </button>
                 `).join("")}
             </div>
@@ -3540,7 +4173,7 @@
             <div class="chip-row">
                 ${animals.map((animal) => `
                     <button class="animal-chip ${animal.id === state.selectedAnimalId ? "active" : ""}" type="button" data-animal="${animal.id}">
-                        <span>${animal.icon}</span><span>${animal.name}</span>
+                        <span>${animal.icon}</span><span>${getAnimalDisplayName(animal.id)}</span>
                     </button>
                 `).join("")}
             </div>
@@ -3566,28 +4199,170 @@
 
     function quizResultText(animal, currentQuiz) {
         if (!currentQuiz) return "";
-        if (currentQuiz.correct) return `答对了，已经给${animal.name}喂养：${currentQuiz.food}`;
+        if (currentQuiz.correct) return `答对了，已经给${getAnimalDisplayName(animal.id)}喂养：${currentQuiz.food}`;
         return `答错了，正确答案是：${animal.quiz.options[animal.quiz.answer]}。AI医生已经开始治疗。`;
     }
 
     function qaView() {
         const animal = getAnimal();
+
+        // Check if we're in demonstration stage (showing correct answer animation)
+        if (state.qaStage === 'demonstration') {
+            return renderDemonstration(animal);
+        }
+
+        // Check if we're in doctor consultation mode
+        if (state.qaStage === 'doctor') {
+            return renderDoctorConsultation(animal);
+        }
+
+        // Check if we're in animal selection mode (no animal selected yet, or explicitly requested)
+        if (!state.selectedAnimal || state.qaStage === 'selection') {
+            return renderAnimalSelection();
+        }
+
+        // Check if we're in loading animation stage
+        if (state.qaStage === 'loading') {
+            return renderAnimalLoading(animal);
+        }
+
+        // Otherwise show the main care interface
+        return renderAnimalCare(animal);
+    }
+
+    function renderAnimalSelection() {
+        return `
+            <section class="view animal-selection-view">
+                <div class="selection-container">
+                    <h2 class="selection-title">选择照顾对象</h2>
+                    <div class="animal-selection-list">
+                        ${animals.map((animal) => `
+                            <button class="animal-selection-item" type="button" data-action="select-animal" data-animal-id="${animal.id}">
+                                <span class="selection-icon">${animal.icon}</span>
+                                <span class="selection-name">${animal.name}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    function renderAnimalLoading(animal) {
+        const animations = {
+            panda: { action: '吃竹子', emoji: '🎋' },
+            dolphin: { action: '吐泡泡', emoji: '💧' },
+            elephant: { action: '打盹', emoji: '💤' },
+            penguin: { action: '蹒跚', emoji: '👣' },
+            tiger: { action: '奔跑', emoji: '💨' },
+            rabbit: { action: '吃萝卜', emoji: '🥕' },
+            camel: { action: '沙漠散步', emoji: '🏜️' },
+            frog: { action: '荷叶上休息', emoji: '🍃' }
+        };
+
+        const anim = animations[animal.id] || { action: '活动中', emoji: '✨' };
+
+        return `
+            <section class="view animal-loading-view">
+                <div class="loading-container">
+                    <div class="loading-animal ${animal.id}-animation">
+                        <div class="animal-large-icon">${animal.icon}</div>
+                        <div class="animal-action-indicator">${anim.emoji}</div>
+                    </div>
+                    <p class="loading-text">${getAnimalDisplayName(animal.id)}正在${anim.action}...</p>
+                </div>
+            </section>
+        `;
+    }
+
+    function renderDemonstration(animal) {
+        // Map each animal to its correct answer demonstration
+        const demonstrations = {
+            panda: { action: '吃竹子', emoji: '🎋', description: '正确答案：大熊猫最爱吃竹子' },
+            dolphin: { action: '使用回声定位', emoji: '🔊', description: '正确答案：海豚用回声寻找东西' },
+            elephant: { action: '用鼻子喝水', emoji: '💧', description: '正确答案：大象用鼻子拿食物和喝水' },
+            penguin: { action: '游泳', emoji: '🏊', description: '正确答案：企鹅最擅长游泳' },
+            tiger: { action: '在草丛中隐藏', emoji: '🌿', description: '正确答案：条纹帮助老虎隐藏' },
+            rabbit: { action: '竖起耳朵听声音', emoji: '👂', description: '正确答案：长耳朵帮助听声音和散热' },
+            camel: { action: '在沙漠行走', emoji: '🏜️', description: '正确答案：驼峰储存脂肪' },
+            frog: { action: '从蝌蚪变成青蛙', emoji: '🐸', description: '正确答案：青蛙小时候叫蝌蚪' }
+        };
+
+        const demo = demonstrations[animal.id] || { action: '展示中', emoji: '✨', description: '正确答案演示' };
+
+        return `
+            <section class="view animal-loading-view">
+                <div class="loading-container">
+                    <div class="loading-animal ${animal.id}-demonstration">
+                        <div class="animal-large-icon">${animal.icon}</div>
+                        <div class="animal-action-indicator">${demo.emoji}</div>
+                    </div>
+                    <p class="loading-text">${demo.description}</p>
+                    <p class="loading-subtext">${getAnimalDisplayName(animal.id)}正在${demo.action}...</p>
+                </div>
+            </section>
+        `;
+    }
+
+    function renderAnimalCare(animal) {
         const lastAnswer = state.answers[0];
         const lastDoctorLog = state.doctorLogs.find((item) => item.animalId === animal.id);
         const lastFeeding = state.feedingLogs.find((item) => item.animalId === animal.id);
         const currentQuiz = state.lastQuiz && state.lastQuiz.animalId === animal.id ? state.lastQuiz : null;
         const animalFeedings = state.feedingLogs.filter((item) => item.animalId === animal.id).length;
         const animalTreatments = state.doctorLogs.filter((item) => item.animalId === animal.id).length;
+        const animalLevel = Math.floor(animalFeedings / 3) + 1; // Level up every 3 feedings
+
         return `
-            <section class="view">
-                <div class="panel">
-                    <div class="panel-title">
-                        <h3>选择照护对象</h3>
-                        <span>${animal.icon} ${animal.name}</span>
+            <section class="view animal-care-view">
+                <div class="care-header">
+                    <div class="animal-display">
+                        <div class="animal-large ${animal.id}-state">
+                            ${animal.icon}
+                        </div>
                     </div>
-                    ${animalChips()}
+                    <div class="animal-info-card">
+                        <div class="info-card-header">
+                            <div class="animal-name-edit">
+                                <input
+                                    type="text"
+                                    class="animal-name-input"
+                                    id="animalNickname"
+                                    value="${getAnimalDisplayName(animal.id)}"
+                                    maxlength="10"
+                                    placeholder="${animal.name}"
+                                />
+                                <button class="save-nickname-btn" type="button" data-action="save-nickname" title="保存名字">
+                                    ✓
+                                </button>
+                            </div>
+                            <button class="change-animal-btn" type="button" data-action="change-animal">更换</button>
+                        </div>
+                        <div class="animal-level">
+                            <span class="level-badge">Lv.${animalLevel}</span>
+                            <div class="level-progress">
+                                <div class="level-progress-fill" style="width: ${(animalFeedings % 3) * 33.33}%;"></div>
+                            </div>
+                        </div>
+                        <div class="care-stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">喂养</span>
+                                <span class="stat-value">${animalFeedings}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">治疗</span>
+                                <span class="stat-value">${animalTreatments}</span>
+                            </div>
+                        </div>
+                        <div class="animal-status-text">
+                            ${lastFeeding && lastFeeding.animalId === animal.id ?
+                                `最近喂食：${escapeHtml(lastFeeding.food)}` :
+                                `喜欢吃：${animal.diet}`}
+                        </div>
+                    </div>
                 </div>
-                <div class="grid-2">
+
+                <div class="knowledge-qa-section">
                     <div class="panel">
                         <div class="panel-title">
                             <h3>知识提问</h3>
@@ -3616,17 +4391,15 @@
                         <div class="action-row" style="margin-top: 14px;">
                             <button class="primary-button" type="button" data-action="ask-qa">问问AI</button>
                         </div>
+                        ${lastAnswer ? `
+                            <div class="qa-answer-box" style="margin-top: 20px;">
+                                <div class="answer-label">回答</div>
+                                <div id="qaAnswer" class="answer-panel">${escapeHtml(lastAnswer.reply)}</div>
+                                <div id="qaMeta" class="meta-line">${formatTime(lastAnswer.time)} | ${escapeHtml(getAnimalDisplayName(lastAnswer.animalId))}</div>
+                            </div>
+                        ` : ''}
                     </div>
-                    <div class="panel">
-                        <div class="panel-title">
-                            <h3>回答</h3>
-                            <span>${lastAnswer ? formatTime(lastAnswer.time) : ""}</span>
-                        </div>
-                        <div id="qaAnswer" class="answer-panel">${lastAnswer ? escapeHtml(lastAnswer.reply) : "选择动物并提出问题，回答会显示在这里。"}</div>
-                        <div id="qaMeta" class="meta-line">${lastAnswer ? `动物：${escapeHtml(getAnimal(lastAnswer.animalId).name)}｜${escapeHtml(lastAnswer.source)}` : ""}</div>
-                    </div>
-                </div>
-                <div class="grid-2">
+
                     <div class="panel">
                         <div class="panel-title">
                             <h3>答题喂养</h3>
@@ -3641,58 +4414,69 @@
                             ${currentQuiz ? `<button class="secondary-button" type="button" data-action="reset-quiz">再答一次</button>` : ""}
                         </div>
                     </div>
-                    <div class="panel">
-                        <div class="panel-title">
-                            <h3>照护状态</h3>
-                            <span>${lastFeeding ? formatTime(lastFeeding.time) : ""}</span>
-                        </div>
-                        <div class="care-status-line">
-                            <div class="animal-avatar" style="background: ${animal.color}33;">${animal.icon}</div>
-                            <div>
-                                <strong>${animal.name}</strong>
-                                <p>${lastFeeding && lastFeeding.animalId === animal.id ? escapeHtml(lastFeeding.food) : `喜欢吃：${animal.diet}`}</p>
-                            </div>
-                        </div>
-                        <div class="care-summary">
-                            <div class="care-stat"><strong>${animalFeedings}</strong><span>本动物喂养</span></div>
-                            <div class="care-stat"><strong>${animalTreatments}</strong><span>本动物治疗</span></div>
-                        </div>
-                        <div class="meta-line">全园喂养 ${state.progress.feedings || 0} 次｜AI医生 ${state.progress.treatments || 0} 次</div>
-                    </div>
                 </div>
+            </section>
+        `;
+    }
+
+    function renderDoctorConsultation(animal) {
+        const lastDoctorLog = state.doctorLogs.find((item) => item.animalId === animal.id);
+
+        return `
+            <section class="view doctor-consultation-view">
+                <div class="doctor-header">
+                    <button class="back-button" type="button" data-action="close-doctor">
+                        <span>← 返回</span>
+                    </button>
+                    <h2>AI医生问诊</h2>
+                </div>
+
+                <div class="panel doctor-note">AI动物医生只适合做儿童科普和初步照护学习。真实宠物出现呼吸困难、流血、抽搐、持续呕吐等情况，请马上联系兽医。</div>
+
                 <div class="grid-2">
                     <div class="panel">
                         <div class="panel-title">
-                            <h3>AI医生治疗</h3>
-                            <span>${lastDoctorLog ? formatTime(lastDoctorLog.time) : ""}</span>
+                            <h3>问诊</h3>
+                            <span>${animal.icon} ${getAnimalDisplayName(animal.id)}</span>
                         </div>
                         <div class="field">
-                            <label for="symptomType">情况</label>
-                            <select class="select-input" id="symptomType">
-                                <option>答题紧张，需要安慰</option>
-                                <option>不爱吃东西</option>
-                                <option>一直挠痒</option>
-                                <option>走路没精神</option>
-                                <option>喝水变多</option>
-                                <option>看起来紧张</option>
-                            </select>
+                            <div style="position: relative;">
+                                <textarea class="textarea-input" id="doctorQuestion" placeholder="想问医生什么呢？试试点击话筒说出来...">${getAnimalDisplayName(animal.id)}怎么了？为什么不开心？</textarea>
+                                <button class="voice-input-btn" type="button" data-action="toggle-voice-input-doctor" id="voiceInputBtnDoctor" title="语音输入（建议使用 Chrome 浏览器）">
+                                    <span id="voiceIconDoctor">🎤</span>
+                                </button>
+                            </div>
+                            <div id="voiceStatusDoctor" class="voice-status" style="display: none;">
+                                <div class="voice-wave">
+                                    <span class="wave-bar"></span>
+                                    <span class="wave-bar"></span>
+                                    <span class="wave-bar"></span>
+                                    <span class="wave-bar"></span>
+                                    <span class="wave-bar"></span>
+                                </div>
+                                <p id="voiceStatusTextDoctor">正在聆听...</p>
+                            </div>
                         </div>
-                        <div class="field">
-                            <label for="symptomDetail">补充</label>
-                            <textarea class="textarea-input" id="symptomDetail">${animal.name}答题时有点紧张，请给出温和的照护和鼓励。</textarea>
+                        <div class="action-row" style="margin-top: 14px;">
+                            <button class="primary-button" type="button" data-action="ask-doctor-consultation">咨询医生</button>
                         </div>
-                        <button class="secondary-button" type="button" data-action="ask-doctor">手动治疗</button>
                     </div>
+
                     <div class="panel">
                         <div class="panel-title">
                             <h3>医生建议</h3>
-                            <span>${lastDoctorLog ? escapeHtml(getAnimal(lastDoctorLog.animalId).name) : ""}</span>
+                            <span>${lastDoctorLog ? formatTime(lastDoctorLog.time) : ""}</span>
                         </div>
-                        <div id="doctorAnswer" class="answer-panel care-answer">${lastDoctorLog ? escapeHtml(lastDoctorLog.reply) : "答错题后，这里会自动出现AI医生的治疗建议。"}</div>
-                        <div id="doctorMeta" class="meta-line">${lastDoctorLog ? `动物：${escapeHtml(getAnimal(lastDoctorLog.animalId).name)}｜${escapeHtml(lastDoctorLog.source)}` : ""}</div>
+                        <div id="doctorAnswer" class="answer-panel care-answer">${lastDoctorLog ? escapeHtml(lastDoctorLog.reply) : "医生的诊断建议会显示在这里。"}</div>
+                        ${lastDoctorLog ? `
+                            <div class="action-row" style="margin-top: 10px;">
+                                <button class="secondary-button" type="button" data-action="read-doctor-answer" id="readDoctorBtn">
+                                    <span style="margin-right: 4px;">🔊</span>朗读
+                                </button>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
-                <div class="panel doctor-note">AI动物医生只适合做儿童科普和初步照护学习。真实宠物出现呼吸困难、流血、抽搐、持续呕吐等情况，请马上联系兽医。</div>
             </section>
         `;
     }
@@ -3707,7 +4491,7 @@
                     <div class="panel">
                         <div class="panel-title">
                             <h3>问诊记录</h3>
-                            <span>${animal.icon} ${animal.name}</span>
+                            <span>${animal.icon} ${getAnimalDisplayName(animal.id)}</span>
                         </div>
                         ${animalChips()}
                         <div class="field" style="margin-top: 16px;">
@@ -3722,7 +4506,7 @@
                         </div>
                         <div class="field">
                             <label for="symptomDetail">补充</label>
-                            <textarea class="textarea-input" id="symptomDetail">${animal.name}今天有点没精神，想知道可能需要观察什么。</textarea>
+                            <textarea class="textarea-input" id="symptomDetail">${getAnimalDisplayName(animal.id)}今天有点没精神，想知道可能需要观察什么。</textarea>
                         </div>
                         <button class="primary-button" type="button" data-action="ask-doctor">生成照护建议</button>
                     </div>
@@ -3732,7 +4516,7 @@
                             <span>${lastLog ? formatTime(lastLog.time) : ""}</span>
                         </div>
                         <div id="doctorAnswer" class="answer-panel">${lastLog ? escapeHtml(lastLog.reply) : "照护建议会显示在这里。"}</div>
-                        <div id="doctorMeta" class="meta-line">${lastLog ? `动物：${escapeHtml(getAnimal(lastLog.animalId).name)}｜${escapeHtml(lastLog.source)}` : ""}</div>
+                        <div id="doctorMeta" class="meta-line">${lastLog ? `动物：${escapeHtml(getAnimalDisplayName(lastLog.animalId))}｜${escapeHtml(lastLog.source)}` : ""}</div>
                     </div>
                 </div>
             </section>
@@ -3890,7 +4674,7 @@
                     <div class="panel">
                         <div class="panel-title">
                             <h3>故事设置</h3>
-                            <span>${animal.icon} ${animal.name}</span>
+                            <span>${animal.icon} ${getAnimalDisplayName(animal.id)}</span>
                         </div>
                         ${animalChips()}
                         <div class="field" style="margin-top: 16px;">
@@ -3972,7 +4756,7 @@
                     <div class="action-row" style="margin-bottom: 12px;">
                         <select class="select-input" id="storyFilterAnimal">
                             <option value="">全部动物</option>
-                            ${animals.map((a) => `<option value="${a.id}" ${state.storyFilter.animal === a.id ? "selected" : ""}>${a.icon} ${a.name}</option>`).join("")}
+                            ${animals.map((a) => `<option value="${a.id}" ${state.storyFilter.animal === a.id ? "selected" : ""}>${a.icon} ${getAnimalDisplayName(a.id)}</option>`).join("")}
                         </select>
                         <select class="select-input" id="storySort">
                             <option value="time" ${state.storyFilter.sort === "time" ? "selected" : ""}>最新优先</option>
@@ -3996,7 +4780,7 @@
                 <h4>${escapeHtml(story.title)}</h4>
                 <p>${escapeHtml(story.text.slice(0, 120))}${story.text.length > 120 ? "..." : ""}</p>
                 <div class="story-meta">
-                    <span class="story-tag">${animal.icon} ${animal.name}</span>
+                    <span class="story-tag">${animal.icon} ${getAnimalDisplayName(story.animalId)}</span>
                     ${story.length ? `<span class="story-tag">${story.length === "short" ? "短篇" : story.length === "medium" ? "中篇" : "长篇"}</span>` : ""}
                     ${story.readCount ? `<span class="story-tag">阅读 ${story.readCount}次</span>` : ""}
                     ${story.isFavorite ? '<span style="font-size: 16px;">⭐</span>' : ""}
@@ -4482,6 +5266,61 @@
         }
         if (action === "ask-qa") await handleAskQa();
         if (action === "ask-doctor") await handleAskDoctor();
+        if (action === "select-animal") {
+            const animalId = event.target.closest("[data-animal-id]")?.dataset.animalId;
+            if (animalId) {
+                state.selectedAnimal = animalId;
+                state.qaStage = 'loading';
+                saveState();
+                render();
+                // Simulate loading animation for 2.5 seconds
+                setTimeout(() => {
+                    state.qaStage = 'care';
+                    saveState();
+                    render();
+                }, 2500);
+            }
+            return;
+        }
+        if (action === "change-animal") {
+            state.qaStage = 'selection';
+            saveState();
+            render();
+            return;
+        }
+        if (action === "open-doctor") {
+            state.qaStage = 'doctor';
+            saveState();
+            render();
+            return;
+        }
+        if (action === "close-doctor") {
+            state.qaStage = 'care';
+            saveState();
+            render();
+            return;
+        }
+        if (action === "ask-doctor-consultation") await handleAskDoctorConsultation();
+        if (action === "toggle-voice-input-doctor") toggleVoiceInputDoctor(event.target.closest("button"));
+        if (action === "read-doctor-answer") readDoctorAnswer();
+        if (action === "save-nickname") {
+            const input = document.getElementById('animalNickname');
+            if (input) {
+                const nickname = input.value.trim();
+                const animal = getAnimal();
+                if (nickname && nickname !== animal.name) {
+                    state.animalNicknames[animal.id] = nickname;
+                    saveState();
+                    showToast(`已将${animal.name}改名为 ${nickname}`);
+                } else if (!nickname) {
+                    delete state.animalNicknames[animal.id];
+                    saveState();
+                    showToast(`已恢复为 ${animal.name}`);
+                }
+                render();
+            }
+            return;
+        }
         if (action === "save-creature") saveCreature();
         if (action === "random-creature") randomCreature();
         if (action === "clear-creature-parts") clearCreatureParts();
@@ -4634,9 +5473,9 @@
         if (correct) {
             state.progress.quizCorrect += 1;
             feedAnimal(animal);
-            addActivity("测验", `${animal.name}：答对并喂养`, animal.id);
+            addActivity("测验", `${getAnimalDisplayName(animal.id)}：答对并喂养`, animal.id);
         } else {
-            addActivity("测验", `${animal.name}：答错，进入AI医生治疗`, animal.id);
+            addActivity("测验", `${getAnimalDisplayName(animal.id)}：答错，查看正确示范`, animal.id);
         }
 
         document.querySelectorAll("[data-quiz-choice]").forEach((button) => {
@@ -4647,25 +5486,44 @@
         });
         const result = document.getElementById("quizResult");
         result.textContent = correct
-            ? `答对了，已经给${animal.name}喂养：${state.lastQuiz.food}`
-            : `答错了，正确答案是：${animal.quiz.options[animal.quiz.answer]}。AI医生正在治疗...`;
+            ? `答对了，已经给${getAnimalDisplayName(animal.id)}喂养：${state.lastQuiz.food}`
+            : `答错了，正确答案是：${animal.quiz.options[animal.quiz.answer]}。正在展示正确示范...`;
 
         saveState();
         if (correct) {
-            render();
-            // 恢复滚动位置
-            setTimeout(() => {
-                window.scrollTo(0, scrollTop);
-            }, 0);
-            showToast(`已喂养${animal.name}`);
+            // Update only the necessary parts without full re-render to keep scroll position
+            showToast(`已喂养${getAnimalDisplayName(animal.id)}`);
+            // Update stats without re-rendering the entire page
+            updateCareStats(animal);
             return;
         }
 
-        await treatAnimalAfterWrongAnswer(animal, choice);
-        // 答错后也恢复滚动位置
-        setTimeout(() => {
-            window.scrollTo(0, scrollTop);
-        }, 0);
+        // 答错后：1. 展示正确示范动画 2. 进入医生问答
+        await showCorrectDemonstration(animal, choice);
+    }
+
+    function updateCareStats(animal) {
+        // Update feeding count and level display without full re-render
+        const animalFeedings = state.feedingLogs.filter((item) => item.animalId === animal.id).length;
+        const animalLevel = Math.floor(animalFeedings / 3) + 1;
+
+        // Update level badge
+        const levelBadge = document.querySelector('.level-badge');
+        if (levelBadge) {
+            levelBadge.textContent = `Lv.${animalLevel}`;
+        }
+
+        // Update progress bar
+        const progressFill = document.querySelector('.level-progress-fill');
+        if (progressFill) {
+            progressFill.style.width = `${(animalFeedings % 3) * 33.33}%`;
+        }
+
+        // Update feeding stat
+        const feedingStat = document.querySelectorAll('.stat-item')[0]?.querySelector('.stat-number');
+        if (feedingStat) {
+            feedingStat.textContent = animalFeedings;
+        }
     }
 
     function feedAnimal(animal) {
@@ -4677,6 +5535,21 @@
             time: Date.now()
         });
         state.feedingLogs = state.feedingLogs.slice(0, 24);
+    }
+
+    async function showCorrectDemonstration(animal, wrongChoice) {
+        // Show demonstration animation
+        state.qaStage = 'demonstration';
+        saveState();
+        render();
+
+        // Wait for demonstration animation (2.5 seconds)
+        await new Promise(resolve => setTimeout(resolve, 2500));
+
+        // Then show doctor consultation
+        state.qaStage = 'doctor';
+        saveState();
+        render();
     }
 
     async function treatAnimalAfterWrongAnswer(animal, choice) {
@@ -5699,6 +6572,270 @@
         finalTranscriptQa = '';
         interimTranscriptQa = '';
         restartAttemptsQa = 0;
+    }
+
+    // Voice input for doctor consultation
+    function toggleVoiceInputDoctor(button) {
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            showToast("您的浏览器不支持语音识别。\n请使用 Google Chrome 浏览器以获得最佳体验。");
+            return;
+        }
+
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            showToast('语音识别需要HTTPS协议，请使用https://访问或在本地测试');
+            return;
+        }
+
+        if (isRecordingDoctor) {
+            stopVoiceInputDoctor();
+        } else {
+            startVoiceInputDoctor(button);
+        }
+    }
+
+    let recognitionDoctor = null;
+    let isRecordingDoctor = false;
+    let finalTranscriptDoctor = '';
+    let interimTranscriptDoctor = '';
+    let recognitionTimeoutDoctor = null;
+    let restartAttemptsDoctor = 0;
+    let useSimpleModeDoctor = false;
+
+    function startVoiceInputDoctor(button) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+
+        if (recognitionDoctor) {
+            try {
+                recognitionDoctor.stop();
+            } catch (e) {}
+            recognitionDoctor = null;
+        }
+
+        recognitionDoctor = new SpeechRecognition();
+        recognitionDoctor.lang = 'zh-CN';
+        recognitionDoctor.continuous = true;
+        recognitionDoctor.interimResults = true;
+        recognitionDoctor.maxAlternatives = 1;
+
+        const voiceStatus = document.getElementById('voiceStatusDoctor');
+        const voiceIcon = document.getElementById('voiceIconDoctor');
+        const doctorQuestion = document.getElementById('doctorQuestion');
+        const voiceButton = button || document.getElementById('voiceInputBtnDoctor');
+
+        if (!voiceStatus || !voiceIcon || !doctorQuestion || !voiceButton) {
+            showToast('页面元素加载异常，请刷新页面');
+            return;
+        }
+
+        if (doctorQuestion.value.trim() === '' || doctorQuestion.value === doctorQuestion.placeholder) {
+            doctorQuestion.value = '';
+        }
+
+        voiceButton.classList.add('recording');
+        voiceIcon.textContent = '🎙️';
+        voiceStatus.style.display = 'block';
+        document.getElementById('voiceStatusTextDoctor').textContent = '正在聆听...';
+        isRecordingDoctor = true;
+        restartAttemptsDoctor = 0;
+        finalTranscriptDoctor = '';
+        interimTranscriptDoctor = '';
+
+        if (recognitionTimeoutDoctor) {
+            clearTimeout(recognitionTimeoutDoctor);
+            recognitionTimeoutDoctor = null;
+        }
+
+        recognitionDoctor.onstart = () => {
+            isRecordingDoctor = true;
+            voiceButton.classList.add('recording');
+            voiceIcon.textContent = '🎙️';
+            voiceStatus.style.display = 'block';
+        };
+
+        recognitionDoctor.onresult = (event) => {
+            if (recognitionTimeoutDoctor) {
+                clearTimeout(recognitionTimeoutDoctor);
+            }
+
+            let newFinalTranscript = '';
+            let newInterimTranscript = '';
+
+            for (let i = 0; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    newFinalTranscript += transcript;
+                } else {
+                    newInterimTranscript += transcript;
+                }
+            }
+
+            finalTranscriptDoctor = newFinalTranscript;
+            interimTranscriptDoctor = newInterimTranscript;
+
+            const displayText = finalTranscriptDoctor + (interimTranscriptDoctor ? interimTranscriptDoctor : '');
+            if (displayText.trim()) {
+                doctorQuestion.value = displayText;
+                document.getElementById('voiceStatusTextDoctor').textContent =
+                    interimTranscriptDoctor ? `正在识别: ${interimTranscriptDoctor}` : `已识别 ${finalTranscriptDoctor.length} 字`;
+            }
+
+            recognitionTimeoutDoctor = setTimeout(() => {
+                if (isRecordingDoctor && finalTranscriptDoctor.trim()) {
+                    stopVoiceInputDoctor(true);
+                }
+            }, 6000);
+        };
+
+        recognitionDoctor.onerror = (event) => {
+            if (recognitionTimeoutDoctor) {
+                clearTimeout(recognitionTimeoutDoctor);
+                recognitionTimeoutDoctor = null;
+            }
+            if (event.error !== 'aborted' && event.error !== 'no-speech') {
+                showToast(`语音识别出错: ${event.error}`);
+            }
+            stopVoiceInputDoctor();
+        };
+
+        recognitionDoctor.onend = () => {
+            if (isRecordingDoctor && restartAttemptsDoctor < 3) {
+                try {
+                    setTimeout(() => {
+                        if (isRecordingDoctor) {
+                            recognitionDoctor.start();
+                        }
+                    }, 100);
+                } catch (e) {
+                    stopVoiceInputDoctor();
+                }
+            } else if (!isRecordingDoctor) {
+                stopVoiceInputDoctor();
+            }
+        };
+
+        try {
+            recognitionDoctor.start();
+        } catch (error) {
+            showToast('无法启动语音识别，请检查麦克风权限');
+            stopVoiceInputDoctor();
+        }
+    }
+
+    function stopVoiceInputDoctor(autoStop = false) {
+        if (recognitionTimeoutDoctor) {
+            clearTimeout(recognitionTimeoutDoctor);
+            recognitionTimeoutDoctor = null;
+        }
+
+        isRecordingDoctor = false;
+
+        if (recognitionDoctor) {
+            try {
+                recognitionDoctor.stop();
+            } catch (e) {}
+            recognitionDoctor = null;
+        }
+
+        const voiceStatus = document.getElementById('voiceStatusDoctor');
+        const voiceIcon = document.getElementById('voiceIconDoctor');
+        const button = document.getElementById('voiceInputBtnDoctor');
+        const doctorQuestion = document.getElementById('doctorQuestion');
+
+        if (button) button.classList.remove('recording');
+        if (voiceIcon) voiceIcon.textContent = '🎤';
+        if (voiceStatus) voiceStatus.style.display = 'none';
+
+        if (finalTranscriptDoctor && doctorQuestion) {
+            const text = finalTranscriptDoctor.trim();
+            if (text) {
+                doctorQuestion.value = text;
+            }
+        }
+
+        finalTranscriptDoctor = '';
+        interimTranscriptDoctor = '';
+        restartAttemptsDoctor = 0;
+    }
+
+    // Doctor consultation handler
+    async function handleAskDoctorConsultation() {
+        const animal = getAnimal();
+        const doctorQuestion = document.getElementById('doctorQuestion');
+        if (!doctorQuestion) return;
+
+        const question = doctorQuestion.value.trim();
+        if (!question) {
+            showToast("请输入问题");
+            return;
+        }
+
+        const answerDiv = document.getElementById('doctorAnswer');
+        if (answerDiv) answerDiv.textContent = "医生正在分析...";
+
+        try {
+            const response = await fetch("/api/animal/ask-doctor", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    animal_id: animal.id,
+                    symptom: question,
+                    detail: question
+                })
+            });
+
+            if (!response.ok) throw new Error("网络错误");
+
+            const data = await response.json();
+            const reply = data.reply || "医生暂时无法回答。";
+
+            state.doctorLogs.unshift({
+                animalId: animal.id,
+                symptom: question,
+                detail: question,
+                reply: reply,
+                source: data.source || "AI医生",
+                time: Date.now()
+            });
+
+            state.progress.treatments = (state.progress.treatments || 0) + 1;
+            state.progress.activities.push({
+                type: "doctor",
+                animal: animal.id,
+                time: Date.now(),
+                detail: `咨询了${animal.name}的健康问题`
+            });
+
+            saveState();
+            render();
+        } catch (error) {
+            if (answerDiv) answerDiv.textContent = "出错了，请重试。";
+            showToast("网络错误，请检查连接");
+        }
+    }
+
+    // Read doctor answer aloud
+    function readDoctorAnswer() {
+        const answerDiv = document.getElementById('doctorAnswer');
+        if (!answerDiv) return;
+
+        const text = answerDiv.textContent.trim();
+        if (!text || text === "医生的诊断建议会显示在这里。") {
+            showToast("暂无内容可以朗读");
+            return;
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = state.readSpeed || 0.9;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            showToast("您的浏览器不支持语音朗读");
+        }
     }
 
     function resetProgress() {
