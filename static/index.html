@@ -996,6 +996,934 @@
             border-radius: 8px;
         }
 
+        .route-imagine {
+            position: relative;
+            padding: 0 0 calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+            background:
+                radial-gradient(circle at 18% 13%, rgba(255, 255, 255, 0.86) 0 22px, transparent 23px),
+                radial-gradient(circle at 80% 16%, rgba(255, 255, 255, 0.58) 0 28px, transparent 29px),
+                linear-gradient(180deg, #fff0be 0, #ffeab1 21%, #cbe9a6 72%, #98d68b 100%);
+        }
+
+        .route-imagine::before,
+        .route-imagine::after {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .route-imagine::before {
+            inset: 84px 0 auto;
+            height: 128px;
+            background:
+                radial-gradient(ellipse at 6% 100%, #579e68 0 18px, transparent 19px),
+                radial-gradient(ellipse at 13% 100%, #7dbf65 0 30px, transparent 31px),
+                radial-gradient(ellipse at 88% 100%, #5aa56d 0 28px, transparent 29px),
+                radial-gradient(ellipse at 95% 100%, #79ba63 0 40px, transparent 41px);
+            opacity: 0.92;
+        }
+
+        .route-imagine::after {
+            inset: auto 0 0;
+            height: 92px;
+            background:
+                radial-gradient(circle at 10% 78%, #70bd70 0 30px, transparent 31px),
+                radial-gradient(circle at 27% 94%, #8ed277 0 35px, transparent 36px),
+                radial-gradient(circle at 72% 92%, #85ca70 0 38px, transparent 39px),
+                radial-gradient(circle at 94% 86%, #67b765 0 32px, transparent 33px);
+            opacity: 0.72;
+        }
+
+        .route-imagine .topbar {
+            z-index: 2;
+            margin: 0;
+            padding: 18px 18px 8px;
+            background: transparent;
+            border-bottom: 0;
+            backdrop-filter: none;
+        }
+
+        .route-imagine .page-title h2 {
+            color: #6d4724;
+            font-size: 26px;
+            font-weight: 900;
+            text-shadow: 0 2px 0 rgba(255, 255, 255, 0.75);
+        }
+
+        .route-imagine .page-title p {
+            display: none;
+        }
+
+        .route-imagine .settings-button {
+            background: rgba(255, 255, 255, 0.78);
+            border-color: rgba(238, 197, 104, 0.72);
+            color: #7e582f;
+            box-shadow: 0 8px 16px rgba(127, 85, 35, 0.14);
+        }
+
+        .imagine-screen {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 6px;
+            padding: 0 12px 14px;
+        }
+
+        .imagine-prompt {
+            width: fit-content;
+            max-width: calc(100% - 44px);
+            margin: 0 auto;
+            padding: 13px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.88);
+            color: #72502e;
+            font-weight: 800;
+            line-height: 1.25;
+            box-shadow: 0 8px 18px rgba(120, 82, 36, 0.14);
+        }
+
+        .creator-board {
+            display: grid;
+            grid-template-columns: 82px minmax(0, 1fr) 82px;
+            gap: 8px;
+            align-items: start;
+        }
+
+        .material-rail {
+            display: grid;
+            gap: 8px;
+        }
+
+        .material-group {
+            padding: 7px 6px;
+            border-radius: 20px;
+            background: rgba(255, 253, 235, 0.93);
+            border: 2px solid rgba(242, 216, 143, 0.9);
+            box-shadow: 0 8px 16px rgba(102, 124, 61, 0.16);
+        }
+
+        .material-title {
+            margin: 0 0 6px;
+            color: #6d4724;
+            font-weight: 900;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .material-list {
+            display: grid;
+            gap: 5px;
+        }
+
+        .asset-list {
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .asset-list::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .material-button,
+        .color-swatch {
+            min-height: 45px;
+            border-radius: 12px;
+            border: 2px solid #f0dfb6;
+            background: rgba(255, 255, 255, 0.9);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            box-shadow: inset 0 -4px 0 rgba(151, 115, 58, 0.06);
+        }
+
+        .material-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .material-button[draggable="true"] {
+            touch-action: none;
+        }
+
+        .material-button.active,
+        .color-swatch.active {
+            border-color: #82bf54;
+            box-shadow: 0 0 0 3px rgba(130, 191, 84, 0.18), inset 0 -4px 0 rgba(151, 115, 58, 0.06);
+        }
+
+        .material-button::after,
+        .color-swatch::after {
+            content: "";
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #82bf54;
+            opacity: 0;
+            box-shadow: inset 0 -2px 0 rgba(59, 123, 43, 0.18);
+        }
+
+        .material-button.active::after,
+        .color-swatch.active::after {
+            opacity: 1;
+        }
+
+        .part-mini {
+            position: relative;
+            width: 43px;
+            height: 34px;
+            display: block;
+            filter: drop-shadow(0 5px 5px rgba(93, 72, 45, 0.18));
+        }
+
+        .mini-body-panda,
+        .mini-body-puppy,
+        .mini-body-bunny {
+            width: 38px;
+            height: 31px;
+            margin: 2px auto 0;
+            border-radius: 48% 48% 42% 42%;
+            background:
+                radial-gradient(circle at 32% 45%, #253c5b 0 4px, #fff 5px 6px, transparent 7px),
+                radial-gradient(circle at 68% 45%, #253c5b 0 4px, #fff 5px 6px, transparent 7px),
+                radial-gradient(circle at 50% 64%, #3b2b24 0 3px, transparent 4px),
+                radial-gradient(ellipse at 50% 64%, #fff8ee 0 15px, transparent 16px),
+                linear-gradient(145deg, #9bd0fb, #5fa7e8);
+        }
+
+        .mini-body-panda::before,
+        .mini-body-panda::after,
+        .mini-body-puppy::before,
+        .mini-body-puppy::after,
+        .mini-body-bunny::before,
+        .mini-body-bunny::after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #2d5d91;
+        }
+
+        .mini-body-panda::before,
+        .mini-body-puppy::before,
+        .mini-body-bunny::before {
+            left: 4px;
+        }
+
+        .mini-body-panda::after,
+        .mini-body-puppy::after,
+        .mini-body-bunny::after {
+            right: 4px;
+        }
+
+        .mini-body-puppy {
+            background:
+                radial-gradient(circle at 32% 45%, #253c5b 0 4px, #fff 5px 6px, transparent 7px),
+                radial-gradient(circle at 68% 45%, #253c5b 0 4px, #fff 5px 6px, transparent 7px),
+                radial-gradient(circle at 50% 64%, #3b2b24 0 3px, transparent 4px),
+                linear-gradient(145deg, #f0ba77, #c77846);
+        }
+
+        .mini-body-puppy::before,
+        .mini-body-puppy::after {
+            height: 20px;
+            background: #9d5d36;
+            transform-origin: 50% 0;
+        }
+
+        .mini-body-puppy::before {
+            transform: rotate(24deg);
+        }
+
+        .mini-body-puppy::after {
+            transform: rotate(-24deg);
+        }
+
+        .mini-body-bunny {
+            background:
+                radial-gradient(circle at 32% 45%, #253c5b 0 4px, #fff 5px 6px, transparent 7px),
+                radial-gradient(circle at 68% 45%, #253c5b 0 4px, #fff 5px 6px, transparent 7px),
+                radial-gradient(circle at 50% 64%, #3b2b24 0 3px, transparent 4px),
+                linear-gradient(145deg, #fff4e6, #e8d7c2);
+        }
+
+        .mini-body-bunny::before,
+        .mini-body-bunny::after {
+            top: -20px;
+            width: 10px;
+            height: 30px;
+            border-radius: 50% 50% 32% 32%;
+            background: linear-gradient(90deg, #fff6eb 0 25%, #ffc8d7 26% 74%, #fff6eb 75%);
+        }
+
+        .mini-wing-angel,
+        .mini-wing-butterfly,
+        .mini-wing-bat {
+            width: 42px;
+            height: 30px;
+            margin: 2px auto 0;
+            border-radius: 78% 22% 78% 24%;
+            background:
+                linear-gradient(150deg, transparent 0 32%, rgba(255, 255, 255, 0.58) 33% 38%, transparent 39% 100%),
+                linear-gradient(170deg, transparent 0 58%, rgba(255, 255, 255, 0.42) 59% 64%, transparent 65% 100%),
+                linear-gradient(145deg, #bfe7ff, #5fa8eb);
+            box-shadow: inset 7px -6px 0 rgba(42, 105, 176, 0.12);
+        }
+
+        .mini-wing-butterfly {
+            border-radius: 64% 36% 58% 42%;
+            background:
+                radial-gradient(circle at 32% 35%, rgba(255, 255, 255, 0.62) 0 5px, transparent 6px),
+                radial-gradient(circle at 70% 64%, rgba(242, 104, 154, 0.38) 0 6px, transparent 7px),
+                linear-gradient(145deg, #ffc5d7, #ffd870);
+        }
+
+        .mini-wing-bat {
+            border-radius: 70% 30% 58% 42%;
+            background:
+                linear-gradient(150deg, rgba(255, 255, 255, 0.16), transparent 38%),
+                linear-gradient(145deg, #7b68a6, #403867);
+        }
+
+        .mini-tail-curl,
+        .mini-tail-fluffy,
+        .mini-tail-leaf {
+            width: 40px;
+            height: 29px;
+            margin: 3px auto 0;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #6eb6f2, #356ee9);
+        }
+
+        .mini-tail-curl::before {
+            content: "";
+            position: absolute;
+            inset: 8px 10px;
+            border-radius: 50%;
+            border: 6px solid rgba(255, 255, 255, 0.6);
+            border-left-color: transparent;
+            transform: rotate(-20deg);
+        }
+
+        .mini-tail-fluffy {
+            width: 35px;
+            height: 35px;
+            background:
+                linear-gradient(120deg, transparent 0 42%, rgba(172, 105, 39, 0.24) 43% 47%, transparent 48%),
+                linear-gradient(145deg, #fff3d6, #eda14f);
+        }
+
+        .mini-tail-leaf {
+            border-radius: 78% 12% 78% 16%;
+            background: linear-gradient(145deg, #aee778, #57a85a);
+            transform: rotate(-12deg);
+        }
+
+        .mini-tail-leaf::before {
+            content: "";
+            position: absolute;
+            left: 9px;
+            top: 14px;
+            width: 28px;
+            height: 3px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.58);
+            transform: rotate(-18deg);
+        }
+
+        .mini-horn {
+            position: relative;
+            width: 30px;
+            height: 38px;
+            display: block;
+            clip-path: polygon(50% 0, 88% 100%, 12% 100%);
+            border-radius: 50% 50% 16% 16%;
+            background:
+                linear-gradient(120deg, transparent 0 43%, rgba(255, 255, 255, 0.7) 44% 52%, transparent 53% 100%),
+                linear-gradient(180deg, #fff5a5 0, #ffc75a 50%, #df8331 100%);
+            filter: drop-shadow(0 5px 5px rgba(93, 72, 45, 0.18));
+        }
+
+        .material-img {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 48px;
+            height: 40px;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 5px rgba(93, 72, 45, 0.18));
+        }
+
+        .color-swatch span {
+            width: 34px;
+            height: 34px;
+            display: block;
+            border-radius: 50%;
+            background: var(--swatch);
+            box-shadow: inset 0 -7px 0 rgba(75, 55, 41, 0.08);
+        }
+
+        .stage-card {
+            min-width: 0;
+            padding: 0;
+            border-radius: 22px;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .route-imagine .imagine-stage {
+            position: relative;
+            display: grid;
+            place-items: center;
+            min-height: 292px;
+            border-radius: 18px;
+            border: 0;
+            background:
+                radial-gradient(circle at 24% 22%, rgba(255, 255, 255, 0.54) 0 26px, transparent 27px),
+                radial-gradient(circle at 78% 30%, rgba(255, 255, 255, 0.42) 0 24px, transparent 25px),
+                linear-gradient(180deg, #fff8e8 0, #dff1cf 66%, #a9d67d 100%);
+            overflow: hidden;
+        }
+
+        .route-imagine .imagine-stage.drag-over {
+            outline: 3px solid rgba(130, 191, 84, 0.5);
+            outline-offset: -6px;
+        }
+
+        .route-imagine .imagine-stage::before {
+            content: "";
+            position: absolute;
+            inset: auto 12px 10px;
+            height: 72px;
+            border-radius: 50%;
+            background: #9acb66;
+            box-shadow: 0 12px 0 #79b55e;
+        }
+
+        .route-imagine .creature-preview {
+            position: static;
+            width: 100%;
+            max-width: 292px;
+            z-index: 1;
+        }
+
+        .raster-creature {
+            height: 292px;
+            margin: 0 auto;
+        }
+
+        .creature-color-glow {
+            position: absolute;
+            z-index: 0;
+            left: 50%;
+            bottom: 46px;
+            width: 164px;
+            height: 164px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: var(--creature-color, #8fc6f5);
+            opacity: 0.32;
+            filter: blur(18px);
+        }
+
+        .creature-asset {
+            position: absolute;
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .asset-wing {
+            z-index: 1;
+            top: 48px;
+            left: 50%;
+            width: 246px;
+            max-height: 138px;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 10px 10px rgba(64, 103, 143, 0.18));
+        }
+
+        .asset-tail {
+            z-index: 2;
+            right: 22px;
+            bottom: 72px;
+            width: 92px;
+            max-height: 116px;
+            transform: rotate(-8deg);
+            filter: drop-shadow(0 8px 8px rgba(83, 76, 52, 0.18));
+        }
+
+        .asset-body {
+            z-index: 3;
+            left: 50%;
+            bottom: 14px;
+            width: 205px;
+            max-height: 250px;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 16px 14px rgba(69, 83, 72, 0.24));
+        }
+
+        .asset-body[data-body="snake"] {
+            width: 218px;
+            bottom: 20px;
+        }
+
+        .asset-body[data-body="chick"] {
+            width: 190px;
+        }
+
+        .asset-body[data-body="pig"],
+        .asset-body[data-body="panda"] {
+            width: 198px;
+        }
+
+        .asset-wing[data-wing="bat"],
+        .asset-wing[data-wing="dragon"] {
+            top: 66px;
+            width: 236px;
+        }
+
+        .asset-tail[data-tail="dino"],
+        .asset-tail[data-tail="cat"] {
+            right: 12px;
+            bottom: 58px;
+            width: 104px;
+        }
+
+        .asset-tail[data-tail="fluffy"],
+        .asset-tail[data-tail="puppy"] {
+            right: 30px;
+            bottom: 54px;
+            width: 84px;
+        }
+
+        .asset-horn {
+            position: absolute;
+            z-index: 4;
+            left: 50%;
+            top: 44px;
+            width: 44px;
+            height: 74px;
+            transform: translateX(-50%);
+            border-radius: 50% 50% 18% 18%;
+            background:
+                linear-gradient(120deg, transparent 0 45%, rgba(255, 255, 255, 0.6) 46% 53%, transparent 54% 100%),
+                linear-gradient(180deg, #fff4a3 0, #ffc75a 48%, #e88d34 100%);
+            clip-path: polygon(50% 0, 88% 100%, 12% 100%);
+            filter: drop-shadow(0 8px 8px rgba(129, 91, 28, 0.18));
+        }
+
+        .route-imagine .creature-body {
+            width: 134px;
+            height: 154px;
+            border-radius: 48% 48% 42% 42%;
+            background:
+                radial-gradient(circle at 50% 64%, rgba(255, 255, 255, 0.9) 0 37px, transparent 38px),
+                radial-gradient(circle at 34% 34%, rgba(255, 255, 255, 0.22) 0 18px, transparent 19px),
+                var(--creature-color, #8ccf88);
+            border: 0;
+            box-shadow: 0 14px 22px rgba(63, 76, 84, 0.22);
+        }
+
+        .route-imagine .creature-body::before,
+        .route-imagine .creature-body::after {
+            top: -14px;
+            width: 46px;
+            height: 46px;
+            border: 0;
+            border-radius: 50%;
+            background: var(--ear-color, #2a5d91);
+            box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .route-imagine .creature-body::before {
+            left: 5px;
+        }
+
+        .route-imagine .creature-body::after {
+            right: 5px;
+        }
+
+        .creature-body.body-puppy::before,
+        .creature-body.body-puppy::after {
+            top: -4px;
+            height: 58px;
+            border-radius: 54% 54% 62% 62%;
+            transform-origin: 50% 0;
+        }
+
+        .creature-body.body-puppy::before {
+            transform: rotate(22deg);
+        }
+
+        .creature-body.body-puppy::after {
+            transform: rotate(-22deg);
+        }
+
+        .creature-body.body-bunny::before,
+        .creature-body.body-bunny::after {
+            top: -55px;
+            width: 30px;
+            height: 78px;
+            border-radius: 50% 50% 34% 34%;
+            background:
+                linear-gradient(90deg, transparent 0 24%, rgba(255, 205, 214, 0.9) 25% 75%, transparent 76%),
+                var(--ear-color, #f6eee1);
+        }
+
+        .route-imagine .creature-face {
+            width: 96px;
+            height: 74px;
+            margin-top: -20px;
+            display: block;
+            position: relative;
+            z-index: 3;
+            border-radius: 46% 46% 50% 50%;
+            background:
+                radial-gradient(circle at 31% 42%, #233854 0 8px, #ffffff 9px 12px, transparent 13px),
+                radial-gradient(circle at 69% 42%, #233854 0 8px, #ffffff 9px 12px, transparent 13px),
+                radial-gradient(circle at 28% 64%, rgba(255, 139, 128, 0.35) 0 8px, transparent 9px),
+                radial-gradient(circle at 72% 64%, rgba(255, 139, 128, 0.35) 0 8px, transparent 9px),
+                radial-gradient(circle at 50% 58%, #3a2a24 0 5px, transparent 6px),
+                radial-gradient(ellipse at 50% 74%, #e36d64 0 10px, transparent 11px),
+                radial-gradient(ellipse at 50% 60%, #fff8ec 0 44px, transparent 45px);
+            font-size: 0;
+        }
+
+        .creature-arm {
+            position: absolute;
+            z-index: 2;
+            top: 78px;
+            width: 38px;
+            height: 70px;
+            border-radius: 48% 48% 44% 44%;
+            background: var(--limb-color, #2d5d91);
+            box-shadow: inset 0 -10px 0 rgba(34, 66, 96, 0.1);
+        }
+
+        .creature-arm.left {
+            left: 1px;
+            transform: rotate(19deg);
+        }
+
+        .creature-arm.right {
+            right: 1px;
+            transform: rotate(-19deg);
+        }
+
+        .creature-foot {
+            position: absolute;
+            z-index: 2;
+            bottom: -10px;
+            width: 42px;
+            height: 30px;
+            border-radius: 50% 50% 42% 42%;
+            background: var(--limb-color, #2d5d91);
+            box-shadow: inset 0 -7px 0 rgba(28, 63, 94, 0.09);
+        }
+
+        .creature-foot.left {
+            left: 28px;
+        }
+
+        .creature-foot.right {
+            right: 28px;
+        }
+
+        .belly-mark {
+            position: absolute;
+            z-index: 3;
+            left: 50%;
+            bottom: 34px;
+            width: 42px;
+            height: 26px;
+            transform: translateX(-50%);
+            border-radius: 16px;
+            background:
+                radial-gradient(circle at 24% 47%, #8fd2f4 0 10px, transparent 11px),
+                radial-gradient(circle at 48% 32%, #8fd2f4 0 11px, transparent 12px),
+                radial-gradient(circle at 70% 50%, #8fd2f4 0 10px, transparent 11px);
+            opacity: 0.9;
+        }
+
+        .body-puppy .belly-mark {
+            width: 36px;
+            height: 30px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 35% 35%, rgba(121, 75, 54, 0.85) 0 7px, transparent 8px),
+                radial-gradient(circle at 65% 65%, rgba(121, 75, 54, 0.72) 0 6px, transparent 7px),
+                rgba(255, 255, 255, 0.62);
+        }
+
+        .body-bunny .belly-mark {
+            width: 44px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 232, 237, 0.88);
+        }
+
+        .route-imagine .wing {
+            width: 96px;
+            height: 116px;
+            top: 82px;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 70% 20%, rgba(255, 255, 255, 0.52) 0 16px, transparent 17px),
+                linear-gradient(145deg, rgba(126, 197, 244, 0.95), rgba(71, 139, 219, 0.82));
+            border: 0;
+            border-radius: 82% 18% 82% 24%;
+            box-shadow: inset 11px -12px 0 rgba(34, 89, 162, 0.1);
+        }
+
+        .route-imagine .wing::before,
+        .route-imagine .wing::after {
+            content: "";
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .route-imagine .wing::before {
+            inset: 20px 11px 12px 18px;
+            border-radius: inherit;
+            background:
+                linear-gradient(150deg, transparent 0 25%, rgba(255, 255, 255, 0.52) 26% 30%, transparent 31% 100%),
+                linear-gradient(162deg, transparent 0 46%, rgba(255, 255, 255, 0.38) 47% 51%, transparent 52% 100%),
+                linear-gradient(174deg, transparent 0 65%, rgba(255, 255, 255, 0.3) 66% 70%, transparent 71% 100%);
+        }
+
+        .route-imagine .wing::after {
+            left: 12px;
+            bottom: 12px;
+            width: 58px;
+            height: 34px;
+            border-radius: 50%;
+            background:
+                radial-gradient(ellipse at 18% 60%, rgba(255, 255, 255, 0.38) 0 13px, transparent 14px),
+                radial-gradient(ellipse at 48% 70%, rgba(255, 255, 255, 0.24) 0 15px, transparent 16px),
+                radial-gradient(ellipse at 78% 82%, rgba(255, 255, 255, 0.18) 0 13px, transparent 14px);
+        }
+
+        .route-imagine .wing.left {
+            left: -2px;
+        }
+
+        .route-imagine .wing.right {
+            right: -2px;
+        }
+
+        .wing.butterfly {
+            background:
+                radial-gradient(circle at 34% 36%, rgba(255, 255, 255, 0.56) 0 9px, transparent 10px),
+                radial-gradient(circle at 67% 66%, rgba(255, 120, 166, 0.42) 0 10px, transparent 11px),
+                linear-gradient(145deg, rgba(255, 183, 202, 0.96), rgba(250, 221, 119, 0.88));
+            border-radius: 72% 28% 66% 34%;
+        }
+
+        .wing.bat {
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.12), transparent 34%),
+                linear-gradient(145deg, #6c5a96, #413968);
+            border-radius: 70% 30% 58% 42%;
+        }
+
+        .route-imagine .tail {
+            width: 82px;
+            height: 52px;
+            right: 8px;
+            bottom: 63px;
+            border: 0;
+            background:
+                radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.46) 0 12px, transparent 13px),
+                var(--creature-color, #8ccf88);
+            box-shadow: inset 0 -8px 0 rgba(60, 78, 48, 0.08);
+        }
+
+        .route-imagine .tail::before,
+        .route-imagine .tail::after {
+            content: "";
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .tail.curl::before {
+            inset: 10px 14px;
+            border-radius: 50%;
+            border: 8px solid rgba(255, 255, 255, 0.54);
+            border-left-color: transparent;
+            transform: rotate(-22deg);
+        }
+
+        .tail.curl::after {
+            right: 22px;
+            top: 18px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.58);
+        }
+
+        .tail.fluffy {
+            width: 64px;
+            height: 64px;
+            right: 20px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #fff8df, #f1ab58);
+        }
+
+        .tail.fluffy::before {
+            inset: 9px 14px;
+            border-radius: 50%;
+            background:
+                linear-gradient(120deg, transparent 0 38%, rgba(175, 105, 36, 0.24) 39% 42%, transparent 43% 100%),
+                linear-gradient(150deg, transparent 0 53%, rgba(175, 105, 36, 0.2) 54% 57%, transparent 58% 100%);
+        }
+
+        .tail.leaf {
+            border-radius: 78% 12% 78% 16%;
+            background: linear-gradient(145deg, #9cd467, #4f9d54);
+        }
+
+        .tail.leaf::before {
+            left: 14px;
+            top: 26px;
+            width: 58px;
+            height: 3px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.5);
+            transform: rotate(-18deg);
+        }
+
+        .tail.leaf::after {
+            left: 36px;
+            top: 20px;
+            width: 20px;
+            height: 22px;
+            border-left: 3px solid rgba(255, 255, 255, 0.38);
+            border-bottom: 3px solid rgba(255, 255, 255, 0.32);
+            transform: rotate(-18deg);
+        }
+
+        .route-imagine .horn {
+            top: 40px;
+            height: 42px;
+            background: #ffd65b;
+            filter: drop-shadow(0 4px 0 rgba(161, 120, 33, 0.12));
+        }
+
+        .compose-hint,
+        .creature-card {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: 10px;
+            align-items: center;
+            padding: 9px 11px;
+            border-radius: 20px;
+            background: rgba(255, 251, 235, 0.94);
+            border: 2px solid rgba(241, 219, 168, 0.9);
+            color: #70502d;
+            box-shadow: 0 8px 15px rgba(120, 93, 45, 0.12);
+        }
+
+        .hint-icon {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #fff2cf;
+            color: #ee9b25;
+            font-size: 20px;
+        }
+
+        .creature-thumb {
+            width: 76px;
+            height: 76px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #e8f6ff, #d6edb9);
+            display: grid;
+            place-items: center;
+            box-shadow: inset 0 -8px 0 rgba(121, 150, 72, 0.08);
+            overflow: hidden;
+        }
+
+        .creature-thumb img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 6px rgba(74, 88, 70, 0.18));
+        }
+
+        .creature-card h3 {
+            margin: 0 0 4px;
+            color: #6d4724;
+            font-size: 21px;
+        }
+
+        .creature-card .text-input,
+        .creature-card .select-input {
+            min-height: 36px;
+            padding: 6px 10px;
+            border-radius: 10px;
+        }
+
+        .creature-card p {
+            margin: 0;
+            color: #7e684f;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .imagine-actions {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .save-creature-button {
+            min-height: 44px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #ffc75a, #ff9d34);
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 900;
+            box-shadow: 0 7px 0 #d88128, 0 12px 18px rgba(158, 101, 35, 0.2);
+        }
+
+        .random-creature-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff4cf;
+            border: 2px solid #f2d591;
+            color: #b16c19;
+            font-size: 20px;
+        }
+
+        .remove-creature-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #f8fff3;
+            border: 2px solid #b9dba8;
+            color: #4e8c34;
+            font-size: 20px;
+        }
+
+        .route-imagine .nav-item.active {
+            background: #f4fff0;
+            color: #65ad40;
+            box-shadow: 0 -4px 0 rgba(111, 178, 67, 0.1);
+        }
+
         .collection-grid,
         .story-list,
         .activity-list {
@@ -1160,23 +2088,28 @@
         body {
             min-height: 100dvh;
             background: #dbeee5;
+            overflow: hidden;
         }
 
         .app-root {
             width: min(100vw, 430px);
-            min-height: 100dvh;
+            height: 100dvh;
+            min-height: 0;
             margin: 0 auto;
+            position: relative;
+            overflow: hidden;
             background:
                 linear-gradient(180deg, #dff4ff 0, #f2faec 44%, #fff8e3 100%);
             box-shadow: 0 0 0 1px rgba(38, 66, 54, 0.06), 0 20px 50px rgba(29, 52, 42, 0.18);
         }
 
         .login-screen {
-            min-height: 100dvh;
+            min-height: 100%;
             display: flex;
             flex-direction: column;
             gap: 12px;
             padding: 14px 12px 18px;
+            overflow-y: auto;
         }
 
         .login-panel {
@@ -1244,29 +2177,38 @@
         }
 
         .shell {
-            min-height: 100dvh;
-            display: block;
+            height: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .main {
+            order: 1;
+            flex: 1 1 auto;
             padding: 10px 10px calc(var(--bottom-nav-height) + 22px + env(safe-area-inset-bottom));
             width: 100%;
             min-width: 0;
+            min-height: 0;
+            overflow-y: auto;
             overflow-x: hidden;
         }
 
         .sidebar {
-            position: fixed;
-            left: 50%;
+            order: 2;
+            flex: 0 0 auto;
+            position: relative;
+            left: auto;
             right: auto;
             top: auto;
-            bottom: 0;
+            bottom: auto;
             z-index: 20;
-            width: min(100vw, 430px);
+            width: 100%;
+            height: auto;
             min-height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
             padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
             overflow: hidden;
-            transform: translateX(-50%);
+            transform: none;
             border-right: 0;
             border-top: 1px solid rgba(118, 150, 134, 0.26);
             background: rgba(255, 253, 247, 0.96);
@@ -1548,23 +2490,27 @@
         }
 
         .toast {
+            position: absolute;
             bottom: calc(var(--bottom-nav-height) + 14px + env(safe-area-inset-bottom));
             max-width: min(390px, calc(100vw - 24px));
         }
 
+        .main.route-imagine {
+            padding: 0 0 calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+        }
+
         @media (min-width: 431px) {
             body {
+                display: grid;
+                place-items: center;
+                height: 100dvh;
                 padding: 16px 0;
             }
 
             .app-root {
+                height: min(100dvh - 32px, 932px);
                 border-radius: 18px;
                 overflow: hidden;
-            }
-
-            .sidebar {
-                bottom: 16px;
-                border-radius: 0 0 18px 18px;
             }
         }
 
@@ -1616,6 +2562,39 @@
         { id: "imagine", label: "想象", icon: "🎨", title: "想象动物区", subtitle: "组合栖息地、能力和性格，创建自己的动物。" },
         { id: "story", label: "故事", icon: "📖", title: "故事页", subtitle: "把动物知识变成睡前故事和探险故事。" },
         { id: "report", label: "报告", icon: "📊", title: "家长报告", subtitle: "查看探索记录、兴趣动物和学习建议。" }
+    ];
+
+    const imagineAssetBase = "/static/assets/imagine/";
+    const creatureBodies = [
+        { id: "panda", label: "熊猫身体", file: "body-panda.png" },
+        { id: "rabbit", label: "兔子身体", file: "body-rabbit.png" },
+        { id: "dog", label: "狗狗身体", file: "body-dog.png" },
+        { id: "cat", label: "猫咪身体", file: "body-cat.png" },
+        { id: "chick", label: "小鸡身体", file: "body-chick.png" },
+        { id: "snake", label: "小蛇身体", file: "body-snake.png" },
+        { id: "pig", label: "小猪身体", file: "body-pig.png" }
+    ];
+    const creatureWings = [
+        { id: "angel", label: "天使翅膀", file: "wing-angel.png" },
+        { id: "fairy", label: "精灵翅膀", file: "wing-fairy.png" },
+        { id: "bat", label: "蝙蝠翅膀", file: "wing-bat.png" },
+        { id: "dragon", label: "龙翼", file: "wing-dragon.png" },
+        { id: "cloud", label: "云朵翅膀", file: "wing-cloud.png" }
+    ];
+    const creatureTails = [
+        { id: "curl", label: "卷卷尾巴", file: "tail-curl.png" },
+        { id: "fox", label: "狐狸尾巴", file: "tail-fox.png" },
+        { id: "dino", label: "恐龙尾巴", file: "tail-dino.png" },
+        { id: "fluffy", label: "绒球尾巴", file: "tail-fluffy.png" },
+        { id: "cat", label: "猫咪尾巴", file: "tail-cat.png" },
+        { id: "puppy", label: "小狗尾巴", file: "tail-puppy.png" }
+    ];
+    const creatureColors = [
+        ["#8fc6f5", "天空蓝"],
+        ["#f8c8d1", "桃粉"],
+        ["#c9a6e7", "云紫"],
+        ["#ffd76c", "阳光黄"],
+        ["#8fd7a1", "薄荷绿"]
     ];
 
     const animals = [
@@ -1801,7 +2780,10 @@
             name: "云朵跳跳兽",
             habitat: "彩虹森林",
             mood: "好奇",
-            color: "#8ccf88",
+            color: "#8fc6f5",
+            body: "panda",
+            wing: "angel",
+            tail: "curl",
             parts: ["wing", "tail"]
         }
     };
@@ -2051,7 +3033,7 @@
                         <div class="profile-meta">${roleLabel(state.profile.role)}｜${state.profile.age} 岁<br>已探索 ${Object.keys(state.progress.visits).length} 种动物</div>
                     </div>
                 </aside>
-                <main class="main">
+                <main class="main route-${state.route}">
                     <div class="topbar">
                         <div class="page-title">
                             <h2>${route.title}</h2>
@@ -2362,92 +3344,140 @@
 
     function imagineView() {
         const draft = state.draftCreature;
+        const parts = Array.isArray(draft.parts) ? draft.parts : [];
+        const body = normalizeCreatureBody(draft.body || "panda");
+        const wing = parts.includes("wing") ? normalizeCreatureWing(draft.wing || "angel") : "";
+        const tail = parts.includes("tail") ? normalizeCreatureTail(draft.tail || "curl") : "";
+        const hasHorn = parts.includes("horn");
         return `
-            <section class="view">
-                <div class="grid-2">
-                    <div class="panel">
-                        <div class="panel-title">
-                            <h3>创建动物</h3>
-                            <span>${draft.name}</span>
+            <section class="imagine-screen">
+                <div class="imagine-prompt">拖一拖，拼出你自己的小动物！</div>
+                <div class="creator-board">
+                    <div class="material-rail">
+                        <div class="material-group">
+                            <p class="material-title">身体</p>
+                            <div class="material-list asset-list">
+                                ${creatureBodies.map((item) => creatureMaterialButton("body", item, body === item.id)).join("")}
+                            </div>
                         </div>
-                        <div class="field">
-                            <label for="creatureName">名字</label>
-                            <input class="text-input" id="creatureName" maxlength="16" value="${escapeHtml(draft.name)}">
+                        <div class="material-group">
+                            <p class="material-title">尾巴</p>
+                            <div class="material-list asset-list">
+                                ${creatureTails.map((item) => creatureMaterialButton("tail", item, tail === item.id)).join("")}
+                            </div>
                         </div>
-                        <div class="field">
-                            <label for="creatureHabitat">栖息地</label>
-                            <input class="text-input" id="creatureHabitat" maxlength="18" value="${escapeHtml(draft.habitat)}">
+                    </div>
+                    <div class="stage-card">
+                        ${creaturePreview(draft)}
+                    </div>
+                    <div class="material-rail">
+                        <div class="material-group">
+                            <p class="material-title">翅膀</p>
+                            <div class="material-list asset-list">
+                                ${creatureWings.map((item) => creatureMaterialButton("wing", item, wing === item.id)).join("")}
+                            </div>
                         </div>
-                        <div class="field">
-                            <label for="creatureMood">性格</label>
-                            <select class="select-input" id="creatureMood">
+                        <div class="material-group">
+                            <p class="material-title">颜色</p>
+                            <div class="material-list">
+                                ${creatureColors.map(([color, label]) => `<button class="color-swatch ${draft.color === color ? "active" : ""}" type="button" data-creature-color="${color}" aria-label="${label}"><span style="--swatch: ${color};"></span></button>`).join("")}
+                            </div>
+                        </div>
+                        <div class="material-group">
+                            <p class="material-title">角</p>
+                            <div class="material-list">
+                                <button class="material-button ${hasHorn ? "active" : ""}" type="button" draggable="true" data-creature-part-type="horn" data-creature-part-id="horn" data-creature-part="horn" aria-label="发光星角" title="发光星角"><span class="mini-horn"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="compose-hint">
+                    <span class="hint-icon">☝</span>
+                    <strong>点击或拖动素材到中间区域进行组合</strong>
+                </div>
+                <div class="creature-card">
+                    <div class="creature-thumb" style="background: linear-gradient(180deg, ${draft.color || "#8fc6f5"}55, #d6edb9);"><img src="${creatureAssetUrl("body", body)}" alt=""></div>
+                    <div>
+                        <input class="text-input" id="creatureName" maxlength="16" value="${escapeHtml(draft.name)}" aria-label="动物名字">
+                        <div class="field" style="margin: 8px 0 0;">
+                            <input class="text-input" id="creatureHabitat" maxlength="18" value="${escapeHtml(draft.habitat)}" aria-label="栖息地">
+                        </div>
+                        <div class="field" style="margin: 8px 0 0;">
+                            <select class="select-input" id="creatureMood" aria-label="性格">
                                 ${["好奇", "勇敢", "温柔", "爱唱歌", "慢悠悠"].map((mood) => `<option ${draft.mood === mood ? "selected" : ""}>${mood}</option>`).join("")}
                             </select>
                         </div>
-                        <div class="field">
-                            <span class="section-label">颜色</span>
-                            <div class="chip-row">
-                                ${[
-                                    ["#8ccf88", "叶绿"],
-                                    ["#76c8dd", "海蓝"],
-                                    ["#f3b05b", "蜂蜜"],
-                                    ["#e6a1b6", "莓果"],
-                                    ["#b9a7e8", "星紫"]
-                                ].map(([color, label]) => `<button class="chip ${draft.color === color ? "active" : ""}" type="button" data-creature-color="${color}">${label}</button>`).join("")}
-                            </div>
-                        </div>
-                        <div class="field">
-                            <span class="section-label">能力</span>
-                            <div class="chip-row">
-                                ${creaturePartButton("wing", "会滑翔")}
-                                ${creaturePartButton("tail", "会平衡")}
-                                ${creaturePartButton("horn", "会发光")}
-                            </div>
-                        </div>
-                        <div class="action-row">
-                            <button class="primary-button" type="button" data-action="save-creature">收藏动物</button>
-                            <button class="secondary-button" type="button" data-action="random-creature">随机组合</button>
-                        </div>
-                    </div>
-                    <div class="panel">
-                        <div class="panel-title">
-                            <h3>预览</h3>
-                            <span>${escapeHtml(draft.habitat)}</span>
-                        </div>
-                        ${creaturePreview(draft)}
+                        <p>${escapeHtml(draft.mood)}，住在${escapeHtml(draft.habitat)}。已经选择 ${[wing && "翅膀", tail && "尾巴", hasHorn && "星角"].filter(Boolean).join("、") || "身体"}。</p>
                     </div>
                 </div>
-                <div class="panel">
-                    <div class="panel-title">
-                        <h3>想象动物收藏</h3>
-                        <span>${state.creations.length} 个</span>
-                    </div>
+                <div class="imagine-actions">
+                    <button class="save-creature-button" type="button" data-action="save-creature">⬇ 保存我的动物</button>
+                    <button class="random-creature-button" type="button" data-action="random-creature" aria-label="随机组合" title="随机组合">✎</button>
+                    <button class="remove-creature-button" type="button" data-action="clear-creature-parts" aria-label="清除配件" title="清除配件">×</button>
+                </div>
+                ${state.creations.length ? `
                     <div class="collection-grid">
-                        ${state.creations.length ? state.creations.map((item) => `
+                        ${state.creations.slice(0, 3).map((item) => `
                             <article class="collection-item">
                                 <h4>${escapeHtml(item.name)}</h4>
                                 <p>${escapeHtml(item.mood)}，住在${escapeHtml(item.habitat)}。能力：${escapeHtml(item.parts.join("、") || "慢慢观察")}</p>
                             </article>
-                        `).join("") : `<div class="empty-state">还没有收藏，创建一个新的想象动物吧。</div>`}
+                        `).join("")}
                     </div>
-                </div>
+                ` : ""}
             </section>
         `;
     }
 
+    function creatureAssetUrl(type, id) {
+        const list = type === "body" ? creatureBodies : type === "wing" ? creatureWings : creatureTails;
+        const fallback = list[0];
+        const item = list.find((asset) => asset.id === id) || fallback;
+        return `${imagineAssetBase}${item.file}`;
+    }
+
+    function normalizeCreatureBody(id) {
+        return { puppy: "dog", bunny: "rabbit" }[id] || (creatureBodies.some((item) => item.id === id) ? id : "panda");
+    }
+
+    function normalizeCreatureWing(id) {
+        if (!id) return "";
+        return { butterfly: "fairy" }[id] || (creatureWings.some((item) => item.id === id) ? id : "angel");
+    }
+
+    function normalizeCreatureTail(id) {
+        if (!id) return "";
+        return { leaf: "dino" }[id] || (creatureTails.some((item) => item.id === id) ? id : "curl");
+    }
+
+    function creatureMaterialButton(type, item, active) {
+        return `<button class="material-button ${active ? "active" : ""}" type="button" draggable="true" data-creature-part-type="${type}" data-creature-part-id="${item.id}" data-creature-${type}="${item.id}" aria-label="${item.label}" title="${item.label}"><img class="material-img" src="${imagineAssetBase}${item.file}" alt=""></button>`;
+    }
+
+    function creatureThumbEmoji(body) {
+        return { panda: "🐼", puppy: "🐶", bunny: "🐰" }[body] || "🐼";
+    }
+
     function creaturePartButton(part, label) {
-        const active = state.draftCreature.parts.includes(part);
+        const parts = Array.isArray(state.draftCreature.parts) ? state.draftCreature.parts : [];
+        const active = parts.includes(part);
         return `<button class="chip ${active ? "active" : ""}" type="button" data-creature-part="${part}">${label}</button>`;
     }
 
     function creaturePreview(draft) {
+        const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
+        const body = normalizeCreatureBody(draft.body || "panda");
+        const wing = parts.has("wing") ? normalizeCreatureWing(draft.wing || "angel") : "";
+        const tail = parts.has("tail") ? normalizeCreatureTail(draft.tail || "curl") : "";
+        const hasHorn = parts.has("horn");
         return `
-            <div class="imagine-stage">
-                <div class="creature-preview" style="--creature-color: ${draft.color};">
-                    ${draft.parts.includes("wing") ? `<span class="wing left"></span><span class="wing right"></span>` : ""}
-                    ${draft.parts.includes("tail") ? `<span class="tail"></span>` : ""}
-                    ${draft.parts.includes("horn") ? `<span class="horn"></span>` : ""}
-                    <div class="creature-body"><span class="creature-face">◕‿◕</span></div>
+            <div class="imagine-stage" data-creature-drop-zone="true">
+                <div class="creature-preview raster-creature" style="--creature-color: ${draft.color || "#8fc6f5"};">
+                    <span class="creature-color-glow" aria-hidden="true"></span>
+                    ${wing ? `<img class="creature-asset asset-wing" data-wing="${wing}" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
+                    ${tail ? `<img class="creature-asset asset-tail" data-tail="${tail}" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
+                    ${hasHorn ? `<span class="asset-horn" aria-hidden="true"></span>` : ""}
+                    <img class="creature-asset asset-body" data-body="${body}" src="${creatureAssetUrl("body", body)}" alt="">
                 </div>
             </div>
         `;
@@ -2712,9 +3742,31 @@
             return;
         }
 
+        const bodyButton = event.target.closest("[data-creature-body]");
+        if (bodyButton) {
+            updateCreatureDraft();
+            applyCreaturePart("body", bodyButton.dataset.creatureBody);
+            return;
+        }
+
+        const wingButton = event.target.closest("[data-creature-wing]");
+        if (wingButton) {
+            updateCreatureDraft();
+            applyCreaturePart("wing", wingButton.dataset.creatureWing);
+            return;
+        }
+
+        const tailButton = event.target.closest("[data-creature-tail]");
+        if (tailButton) {
+            updateCreatureDraft();
+            applyCreaturePart("tail", tailButton.dataset.creatureTail);
+            return;
+        }
+
         const partButton = event.target.closest("[data-creature-part]");
         if (partButton) {
             updateCreatureDraft();
+            if (!Array.isArray(state.draftCreature.parts)) state.draftCreature.parts = [];
             const part = partButton.dataset.creaturePart;
             if (state.draftCreature.parts.includes(part)) {
                 state.draftCreature.parts = state.draftCreature.parts.filter((item) => item !== part);
@@ -2748,10 +3800,50 @@
         if (action === "ask-doctor") await handleAskDoctor();
         if (action === "save-creature") saveCreature();
         if (action === "random-creature") randomCreature();
+        if (action === "clear-creature-parts") clearCreatureParts();
         if (action === "make-story") await makeStory();
         if (action === "read-story") readStory();
         if (action === "print-report") window.print();
         if (action === "reset-progress") resetProgress();
+    });
+
+    document.addEventListener("dragstart", (event) => {
+        const partButton = event.target.closest("[data-creature-part-type]");
+        if (!partButton) return;
+        event.dataTransfer.setData("text/plain", JSON.stringify({
+            type: partButton.dataset.creaturePartType,
+            id: partButton.dataset.creaturePartId
+        }));
+        event.dataTransfer.effectAllowed = "copy";
+    });
+
+    document.addEventListener("dragover", (event) => {
+        const dropZone = event.target.closest("[data-creature-drop-zone]");
+        if (!dropZone) return;
+        event.preventDefault();
+        dropZone.classList.add("drag-over");
+        event.dataTransfer.dropEffect = "copy";
+    });
+
+    document.addEventListener("dragleave", (event) => {
+        const dropZone = event.target.closest("[data-creature-drop-zone]");
+        if (dropZone && !dropZone.contains(event.relatedTarget)) {
+            dropZone.classList.remove("drag-over");
+        }
+    });
+
+    document.addEventListener("drop", (event) => {
+        const dropZone = event.target.closest("[data-creature-drop-zone]");
+        if (!dropZone) return;
+        event.preventDefault();
+        dropZone.classList.remove("drag-over");
+        try {
+            const part = JSON.parse(event.dataTransfer.getData("text/plain"));
+            updateCreatureDraft();
+            applyCreaturePart(part.type, part.id);
+        } catch (error) {
+            showToast("这个素材暂时放不上去");
+        }
     });
 
     document.addEventListener("submit", (event) => {
@@ -2898,12 +3990,54 @@
         if (mood) state.draftCreature.mood = mood.value;
     }
 
+    function ensureCreatureParts() {
+        if (!Array.isArray(state.draftCreature.parts)) state.draftCreature.parts = [];
+        return state.draftCreature.parts;
+    }
+
+    function applyCreaturePart(type, id) {
+        const parts = ensureCreatureParts();
+        if (type === "body") {
+            state.draftCreature.body = normalizeCreatureBody(id);
+        }
+        if (type === "wing") {
+            state.draftCreature.wing = normalizeCreatureWing(id) || "angel";
+            if (!parts.includes("wing")) parts.push("wing");
+        }
+        if (type === "tail") {
+            state.draftCreature.tail = normalizeCreatureTail(id) || "curl";
+            if (!parts.includes("tail")) parts.push("tail");
+        }
+        if (type === "horn" && !parts.includes("horn")) {
+            parts.push("horn");
+        }
+        saveState();
+        render();
+    }
+
+    function clearCreatureParts() {
+        updateCreatureDraft();
+        state.draftCreature.wing = "";
+        state.draftCreature.tail = "";
+        state.draftCreature.parts = [];
+        saveState();
+        render();
+        showToast("已清除配件");
+    }
+
     function saveCreature() {
         updateCreatureDraft();
-        const partsMap = { wing: "会滑翔", tail: "会平衡", horn: "会发光" };
+        const currentParts = Array.isArray(state.draftCreature.parts) ? state.draftCreature.parts : [];
+        const partsMap = { wing: "会飞翔", tail: "会平衡", horn: "会发光" };
+        const wingMap = Object.fromEntries(creatureWings.map((item) => [item.id, item.label]));
+        const tailMap = Object.fromEntries(creatureTails.map((item) => [item.id, item.label]));
         const item = {
             ...clone(state.draftCreature),
-            parts: state.draftCreature.parts.map((part) => partsMap[part] || part),
+            parts: [
+                state.draftCreature.wing ? wingMap[normalizeCreatureWing(state.draftCreature.wing)] : null,
+                state.draftCreature.tail ? tailMap[normalizeCreatureTail(state.draftCreature.tail)] : null,
+                ...currentParts.filter((part) => !["wing", "tail"].includes(part)).map((part) => partsMap[part] || part)
+            ].filter(Boolean),
             time: Date.now()
         };
         state.creations.unshift(item);
@@ -2916,16 +4050,21 @@
     }
 
     function randomCreature() {
-        const names = ["星星贝贝兽", "蒲公英飞飞兽", "果冻潜水兽", "月亮慢慢兽", "树洞眨眼兽"];
+        const names = ["云朵熊鸟", "星星贝贝兽", "蒲公英飞飞兽", "果冻潜水兽", "月亮慢慢兽"];
         const habitats = ["云朵森林", "贝壳海湾", "薄荷草原", "月光山谷", "水晶湿地"];
         const moods = ["好奇", "勇敢", "温柔", "爱唱歌", "慢悠悠"];
-        const colors = ["#8ccf88", "#76c8dd", "#f3b05b", "#e6a1b6", "#b9a7e8"];
+        const bodies = creatureBodies.map((item) => item.id);
+        const wings = creatureWings.map((item) => item.id);
+        const tails = creatureTails.map((item) => item.id);
         const partSets = [["wing"], ["tail"], ["horn"], ["wing", "tail"], ["wing", "horn"], ["tail", "horn"]];
         state.draftCreature = {
             name: pick(names),
             habitat: pick(habitats),
             mood: pick(moods),
-            color: pick(colors),
+            color: pick(creatureColors.map(([color]) => color)),
+            body: pick(bodies),
+            wing: pick(wings),
+            tail: pick(tails),
             parts: pick(partSets)
         };
         saveState();
