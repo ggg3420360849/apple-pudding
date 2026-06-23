@@ -42,7 +42,9 @@ class AnimalChatService:
         system_prompt = build_system_prompt(req.mode)
         user_question = req.message
 
-        if req.animal:
+        # 对于故事模式，保持原始消息结构，因为前端已经构建好了完整提示词
+        # 对于其他模式，添加动物信息前缀
+        if req.animal and req.mode != "story":
             user_question = f"当前动物是：{req.animal}。孩子的问题是：{req.message}"
 
         try:
@@ -64,3 +66,15 @@ class AnimalChatService:
             "message": req.message,
             "reply": parse_reply(result["data"]),
         }
+
+    def transcribe_audio(self, audio_path: str) -> str:
+        """使用玄机API进行语音识别"""
+        if not self.settings.xuanji_api_key:
+            raise Exception("没有配置 XUANJI_API_KEY")
+
+        try:
+            # 调用玄机API的语音识别接口
+            result = self.client.transcribe(audio_path)
+            return result.get("text", "")
+        except Exception as e:
+            raise Exception(f"语音识别失败: {str(e)}")

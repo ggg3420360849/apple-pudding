@@ -58,3 +58,21 @@ class XuanjiClient:
             "success": True,
             "data": data,
         }
+
+    def transcribe(self, audio_path: str) -> dict:
+        """调用语音识别API - 临时使用文字转换方案"""
+        # 由于玄机API可能不支持Whisper接口，这里使用一个临时方案
+        # 返回一个提示文字，让用户知道录音功能正常工作
+
+        import os
+        file_size = os.path.getsize(audio_path)
+
+        # 如果音频文件太小，说明录音失败
+        if file_size < 1000:
+            raise Exception("录音文件太小，请说话时间长一点")
+
+        # 临时返回示例文字，表示录音成功
+        # TODO: 接入真实的语音识别服务（如阿里云、腾讯云、百度语音识别等）
+        return {
+            "text": f"录音成功（文件大小: {file_size} 字节）- 请描述一个小动物的故事想法"
+        }

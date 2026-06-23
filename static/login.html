@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苹果布丁动物乐园 - 登录</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div id="app" class="app-root"></div>
+<script src="/static/shared.js"></script>
+<script>
+    // 登录页面专用逻辑
+    const app = document.getElementById("app");
+
+    let sessionStore = loadSessionStore();
+    let pendingRole = "child";
+    let pendingName = "";
+    let pendingAge = 6;
+
+    function renderLoginScreen() {
+        const sessions = savedSessions();
+        app.innerHTML = `
+            <main class="login-screen">
+                <section class="login-panel">
+                    <div class="brand">
+                        <div class="brand-mark">🍎</div>
+                        <div>
+                            <h1>苹果布丁动物乐园</h1>
+                            <p>动物探索、AI问答、故事创作和家长报告。</p>
+                        </div>
+                    </div>
+
+                    ${sessions.length ? `
+                        <div class="saved-sessions">
+                            <div class="session-title">继续使用</div>
+                            <div class="session-list">
+                                ${sessions.map((session) => sessionCard(session)).join("")}
+                            </div>
+                        </div>
+                    ` : ""}
+
+                    <form id="loginForm">
+                        <div class="field">
+                            <label for="childName">昵称</label>
+                            <input class="text-input" id="childName" maxlength="12" placeholder="小探险家" value="${escapeHtml(pendingName)}">
+                        </div>
+                        <div class="field">
+                            <label for="childAge">年龄</label>
+                            <select class="select-input" id="childAge">
+                                ${[3, 4, 5, 6, 7, 8, 9, 10].map((age) => `<option value="${age}" ${age === pendingAge ? "selected" : ""}>${age} 岁</option>`).join("")}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <span class="section-label">角色</span>
+                            <div class="role-grid">
+                                ${roleButton("child", "小探险家", "地图、问答和故事", pendingRole)}
+                                ${roleButton("parent", "家长", "报告和学习记录", pendingRole)}
+                            </div>
+                        </div>
+                        <button class="primary-button" type="submit" style="width: 100%;">进入乐园</button>
+                    </form>
+                </section>
+                <section class="login-map" aria-label="动物地图预览">
+                    ${mapCanvas(false)}
+                </section>
+            </main>
+        `;
+    }
+
+    function sessionCard(session) {
+        return `
+            <button class="session-card" type="button" data-session-id="${session.sessionId}">
+                <span class="session-avatar">${session.profile.role === "parent" ? "👨‍👩‍👧" : "🧒"}</span>
+                <span>
+                    <span class="session-name">${escapeHtml(session.profile.name)}</span>
+                    <span class="session-meta">${roleLabel(session.profile.role)}｜${session.profile.age} 岁｜探索 ${Object.keys(session.progress.visits || {}).length} 种动物</span>
+                </span>
+                <span class="session-enter">进入</span>
+            </button>
+        `;
+    }
+
+    function roleButton(id, title, desc, selectedRole) {
+        return `
+            <button class="role-option ${selectedRole === id ? "active" : ""}" type="button" data-role="${id}">
+                <strong>${title}</strong>
+                <span>${desc}</span>
+            </button>
+        `;
+    }
+
+    function roleLabel(role) {
+        return { child: "小探险家", parent: "家长" }[role] || "小探险家";
+    }
+
+    document.addEventListener("click", (event) => {
+        const sessionButton = event.target.closest("[data-session-id]");
+        if (sessionButton) {
+            const sessionId = sessionButton.dataset.sessionId;
+            const session = sessionStore.sessions[sessionId];
+            if (session && session.profile) {
+                sessionStorage.setItem(ACTIVE_SESSION_KEY, sessionId);
+                // 根据角色跳转到对应页面
+                window.location.href = session.profile.role === "parent" ? "/parent" : "/child";
+            }
+            return;
+        }
+
+        const roleButtonEl = event.target.closest("[data-role]");
+        if (roleButtonEl) {
+            const nameInput = document.getElementById("childName");
+            const ageInput = document.getElementById("childAge");
+            if (nameInput) pendingName = nameInput.value;
+            if (ageInput) pendingAge = Number(ageInput.value);
+            pendingRole = roleButtonEl.dataset.role;
+            renderLoginScreen();
+            return;
+        }
+    });
+
+    document.addEventListener("submit", (event) => {
+        if (event.target.id !== "loginForm") return;
+        event.preventDefault();
+
+        const name = document.getElementById("childName").value.trim() || "小探险家";
+        const age = Number(document.getElementById("childAge").value || 6);
+        const role = pendingRole || "child";
+
+        // 创建新会话
+        const sessionId = makeSessionId();
+        const profile = { name, age, role, createdAt: Date.now() };
+
+        const newState = mergeState(clone(defaultState), {
+            sessionId,
+            profile,
+            route: role === "parent" ? "report" : "map"
+        });
+
+        sessionStore.sessions[sessionId] = newState;
+        sessionStore.order = [sessionId, ...sessionStore.order];
+        localStorage.setItem(STORE_KEY, JSON.stringify(sessionStore));
+        sessionStorage.setItem(ACTIVE_SESSION_KEY, sessionId);
+
+        // 根据角色跳转到对应页面
+        window.location.href = role === "parent" ? "/parent" : "/child";
+    });
+
+    // 渲染登录界面
+    renderLoginScreen();
+</script>
+</body>
+</html>

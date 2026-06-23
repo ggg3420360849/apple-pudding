@@ -6,16 +6,37 @@ from fastapi.responses import HTMLResponse, Response
 router = APIRouter()
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-STATIC_INDEX = BASE_DIR / "static" / "index.html"
+STATIC_DIR = BASE_DIR / "static"
+STATIC_INDEX = STATIC_DIR / "index.html"
+STATIC_CHILD = STATIC_DIR / "child.html"
+STATIC_PARENT = STATIC_DIR / "parent.html"
 
 
 def index_response() -> HTMLResponse:
     return HTMLResponse(STATIC_INDEX.read_text(encoding="utf-8"))
 
 
+def child_response() -> HTMLResponse:
+    return HTMLResponse(STATIC_CHILD.read_text(encoding="utf-8"))
+
+
+def parent_response() -> HTMLResponse:
+    return HTMLResponse(STATIC_PARENT.read_text(encoding="utf-8"))
+
+
 @router.get("/")
 def home() -> HTMLResponse:
     return index_response()
+
+
+@router.get("/child")
+def child_page() -> HTMLResponse:
+    return child_response()
+
+
+@router.get("/parent")
+def parent_page() -> HTMLResponse:
+    return parent_response()
 
 
 @router.get("/demo")
