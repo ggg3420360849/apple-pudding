@@ -22,6 +22,19 @@ class Settings:
         self.default_model = (os.getenv("DEFAULT_MODEL") or "Doubao-Seed-2.0-pro").strip()
         self.allowed_models = ALLOWED_MODELS
 
+        # 语音识别服务配置
+        self.speech_provider = (os.getenv("SPEECH_PROVIDER") or "mock").strip()
+
+        # Tencent Cloud 配置
+        self.tencent_secret_id = (os.getenv("TENCENT_SECRET_ID") or "").strip()
+        self.tencent_secret_key = (os.getenv("TENCENT_SECRET_KEY") or "").strip()
+        self.tencent_app_id = (os.getenv("TENCENT_APP_ID") or "").strip()
+
+        # Alibaba Cloud 配置
+        self.alibaba_access_key_id = (os.getenv("ALIBABA_ACCESS_KEY_ID") or "").strip()
+        self.alibaba_access_key_secret = (os.getenv("ALIBABA_ACCESS_KEY_SECRET") or "").strip()
+        self.alibaba_app_key = (os.getenv("ALIBABA_APP_KEY") or "").strip()
+
 
 @lru_cache
 def get_settings() -> Settings:

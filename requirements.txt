@@ -3,3 +3,9 @@ uvicorn
 requests
 python-dotenv
 pydantic
+python-multipart
+slowapi
+structlog
+colorama
+Pillow
+qrcode[pil]

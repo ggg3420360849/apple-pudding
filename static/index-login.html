@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苹果布丁 - 登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, #dff4ff 0%, #eff9f0 44%, #fff8e3 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+            overflow-x: hidden;
+        }
+
+        /* 手机风格容器 */
+        .login-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 420px;
+            min-height: 65vh;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            padding: 32px 24px 20px;
+            background: linear-gradient(135deg, #3f9a68 0%, #4aae78 100%);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 16px;
+            font-size: 40px;
+            margin-bottom: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .role-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px 24px 0;
+            background: white;
+            flex-shrink: 0;
+        }
+
+        .role-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 15px;
+            font-weight: 500;
+            color: #6B7077;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .role-tab.active {
+            color: #3f9a68;
+            border-bottom-color: #3f9a68;
+        }
+
+        .content {
+            padding: 24px 24px 32px;
+            background: white;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .role-content {
+            display: none;
+        }
+
+        .role-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #E7E3DA;
+        }
+
+        .auth-tab {
+            padding: 10px 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: #6B7077;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+        }
+
+        .auth-tab.active {
+            color: #3f9a68;
+            border-bottom-color: #3f9a68;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1E2227;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #E7E3DA;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3f9a68;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(63, 154, 104, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3f9a68 0%, #4aae78 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(63, 154, 104, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #6B7077;
+        }
+
+        .links a {
+            color: #3f9a68;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .settings-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #E7E3DA;
+            font-size: 13px;
+            color: #6B7077;
+        }
+
+        .settings-link a {
+            color: #3f9a68;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .settings-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+
+            .login-container {
+                border-radius: 20px;
+            }
+
+            .header {
+                padding: 28px 20px 16px;
+            }
+
+            .logo {
+                width: 56px;
+                height: 56px;
+                font-size: 36px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .role-tabs {
+                padding: 16px 20px 0;
+            }
+
+            .content {
+                padding: 20px 20px 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <div class="logo">🍎</div>
+            <h1>苹果布丁</h1>
+            <p>探索动物世界，快乐学习成长</p>
+        </div>
+
+        <div class="role-tabs">
+            <button class="role-tab active" id="childRoleTab" onclick="switchRole('child')">小探险家</button>
+            <button class="role-tab" id="parentRoleTab" onclick="switchRole('parent')">家长</button>
+        </div>
+
+        <div class="content">
+            <div id="message" class="message"></div>
+
+            <!-- 儿童端 -->
+            <div id="childMode" class="role-content active">
+                <form id="childLoginForm">
+                    <div class="form-group">
+                        <label>昵称</label>
+                        <input type="text" id="childName" placeholder="小探险家" maxlength="12">
+                    </div>
+                    <div class="form-group">
+                        <label>年龄</label>
+                        <select id="childAge">
+                            <option value="3">3 岁</option>
+                            <option value="4">4 岁</option>
+                            <option value="5">5 岁</option>
+                            <option value="6" selected>6 岁</option>
+                            <option value="7">7 岁</option>
+                            <option value="8">8 岁</option>
+                            <option value="9">9 岁</option>
+                            <option value="10">10 岁</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">进入乐园</button>
+                </form>
+
+                <div class="settings-link">
+                    需要设置？<a href="/static/parent-portal.html">前往家长端</a>
+                </div>
+            </div>
+
+            <!-- 家长端 -->
+            <div id="parentMode" class="role-content">
+
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="switchAuthTab('login')">登录</div>
+                    <div class="auth-tab" onclick="switchAuthTab('register')">注册</div>
+                </div>
+
+                <!-- 家长登录 -->
+                <form id="parentLoginForm" class="form-section active">
+                    <div class="form-group">
+                        <label>手机号或邮箱</label>
+                        <input type="text" id="parentLoginUsername" placeholder="请输入手机号或邮箱" required>
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" id="parentLoginPassword" placeholder="请输入密码" required>
+                    </div>
+                    <button type="submit" class="submit-btn">登录</button>
+                    <div class="links">
+                        <a onclick="showMessage('忘记密码功能即将推出', 'error')">忘记密码？</a>
+                        <a onclick="switchAuthTab('register')">立即注册</a>
+                    </div>
+                </form>
+
+                <!-- 家长注册 -->
+                <form id="parentRegisterForm" class="form-section">
+                    <div class="form-group">
+                        <label>家长姓名</label>
+                        <input type="text" id="parentRegisterName" placeholder="请输入您的姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label>手机号</label>
+                        <input type="tel" id="parentRegisterPhone" placeholder="请输入手机号" pattern="1[3-9]\d{9}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱（可选）</label>
+                        <input type="email" id="parentRegisterEmail" placeholder="请输入邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label>设置密码</label>
+                        <input type="password" id="parentRegisterPassword" placeholder="6-20位密码" minlength="6" maxlength="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label>确认密码</label>
+                        <input type="password" id="parentRegisterConfirm" placeholder="再次输入密码" required>
+                    </div>
+                    <button type="submit" class="submit-btn">注册</button>
+                    <div class="links">
+                        <a onclick="switchAuthTab('login')">已有账号？立即登录</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = 'child';
+
+        // 页面加载检查登录状态和角色
+        window.addEventListener('DOMContentLoaded', () => {
+            // 检查 URL 参数，如果有 role=parent，自动切换到家长选项卡
+            const urlParams = new URLSearchParams(window.location.search);
+            const roleParam = urlParams.get('role');
+
+            if (roleParam === 'parent') {
+                switchRole('parent');
+            }
+
+            // 检查是否已登录家长账号
+            const token = localStorage.getItem('parentToken');
+            if (token && currentRole === 'parent') {
+                window.location.href = '/static/parent-portal.html';
+            }
+
+            // 绑定儿童端登录表单
+            const childLoginForm = document.getElementById('childLoginForm');
+            if (childLoginForm) {
+                childLoginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    const name = document.getElementById('childName').value.trim() || '小探险家';
+                    const age = Number(document.getElementById('childAge').value);
+
+                    // 创建会话ID
+                    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+                    // 创建完整的会话数据
+                    const sessionData = {
+                        sessionId: sessionId,
+                        profile: {
+                            name: name,
+                            age: age,
+                            role: 'child'  // 固定为儿童角色
+                        },
+                        progress: {
+                            visits: {},
+                            questions: 0,
+                            stories: 0,
+                            quizTotal: 0,
+                            quizCorrect: 0,
+                            activities: []
+                        },
+                        selectedAnimalId: null,
+                        creations: [],
+                        route: 'map'  // 默认进入地图页面
+                    };
+
+                    // 保存会话数据到 localStorage
+                    const storeKey = 'applePuddingAnimalSessionsV3';
+                    const activeSessionKey = 'applePuddingActiveSessionId';
+                    let sessionStore = { sessions: {}, order: [] };
+
+                    try {
+                        const saved = localStorage.getItem(storeKey);
+                        if (saved) {
+                            sessionStore = JSON.parse(saved);
+                        }
+                    } catch (e) {
+                        console.error('Failed to load sessions:', e);
+                    }
+
+                    // 添加新会话
+                    sessionStore.sessions[sessionId] = sessionData;
+                    sessionStore.order = [sessionId, ...sessionStore.order.filter(id => id !== sessionId)];
+
+                    // 保存到 localStorage
+                    localStorage.setItem(storeKey, JSON.stringify(sessionStore));
+
+                    // 设置当前活动会话
+                    sessionStorage.setItem(activeSessionKey, sessionId);
+
+                    // 跳转到儿童端主页
+                    window.location.href = '/static/index.html';
+                });
+            }
+
+            // 绑定家长登录表单
+            const parentLoginForm = document.getElementById('parentLoginForm');
+            if (parentLoginForm) {
+                parentLoginForm.addEventListener('submit', handleParentLogin);
+            }
+
+            // 绑定家长注册表单
+            const parentRegisterForm = document.getElementById('parentRegisterForm');
+            if (parentRegisterForm) {
+                parentRegisterForm.addEventListener('submit', handleParentRegister);
+            }
+        });
+
+        // 切换角色（儿童/家长）
+        function switchRole(role) {
+            currentRole = role;
+
+            document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(role + 'RoleTab').classList.add('active');
+
+            document.querySelectorAll('.role-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(role + 'Mode').classList.add('active');
+
+            hideMessage();
+        }
+
+        // 切换认证标签（登录/注册）
+        function switchAuthTab(authType) {
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('#parentMode .form-section').forEach(section => section.classList.remove('active'));
+            document.getElementById('parent' + authType.charAt(0).toUpperCase() + authType.slice(1) + 'Form').classList.add('active');
+
+            hideMessage();
+        }
+
+        // 显示消息
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type + ' show';
+            setTimeout(() => hideMessage(), 5000);
+        }
+
+        function hideMessage() {
+            document.getElementById('message').className = 'message';
+        }
+
+        // 家长登录处理
+        async function handleParentLogin(e) {
+            e.preventDefault();
+            hideMessage();
+
+            const username = document.getElementById('parentLoginUsername').value.trim();
+            const password = document.getElementById('parentLoginPassword').value;
+
+            if (!username || !password) {
+                showMessage('请填写完整信息', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/family/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    localStorage.setItem('parentToken', data.token);
+                    localStorage.setItem('parentAccount', JSON.stringify(data.account));
+                    showMessage('登录成功！正在跳转...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/static/parent-portal.html';
+                    }, 1000);
+                } else {
+                    showMessage(data.detail || data.message || '登录失败，请检查账号密码', 'error');
+                }
+            } catch (error) {
+                console.error('登录失败:', error);
+                showMessage('登录失败，请稍后重试', 'error');
+            }
+        }
+
+        // 家长注册处理
+        async function handleParentRegister(e) {
+            e.preventDefault();
+            hideMessage();
+
+            const name = document.getElementById('parentRegisterName').value.trim();
+            const phone = document.getElementById('parentRegisterPhone').value.trim();
+            const email = document.getElementById('parentRegisterEmail').value.trim();
+            const password = document.getElementById('parentRegisterPassword').value;
+            const confirmPassword = document.getElementById('parentRegisterConfirm').value;
+
+            // 验证
+            if (!name || !phone || !password) {
+                showMessage('请填写必填项', 'error');
+                return;
+            }
+
+            if (password.length < 6 || password.length > 20) {
+                showMessage('密码长度应为6-20位', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('两次密码不一致', 'error');
+                return;
+            }
+
+            // 简单的手机号验证
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                showMessage('请输入有效的手机号', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/family/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        parent_name: name,
+                        phone: phone,
+                        email: email || null,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showMessage('注册成功！正在跳转到登录...', 'success');
+                    setTimeout(() => {
+                        switchAuthTab('login');
+                        // 预填手机号
+                        document.getElementById('parentLoginUsername').value = phone;
+                    }, 1500);
+                } else {
+                    showMessage(data.detail || data.message || '注册失败', 'error');
+                }
+            } catch (error) {
+                console.error('注册失败:', error);
+                showMessage('注册失败，请稍后重试', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
+    </script>
+</body>
+</html>

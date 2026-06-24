@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭学习中心 - 苹果布丁</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <style>
+        :root {
+            --bg: #F7F5F1;
+            --surface: #FFFFFF;
+            --border: #E7E3DA;
+            --ink: #1E2227;
+            --muted: #6B7077;
+            --accent: #3C5A78;
+            --accent-hover: #2E4760;
+            --green: #3f9a68;
+            --coral: #ef7d61;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .child-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        select, button {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        select {
+            background: var(--surface);
+            color: var(--ink);
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        button.secondary {
+            background: var(--surface);
+            color: var(--ink);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--border);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .leaderboard-rank {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 40px;
+        }
+
+        .leaderboard-avatar {
+            font-size: 32px;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .leaderboard-stats {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .goal-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .goal-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .goal-status.active {
+            background: #e4f4ff;
+            color: var(--accent);
+        }
+
+        .goal-status.completed {
+            background: #e6f7ed;
+            color: var(--green);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition: width 0.3s;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--ink);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 2000;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .calendar-day.active {
+            background: #e4f4ff;
+            border-color: var(--accent);
+        }
+
+        .calendar-day.completed {
+            background: #e6f7ed;
+            border-color: var(--green);
+        }
+
+        .calendar-day-num {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .calendar-day-badge {
+            font-size: 18px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--coral);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .offline-indicator.active {
+            display: flex;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .badge.new {
+            background: var(--coral);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        <span>🔴</span>
+        <span>离线模式</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🍎 家庭学习中心</h1>
+            <div class="child-selector">
+                <select id="childSelector">
+                    <option value="">加载中...</option>
+                </select>
+                <button onclick="showAddChildModal()">+ 添加孩子</button>
+                <button class="secondary" onclick="location.href='/static/voice-interaction.html'">🎤 语音交互</button>
+                <button class="secondary" onclick="showInviteQRCode(currentAccount?.id)">📱 邀请好友</button>
+                <button class="secondary" onclick="location.href='/static/index.html'">返回主页</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">📊 总览</button>
+            <button class="tab" onclick="switchTab('goals')">🎯 学习目标</button>
+            <button class="tab" onclick="switchTab('calendar')">📅 学习日历</button>
+            <button class="tab" onclick="switchTab('leaderboard')">🏆 排行榜</button>
+            <button class="tab" onclick="switchTab('achievements')">⭐ 成就系统</button>
+            <button class="tab" onclick="switchTab('offline')">📴 离线管理</button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">探索动物</div>
+                    <div class="stat-value" id="animalsCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">正确率</div>
+                    <div class="stat-value" id="accuracy">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">创作故事</div>
+                    <div class="stat-value" id="storiesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">连续天数</div>
+                    <div class="stat-value" id="streak">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">已获得徽章</h2>
+                <div id="earnedBadges" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                    <p style="color: var(--muted);">加载中...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">想象动物收藏</h2>
+                <div id="imaginedAnimals">
+                    <p style="color: var(--muted);">还没有创作想象动物</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="goals" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>本周学习目标</h2>
+                <button onclick="showAddGoalModal()">+ 设置新目标</button>
+            </div>
+            <div id="goalsList">
+                <p style="color: var(--muted);">加载中...</p>
+            </div>
+        </div>
+
+        <div id="calendar" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">本周学习日历</h2>
+                <div class="calendar-grid" id="calendarGrid">
+                    <p style="color: var(--muted);">加载中...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="leaderboard" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">家庭排行榜</h2>
+                <div id="leaderboardList">
+                    <p style="color: var(--muted);">加载中...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="achievements" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">成就系统</h2>
+                <div id="achievementsList">
+                    <p style="color: var(--muted);">加载中...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="offline" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">离线数据管理</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="stat-card">
+                        <div class="stat-label">待同步活动</div>
+                        <div class="stat-value" id="pendingActivities">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">已同步活动</div>
+                        <div class="stat-value" id="syncedActivities">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">缓存大小</div>
+                        <div class="stat-value" id="cacheSize">0 KB</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                    <button onclick="syncNow()">🔄 立即同步</button>
+                    <button class="secondary" onclick="clearSyncedQueue()">🗑️ 清除已同步</button>
+                    <button class="secondary" onclick="clearAllCache()">⚠️ 清空缓存</button>
+                </div>
+
+                <h3 style="margin-bottom: 12px;">待同步队列</h3>
+                <div id="offlineQueueList">
+                    <p style="color: var(--muted);">暂无待同步数据</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加孩子模态框 -->
+    <div class="modal" id="addChildModal">
+        <div class="modal-content">
+            <div class="modal-header">添加孩子</div>
+            <form id="addChildForm">
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" name="name" required placeholder="请输入孩子姓名">
+                </div>
+                <div class="form-group">
+                    <label>年龄</label>
+                    <input type="number" name="age" min="3" max="12" required placeholder="3-12岁">
+                </div>
+                <div class="form-group">
+                    <label>头像</label>
+                    <select name="avatar">
+                        <option value="👦">👦 男孩</option>
+                        <option value="👧">👧 女孩</option>
+                        <option value="🧒">🧒 小朋友</option>
+                        <option value="🐼">🐼 熊猫</option>
+                        <option value="🐰">🐰 兔子</option>
+                        <option value="🐻">🐻 小熊</option>
+                        <option value="🦁">🦁 狮子</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="secondary" onclick="closeModal('addChildModal')">取消</button>
+                    <button type="submit">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 添加目标模态框 -->
+    <div class="modal" id="addGoalModal">
+        <div class="modal-content">
+            <div class="modal-header">设置学习目标</div>
+            <form id="addGoalForm">
+                <div class="form-group">
+                    <label>目标类型</label>
+                    <select name="goal_type" required>
+                        <option value="animals_explored">探索新动物</option>
+                        <option value="questions_correct">答对题目数</option>
+                        <option value="stories_created">创作故事数</option>
+                        <option value="daily_streak">连续学习天数</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>目标数量</label>
+                    <input type="number" name="target" min="1" required placeholder="例如：5">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="secondary" onclick="closeModal('addGoalModal')">取消</button>
+                    <button type="submit">设置目标</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/share-utils.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

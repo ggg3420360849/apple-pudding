@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家长门户 - 苹果布丁</title>
+    <style>
+        :root {
+            --bg: #F7F5F1;
+            --surface: #FFFFFF;
+            --border: #E7E3DA;
+            --ink: #1E2227;
+            --muted: #6B7077;
+            --accent: #3C5A78;
+            --accent-hover: #2E4760;
+            --green: #3f9a68;
+            --coral: #ef7d61;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(180deg, #dff4ff 0, #eff9f0 44%, #fff8e3 100%);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 16px;
+            overflow-x: hidden;
+        }
+
+        /* 手机风格容器 */
+        .mobile-container {
+            max-width: 420px;
+            width: 100%;
+            background: var(--surface);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 65vh;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            background: linear-gradient(135deg, var(--accent) 0%, #4a6d8c 100%);
+            padding: 20px 20px 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-size: 28px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header-title h1 {
+            font-size: 22px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 主内容区域 - 可滚动 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #e4f4ff 0%, #f0f9ff 100%);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .welcome-section h2 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: var(--accent);
+        }
+
+        .welcome-section p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .children-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .child-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .child-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .child-card.add-child {
+            border-style: dashed;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .child-avatar {
+            font-size: 48px;
+            flex-shrink: 0;
+        }
+
+        .child-info-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .child-name {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .child-age {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .child-stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .quick-actions {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+
+        .quick-actions h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: var(--ink);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 16px 14px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #e4f4ff 0%, #f0f9ff 100%);
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .action-text {
+            font-size: 15px;
+            font-weight: 500;
+            flex: 1;
+            text-align: left;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .avatar-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .avatar-option {
+            font-size: 40px;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .avatar-option:hover {
+            border-color: var(--accent);
+        }
+
+        .avatar-option.selected {
+            border-color: var(--accent);
+            background: #e4f4ff;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: stretch;
+            margin-top: 20px;
+        }
+
+        .form-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        button.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        button.secondary {
+            background: #f0f0f0;
+            color: var(--ink);
+        }
+
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--ink);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 2000;
+            animation: slideUp 0.3s;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 滚动条样式 */
+        .content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+        }
+
+        .content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="header">
+            <div class="header-top">
+                <div class="logo">🍎</div>
+                <button class="logout-btn" onclick="logout()">退出</button>
+            </div>
+            <div class="header-title">
+                <h1>家长门户</h1>
+                <p id="parentName">欢迎回来</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="welcome-section">
+                <h2>选择孩子账号</h2>
+                <p>点击头像进入孩子的学习空间</p>
+            </div>
+
+            <div class="children-grid" id="childrenGrid">
+                <div class="child-card add-child" onclick="showAddChildModal()">
+                    <div class="child-avatar">➕</div>
+                    <div class="child-info-left">
+                        <div class="child-name">添加孩子</div>
+                        <p class="child-age">创建新账号</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h3>快捷功能</h3>
+                <div class="action-buttons">
+                    <div class="action-btn" onclick="goToReport()">
+                        <div class="action-icon">📊</div>
+                        <div class="action-text">学习报告</div>
+                    </div>
+                    <div class="action-btn" onclick="goToSettings()">
+                        <div class="action-icon">⚙️</div>
+                        <div class="action-text">系统设置</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加孩子模态框 -->
+    <div class="modal" id="addChildModal">
+        <div class="modal-content">
+            <div class="modal-header">添加孩子</div>
+            <form id="addChildForm">
+                <div class="form-group">
+                    <label>孩子姓名</label>
+                    <input type="text" id="childName" placeholder="请输入孩子的姓名" required>
+                </div>
+                <div class="form-group">
+                    <label>年龄</label>
+                    <input type="number" id="childAge" min="3" max="12" placeholder="3-12岁" required>
+                </div>
+                <div class="form-group">
+                    <label>选择头像</label>
+                    <div class="avatar-selector" id="avatarSelector">
+                        <div class="avatar-option" data-avatar="👦">👦</div>
+                        <div class="avatar-option" data-avatar="👧">👧</div>
+                        <div class="avatar-option" data-avatar="🧒">🧒</div>
+                        <div class="avatar-option" data-avatar="🐼">🐼</div>
+                        <div class="avatar-option" data-avatar="🐰">🐰</div>
+                        <div class="avatar-option" data-avatar="🐻">🐻</div>
+                        <div class="avatar-option" data-avatar="🦁">🦁</div>
+                        <div class="avatar-option" data-avatar="🐯">🐯</div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="secondary" onclick="closeModal('addChildModal')">取消</button>
+                    <button type="submit" class="primary">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentAccount = null;
+        let selectedAvatar = '👦';
+
+        // 页面加载时检查登录状态
+        window.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('parentToken');
+            if (!token) {
+                window.location.href = '/static/index-login.html';
+                return;
+            }
+
+            const accountData = localStorage.getItem('parentAccount');
+            if (accountData) {
+                currentAccount = JSON.parse(accountData);
+                document.getElementById('parentName').textContent = `${currentAccount.parent_name}，欢迎回来`;
+            }
+
+            await loadChildren();
+        });
+
+        // 加载孩子列表
+        async function loadChildren() {
+            if (!currentAccount) return;
+
+            try {
+                const response = await fetch(`/api/family/accounts/${currentAccount.id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const children = data.account.children || [];
+                    renderChildren(children);
+                }
+            } catch (error) {
+                console.error('加载孩子列表失败:', error);
+            }
+        }
+
+        // 渲染孩子卡片
+        function renderChildren(children) {
+            const grid = document.getElementById('childrenGrid');
+            const addChildCard = grid.querySelector('.add-child');
+
+            // 清除现有的孩子卡片
+            grid.querySelectorAll('.child-card:not(.add-child)').forEach(card => card.remove());
+
+            // 添加孩子卡片
+            children.forEach(child => {
+                const card = document.createElement('div');
+                card.className = 'child-card';
+                card.onclick = () => enterChildSpace(child);
+
+                const accuracy = child.questions_answered > 0
+                    ? Math.round((child.questions_correct / child.questions_answered) * 100)
+                    : 0;
+
+                card.innerHTML = `
+                    <div class="child-avatar">${child.avatar || '👤'}</div>
+                    <div class="child-info-left">
+                        <div class="child-name">${child.name}</div>
+                        <div class="child-age">${child.age}岁</div>
+                    </div>
+                    <div class="child-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${child.animals_explored?.length || 0}</div>
+                            <div class="stat-label">动物</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${accuracy}%</div>
+                            <div class="stat-label">正确率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${child.current_streak || 0}</div>
+                            <div class="stat-label">连续</div>
+                        </div>
+                    </div>
+                `;
+
+                grid.insertBefore(card, addChildCard);
+            });
+        }
+
+        // 进入孩子的学习报告界面
+        function enterChildSpace(child) {
+            const parentAccount = JSON.parse(localStorage.getItem('parentAccount') || '{}');
+
+            // 创建家长角色的会话ID
+            const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+            // 创建家长会话数据（使用 index.html 的数据结构）
+            const sessionData = {
+                sessionId: sessionId,
+                profile: {
+                    name: parentAccount.parent_name || '家长',
+                    age: null,
+                    role: 'parent'  // 家长角色
+                },
+                progress: {
+                    visits: {},
+                    questions: 0,
+                    stories: 0,
+                    quizTotal: 0,
+                    quizCorrect: 0,
+                    activities: []
+                },
+                selectedAnimalId: null,
+                creations: [],
+                route: 'report-overview',  // 默认进入数据概览页面
+                // 保存孩子信息供报告页面使用
+                selectedChild: child,
+                parentAccountId: parentAccount.account_id || parentAccount.id
+            };
+
+            // 保存会话数据到 localStorage（使用 index.html 的存储键）
+            const storeKey = 'applePuddingAnimalSessionsV3';
+            const activeSessionKey = 'applePuddingActiveSessionId';
+            let sessionStore = { sessions: {}, order: [] };
+
+            try {
+                const saved = localStorage.getItem(storeKey);
+                if (saved) {
+                    sessionStore = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Failed to load sessions:', e);
+            }
+
+            // 添加新会话
+            sessionStore.sessions[sessionId] = sessionData;
+            sessionStore.order = [sessionId, ...sessionStore.order.filter(id => id !== sessionId)];
+
+            // 保存到 localStorage
+            localStorage.setItem(storeKey, JSON.stringify(sessionStore));
+
+            // 设置当前活动会话
+            sessionStorage.setItem(activeSessionKey, sessionId);
+
+            // 跳转到主应用（家长端界面）
+            window.location.href = '/static/index.html';
+        }
+
+        // 显示添加孩子模态框
+        function showAddChildModal() {
+            document.getElementById('addChildModal').classList.add('active');
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 头像选择
+        document.addEventListener('DOMContentLoaded', () => {
+            const avatarOptions = document.querySelectorAll('.avatar-option');
+            avatarOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    avatarOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedAvatar = option.dataset.avatar;
+                });
+            });
+            // 默认选中第一个
+            if (avatarOptions.length > 0) {
+                avatarOptions[0].classList.add('selected');
+            }
+        });
+
+        // 添加孩子表单提交
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('addChildForm');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const name = document.getElementById('childName').value.trim();
+                    const age = parseInt(document.getElementById('childAge').value);
+
+                    if (!name || !age) {
+                        showToast('请填写完整信息', 'error');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/api/family/accounts/${currentAccount.id}/children`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name: name,
+                                age: age,
+                                avatar: selectedAvatar
+                            })
+                        });
+
+                        if (response.ok) {
+                            showToast('添加成功！', 'success');
+                            closeModal('addChildModal');
+                            form.reset();
+                            await loadChildren();
+                        } else {
+                            showToast('添加失败，请重试', 'error');
+                        }
+                    } catch (error) {
+                        console.error('添加孩子失败:', error);
+                        showToast('添加失败：' + error.message, 'error');
+                    }
+                });
+            }
+        });
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('parentToken');
+                localStorage.removeItem('parentAccount');
+                localStorage.removeItem('currentChild');
+                window.location.href = '/static/index-login.html?role=parent';
+            }
+        }
+
+        // 显示提示
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+
+            if (type === 'success') {
+                toast.style.background = 'var(--green)';
+            } else if (type === 'error') {
+                toast.style.background = 'var(--coral)';
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 跳转到学习报告
+        function goToReport() {
+            // 使用当前选中的孩子，如果有的话
+            const currentChild = localStorage.getItem('currentChild');
+            if (currentChild) {
+                // 跳转到 index.html 并设置路由到报告页面
+                window.location.href = '/static/index.html#report-overview';
+            } else {
+                showToast('请先选择一个孩子', 'error');
+            }
+        }
+
+        // 跳转到系统设置
+        function goToSettings() {
+            // 使用当前选中的孩子，如果有的话
+            const currentChild = localStorage.getItem('currentChild');
+            if (currentChild) {
+                // 跳转到 index.html 并设置路由到设置页面
+                window.location.href = '/static/index.html#report-settings';
+            } else {
+                showToast('请先选择一个孩子', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音功能测试 - 简化版</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #4caf50;
+            color: white;
+            margin: 10px 0;
+        }
+        button:hover { background: #45a049; }
+        button.recording {
+            background: #f44336;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 语音功能测试</h1>
+        <p>点击按钮，然后开始说话</p>
+
+        <button id="voiceBtn">开始录音</button>
+
+        <div id="status" class="status">等待开始...</div>
+
+        <textarea id="result" placeholder="识别的文字会显示在这里..."></textarea>
+
+        <div id="info" style="font-size: 12px; color: #666; margin-top: 10px;"></div>
+    </div>
+
+    <script>
+        const voiceBtn = document.getElementById('voiceBtn');
+        const result = document.getElementById('result');
+        const status = document.getElementById('status');
+        const info = document.getElementById('info');
+
+        let recognition = null;
+        let isRecording = false;
+        let finalText = '';
+
+        // 检查环境
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            status.textContent = '❌ 浏览器不支持语音识别，请使用 Chrome';
+            status.style.background = '#ffebee';
+            status.style.color = '#d32f2f';
+            voiceBtn.disabled = true;
+        } else {
+            const apiType = window.SpeechRecognition ? 'SpeechRecognition' : 'webkitSpeechRecognition';
+            info.textContent = `✓ 支持语音识别 (${apiType})`;
+        }
+
+        voiceBtn.addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+
+        function startRecording() {
+            if (!SpeechRecognition) return;
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'zh-CN';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onstart = () => {
+                isRecording = true;
+                voiceBtn.textContent = '停止录音';
+                voiceBtn.classList.add('recording');
+                status.textContent = '🎙️ 正在聆听...';
+                status.style.background = '#e8f5e9';
+                status.style.color = '#388e3c';
+            };
+
+            recognition.onresult = (event) => {
+                let interimText = '';
+                finalText = '';
+
+                for (let i = 0; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalText += transcript;
+                    } else {
+                        interimText += transcript;
+                    }
+                }
+
+                result.value = finalText + (interimText ? ` [${interimText}]` : '');
+                status.textContent = `已识别 ${finalText.length} 字`;
+            };
+
+            recognition.onerror = (event) => {
+                status.textContent = `❌ 错误: ${event.error}`;
+                status.style.background = '#ffebee';
+                status.style.color = '#d32f2f';
+                stopRecording();
+            };
+
+            recognition.onend = () => {
+                if (isRecording) {
+                    // 自动重启
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        stopRecording();
+                    }
+                }
+            };
+
+            try {
+                recognition.start();
+            } catch (error) {
+                status.textContent = `❌ 启动失败: ${error.message}`;
+                status.style.background = '#ffebee';
+                status.style.color = '#d32f2f';
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (e) {}
+                recognition = null;
+            }
+
+            voiceBtn.textContent = '开始录音';
+            voiceBtn.classList.remove('recording');
+
+            if (finalText) {
+                result.value = finalText;
+                status.textContent = `✓ 识别完成：${finalText.length} 字`;
+                status.style.background = '#e3f2fd';
+                status.style.color = '#1976d2';
+            } else {
+                status.textContent = '等待开始...';
+                status.style.background = '#e3f2fd';
+                status.style.color = '#1976d2';
+            }
+        }
+    </script>
+</body>
+</html>
