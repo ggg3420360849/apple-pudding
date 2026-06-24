@@ -1126,8 +1126,7 @@
             width: 0;
         }
 
-        .material-button,
-        .color-swatch {
+        .material-button {
             min-height: 45px;
             border-radius: 12px;
             border: 2px solid #f0dfb6;
@@ -1147,14 +1146,12 @@
             touch-action: none;
         }
 
-        .material-button.active,
-        .color-swatch.active {
+        .material-button.active {
             border-color: #82bf54;
             box-shadow: 0 0 0 3px rgba(130, 191, 84, 0.18), inset 0 -4px 0 rgba(151, 115, 58, 0.06);
         }
 
-        .material-button::after,
-        .color-swatch::after {
+        .material-button::after {
             content: "";
             position: absolute;
             right: 5px;
@@ -1167,8 +1164,7 @@
             box-shadow: inset 0 -2px 0 rgba(59, 123, 43, 0.18);
         }
 
-        .material-button.active::after,
-        .color-swatch.active::after {
+        .material-button.active::after {
             opacity: 1;
         }
 
@@ -1291,32 +1287,12 @@
                 linear-gradient(145deg, #7b68a6, #403867);
         }
 
-        .mini-tail-curl,
-        .mini-tail-fluffy,
         .mini-tail-leaf {
             width: 40px;
             height: 29px;
             margin: 3px auto 0;
             border-radius: 50%;
             background: linear-gradient(145deg, #6eb6f2, #356ee9);
-        }
-
-        .mini-tail-curl::before {
-            content: "";
-            position: absolute;
-            inset: 8px 10px;
-            border-radius: 50%;
-            border: 6px solid rgba(255, 255, 255, 0.6);
-            border-left-color: transparent;
-            transform: rotate(-20deg);
-        }
-
-        .mini-tail-fluffy {
-            width: 35px;
-            height: 35px;
-            background:
-                linear-gradient(120deg, transparent 0 42%, rgba(172, 105, 39, 0.24) 43% 47%, transparent 48%),
-                linear-gradient(145deg, #fff3d6, #eda14f);
         }
 
         .mini-tail-leaf {
@@ -1358,15 +1334,6 @@
             height: 40px;
             object-fit: contain;
             filter: drop-shadow(0 5px 5px rgba(93, 72, 45, 0.18));
-        }
-
-        .color-swatch span {
-            width: 34px;
-            height: 34px;
-            display: block;
-            border-radius: 50%;
-            background: var(--swatch);
-            box-shadow: inset 0 -7px 0 rgba(75, 55, 41, 0.08);
         }
 
         .stage-card {
@@ -1436,18 +1403,19 @@
         .creature-asset {
             position: absolute;
             object-fit: contain;
-            pointer-events: none;
             user-select: none;
+            touch-action: none;
         }
 
         .asset-wing {
             z-index: 1;
-            top: 48px;
+            top: 66px;
             left: 50%;
-            width: 246px;
+            width: 200px;
             max-height: 138px;
-            transform: translateX(-50%);
+            transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
             filter: drop-shadow(0 10px 10px rgba(64, 103, 143, 0.18));
+            cursor: grab;
         }
 
         .asset-tail {
@@ -1456,38 +1424,41 @@
             bottom: 72px;
             width: 92px;
             max-height: 116px;
-            transform: rotate(-8deg);
+            transform: translate(var(--part-x, 0px), var(--part-y, 0px)) rotate(calc(-8deg + var(--part-rotation, 0deg))) scale(var(--part-scale, 1));
             filter: drop-shadow(0 8px 8px rgba(83, 76, 52, 0.18));
+            cursor: grab;
         }
 
         .asset-body {
             z-index: 3;
             left: 50%;
-            bottom: 14px;
-            width: 205px;
+            bottom: 50px;
+            width: 125px;
             max-height: 250px;
-            transform: translateX(-50%);
+            transform: translateX(-50%) scale(var(--part-scale, 1));
             filter: drop-shadow(0 16px 14px rgba(69, 83, 72, 0.24));
+            transform-origin: center bottom;
+            cursor: ns-resize;
         }
 
-        .asset-body[data-body="snake"] {
-            width: 218px;
-            bottom: 20px;
-        }
-
-        .asset-body[data-body="chick"] {
-            width: 190px;
-        }
-
+        .asset-body[data-body="snake"],
+        .asset-body[data-body="chick"],
         .asset-body[data-body="pig"],
-        .asset-body[data-body="panda"] {
-            width: 198px;
+        .asset-body[data-body="panda"],
+        .asset-body[data-body="rabbit"],
+        .asset-body[data-body="dog"],
+        .asset-body[data-body="cat"]{
+            width: 125px;
+            bottom: 50px;
         }
 
         .asset-wing[data-wing="bat"],
-        .asset-wing[data-wing="dragon"] {
+        .asset-wing[data-wing="dragon"],
+        .asset-wing[data-wing="cloud"],
+        .asset-wing[data-wing="angel"],
+        .asset-wing[data-wing="fairy"]{
             top: 66px;
-            width: 236px;
+            width: 200px;
         }
 
         .asset-tail[data-tail="dino"],
@@ -1497,7 +1468,6 @@
             width: 104px;
         }
 
-        .asset-tail[data-tail="fluffy"],
         .asset-tail[data-tail="puppy"] {
             right: 30px;
             bottom: 54px;
@@ -1511,13 +1481,20 @@
             top: 44px;
             width: 44px;
             height: 74px;
-            transform: translateX(-50%);
+            transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
             border-radius: 50% 50% 18% 18%;
             background:
                 linear-gradient(120deg, transparent 0 45%, rgba(255, 255, 255, 0.6) 46% 53%, transparent 54% 100%),
                 linear-gradient(180deg, #fff4a3 0, #ffc75a 48%, #e88d34 100%);
             clip-path: polygon(50% 0, 88% 100%, 12% 100%);
             filter: drop-shadow(0 8px 8px rgba(129, 91, 28, 0.18));
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .creature-asset.selected-part,
+        .asset-horn.selected-part {
+            filter: drop-shadow(0 0 7px #fff) drop-shadow(0 0 6px #ffb43c);
         }
 
         .route-imagine .creature-body {
@@ -1751,39 +1728,6 @@
             content: "";
             position: absolute;
             pointer-events: none;
-        }
-
-        .tail.curl::before {
-            inset: 10px 14px;
-            border-radius: 50%;
-            border: 8px solid rgba(255, 255, 255, 0.54);
-            border-left-color: transparent;
-            transform: rotate(-22deg);
-        }
-
-        .tail.curl::after {
-            right: 22px;
-            top: 18px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.58);
-        }
-
-        .tail.fluffy {
-            width: 64px;
-            height: 64px;
-            right: 20px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #fff8df, #f1ab58);
-        }
-
-        .tail.fluffy::before {
-            inset: 9px 14px;
-            border-radius: 50%;
-            background:
-                linear-gradient(120deg, transparent 0 38%, rgba(175, 105, 36, 0.24) 39% 42%, transparent 43% 100%),
-                linear-gradient(150deg, transparent 0 53%, rgba(175, 105, 36, 0.2) 54% 57%, transparent 58% 100%);
         }
 
         .tail.leaf {
@@ -2582,21 +2526,11 @@
         { id: "cloud", label: "云朵翅膀", file: "wing-cloud.png" }
     ];
     const creatureTails = [
-        { id: "curl", label: "卷卷尾巴", file: "tail-curl.png" },
         { id: "fox", label: "狐狸尾巴", file: "tail-fox.png" },
         { id: "dino", label: "恐龙尾巴", file: "tail-dino.png" },
-        { id: "fluffy", label: "绒球尾巴", file: "tail-fluffy.png" },
         { id: "cat", label: "猫咪尾巴", file: "tail-cat.png" },
         { id: "puppy", label: "小狗尾巴", file: "tail-puppy.png" }
     ];
-    const creatureColors = [
-        ["#8fc6f5", "天空蓝"],
-        ["#f8c8d1", "桃粉"],
-        ["#c9a6e7", "云紫"],
-        ["#ffd76c", "阳光黄"],
-        ["#8fd7a1", "薄荷绿"]
-    ];
-
     const animals = [
         {
             id: "panda",
@@ -2783,14 +2717,24 @@
             color: "#8fc6f5",
             body: "panda",
             wing: "angel",
-            tail: "curl",
-            parts: ["wing", "tail"]
+            tail: "fox",
+            parts: ["wing", "tail"],
+            selectedPart: "body",
+            transforms: {
+                body: { scale: 100 },
+                wing: { scale: 100, rotation: 0, x: 0, y: 0 },
+                tail: { scale: 100, rotation: 0, x: 0, y: 0 },
+                horn: { scale: 100, rotation: 0, x: 0, y: 0 }
+            }
         }
     };
 
     let sessionStore = loadSessionStore();
     let state = loadState();
     const app = document.getElementById("app");
+    let draggedCreaturePart = null;
+    const creaturePointers = new Map();
+    let creatureGesture = null;
 
     function clone(value) {
         return JSON.parse(JSON.stringify(value));
@@ -2830,6 +2774,10 @@
         const merged = { ...base, ...saved };
         merged.progress = { ...base.progress, ...(saved.progress || {}) };
         merged.draftCreature = { ...base.draftCreature, ...(saved.draftCreature || {}) };
+        merged.draftCreature.transforms = {
+            ...base.draftCreature.transforms,
+            ...((saved.draftCreature || {}).transforms || {})
+        };
         return merged;
     }
 
@@ -2932,6 +2880,31 @@
             return;
         }
         renderShell();
+    }
+
+    function renderImagineWithoutJump() {
+        const currentMain = document.querySelector(".main.route-imagine");
+        const mainScrollTop = currentMain?.scrollTop || 0;
+        const windowScrollTop = window.scrollY;
+        const assetListPositions = {};
+        document.querySelectorAll("[data-asset-list]").forEach((list) => {
+            assetListPositions[list.dataset.assetList] = list.scrollTop;
+        });
+        render();
+        const restorePosition = () => {
+            const nextMain = document.querySelector(".main.route-imagine");
+            if (nextMain) nextMain.scrollTop = mainScrollTop;
+            Object.entries(assetListPositions).forEach(([name, scrollTop]) => {
+                const list = document.querySelector(`[data-asset-list="${name}"]`);
+                if (list) list.scrollTop = scrollTop;
+            });
+            window.scrollTo({ top: windowScrollTop, behavior: "auto" });
+        };
+        restorePosition();
+        window.requestAnimationFrame(() => {
+            restorePosition();
+            window.requestAnimationFrame(restorePosition);
+        });
     }
 
     function renderLogin() {
@@ -3347,22 +3320,23 @@
         const parts = Array.isArray(draft.parts) ? draft.parts : [];
         const body = normalizeCreatureBody(draft.body || "panda");
         const wing = parts.includes("wing") ? normalizeCreatureWing(draft.wing || "angel") : "";
-        const tail = parts.includes("tail") ? normalizeCreatureTail(draft.tail || "curl") : "";
+        const tail = parts.includes("tail") ? normalizeCreatureTail(draft.tail || "fox") : "";
         const hasHorn = parts.includes("horn");
+        const selectedPart = activeCreaturePart(draft);
         return `
             <section class="imagine-screen">
-                <div class="imagine-prompt">拖一拖，拼出你自己的小动物！</div>
+                <div class="imagine-prompt">选部件、调大小、换方向，拼出独一无二的小动物！</div>
                 <div class="creator-board">
                     <div class="material-rail">
                         <div class="material-group">
                             <p class="material-title">身体</p>
-                            <div class="material-list asset-list">
+                            <div class="material-list asset-list" data-asset-list="body">
                                 ${creatureBodies.map((item) => creatureMaterialButton("body", item, body === item.id)).join("")}
                             </div>
                         </div>
                         <div class="material-group">
                             <p class="material-title">尾巴</p>
-                            <div class="material-list asset-list">
+                            <div class="material-list asset-list" data-asset-list="tail">
                                 ${creatureTails.map((item) => creatureMaterialButton("tail", item, tail === item.id)).join("")}
                             </div>
                         </div>
@@ -3373,14 +3347,8 @@
                     <div class="material-rail">
                         <div class="material-group">
                             <p class="material-title">翅膀</p>
-                            <div class="material-list asset-list">
+                            <div class="material-list asset-list" data-asset-list="wing">
                                 ${creatureWings.map((item) => creatureMaterialButton("wing", item, wing === item.id)).join("")}
-                            </div>
-                        </div>
-                        <div class="material-group">
-                            <p class="material-title">颜色</p>
-                            <div class="material-list">
-                                ${creatureColors.map(([color, label]) => `<button class="color-swatch ${draft.color === color ? "active" : ""}" type="button" data-creature-color="${color}" aria-label="${label}"><span style="--swatch: ${color};"></span></button>`).join("")}
                             </div>
                         </div>
                         <div class="material-group">
@@ -3392,8 +3360,10 @@
                     </div>
                 </div>
                 <div class="compose-hint">
-                    <span class="hint-icon">☝</span>
-                    <strong>点击或拖动素材到中间区域进行组合</strong>
+                    <span class="hint-icon">✥</span>
+                    <strong>${selectedPart === "body"
+                        ? "身体：滚轮或双指缩放"
+                        : "单指拖位置，双指缩放旋转；电脑可用滚轮缩放、Shift+滚轮旋转"}</strong>
                 </div>
                 <div class="creature-card">
                     <div class="creature-thumb" style="background: linear-gradient(180deg, ${draft.color || "#8fc6f5"}55, #d6edb9);"><img src="${creatureAssetUrl("body", body)}" alt=""></div>
@@ -3447,7 +3417,7 @@
 
     function normalizeCreatureTail(id) {
         if (!id) return "";
-        return { leaf: "dino" }[id] || (creatureTails.some((item) => item.id === id) ? id : "curl");
+        return { leaf: "dino" }[id] || (creatureTails.some((item) => item.id === id) ? id : "fox");
     }
 
     function creatureMaterialButton(type, item, active) {
@@ -3464,20 +3434,52 @@
         return `<button class="chip ${active ? "active" : ""}" type="button" data-creature-part="${part}">${label}</button>`;
     }
 
+    function defaultCreatureTransform(part) {
+        return part === "body"
+            ? { scale: 100 }
+            : { scale: 100, rotation: 0, x: 0, y: 0 };
+    }
+
+    function creatureTransform(part) {
+        if (!state.draftCreature.transforms) state.draftCreature.transforms = {};
+        state.draftCreature.transforms[part] = {
+            ...defaultCreatureTransform(part),
+            ...(state.draftCreature.transforms[part] || {})
+        };
+        return state.draftCreature.transforms[part];
+    }
+
+    function activeCreaturePart(draft = state.draftCreature) {
+        const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
+        const selected = draft.selectedPart || "body";
+        return selected === "body" || parts.has(selected) ? selected : "body";
+    }
+
+    function creatureTransformStyle(part) {
+        const transform = creatureTransform(part);
+        const values = [`--part-scale:${transform.scale / 100}`];
+        if (part !== "body") {
+            values.push(`--part-rotation:${transform.rotation}deg`);
+            values.push(`--part-x:${transform.x}px`);
+            values.push(`--part-y:${transform.y}px`);
+        }
+        return values.join(";");
+    }
+
     function creaturePreview(draft) {
         const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
         const body = normalizeCreatureBody(draft.body || "panda");
         const wing = parts.has("wing") ? normalizeCreatureWing(draft.wing || "angel") : "";
-        const tail = parts.has("tail") ? normalizeCreatureTail(draft.tail || "curl") : "";
+        const tail = parts.has("tail") ? normalizeCreatureTail(draft.tail || "fox") : "";
         const hasHorn = parts.has("horn");
         return `
             <div class="imagine-stage" data-creature-drop-zone="true">
                 <div class="creature-preview raster-creature" style="--creature-color: ${draft.color || "#8fc6f5"};">
                     <span class="creature-color-glow" aria-hidden="true"></span>
-                    ${wing ? `<img class="creature-asset asset-wing" data-wing="${wing}" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
-                    ${tail ? `<img class="creature-asset asset-tail" data-tail="${tail}" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
-                    ${hasHorn ? `<span class="asset-horn" aria-hidden="true"></span>` : ""}
-                    <img class="creature-asset asset-body" data-body="${body}" src="${creatureAssetUrl("body", body)}" alt="">
+                    ${tail ? `<img class="creature-asset asset-tail ${activeCreaturePart(draft) === "tail" ? "selected-part" : ""}" data-edit-part="tail" data-tail="${tail}" style="${creatureTransformStyle("tail")}" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
+                    ${wing ? `<img class="creature-asset asset-wing ${activeCreaturePart(draft) === "wing" ? "selected-part" : ""}" data-edit-part="wing" data-wing="${wing}" style="${creatureTransformStyle("wing")}" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
+                    <img class="creature-asset asset-body ${activeCreaturePart(draft) === "body" ? "selected-part" : ""}" data-edit-part="body" data-body="${body}" style="${creatureTransformStyle("body")}" src="${creatureAssetUrl("body", body)}" alt="">
+                    ${hasHorn ? `<span class="asset-horn ${activeCreaturePart(draft) === "horn" ? "selected-part" : ""}" data-edit-part="horn" style="${creatureTransformStyle("horn")}" aria-hidden="true"></span>` : ""}
                 </div>
             </div>
         `;
@@ -3733,15 +3735,6 @@
             return;
         }
 
-        const colorButton = event.target.closest("[data-creature-color]");
-        if (colorButton) {
-            updateCreatureDraft();
-            state.draftCreature.color = colorButton.dataset.creatureColor;
-            saveState();
-            render();
-            return;
-        }
-
         const bodyButton = event.target.closest("[data-creature-body]");
         if (bodyButton) {
             updateCreatureDraft();
@@ -3770,11 +3763,13 @@
             const part = partButton.dataset.creaturePart;
             if (state.draftCreature.parts.includes(part)) {
                 state.draftCreature.parts = state.draftCreature.parts.filter((item) => item !== part);
+                state.draftCreature.selectedPart = "body";
             } else {
                 state.draftCreature.parts.push(part);
+                state.draftCreature.selectedPart = part;
             }
             saveState();
-            render();
+            renderImagineWithoutJump();
             return;
         }
 
@@ -3798,6 +3793,7 @@
         }
         if (action === "ask-qa") await handleAskQa();
         if (action === "ask-doctor") await handleAskDoctor();
+        if (action === "reset-part-transform") resetCreaturePartTransform();
         if (action === "save-creature") saveCreature();
         if (action === "random-creature") randomCreature();
         if (action === "clear-creature-parts") clearCreatureParts();
@@ -3862,6 +3858,66 @@
             saveState();
         }
     });
+
+    document.addEventListener("pointerdown", (event) => {
+        const asset = event.target.closest("[data-edit-part]");
+        if (!asset) return;
+        const part = asset.dataset.editPart;
+        state.draftCreature.selectedPart = part;
+        const transform = creatureTransform(part);
+        creaturePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        draggedCreaturePart = {
+            part,
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startY: event.clientY,
+            originX: transform.x,
+            originY: transform.y
+        };
+        if (creaturePointers.size === 2) beginCreatureGesture(part);
+        asset.setPointerCapture?.(event.pointerId);
+        document.querySelectorAll(".selected-part").forEach((item) => item.classList.remove("selected-part"));
+        asset.classList.add("selected-part");
+        event.preventDefault();
+    });
+
+    document.addEventListener("pointermove", (event) => {
+        if (!creaturePointers.has(event.pointerId)) return;
+        creaturePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+        if (creatureGesture && creaturePointers.size >= 2) {
+            updateCreatureGesture();
+            event.preventDefault();
+            return;
+        }
+
+        if (!draggedCreaturePart || event.pointerId !== draggedCreaturePart.pointerId || draggedCreaturePart.part === "body") return;
+        const transform = creatureTransform(draggedCreaturePart.part);
+        transform.x = Math.max(-120, Math.min(120, Math.round(draggedCreaturePart.originX + event.clientX - draggedCreaturePart.startX)));
+        transform.y = Math.max(-100, Math.min(100, Math.round(draggedCreaturePart.originY + event.clientY - draggedCreaturePart.startY)));
+        applyCreatureTransformToStage(draggedCreaturePart.part);
+        event.preventDefault();
+    });
+
+    document.addEventListener("pointerup", finishCreaturePartDrag);
+    document.addEventListener("pointercancel", finishCreaturePartDrag);
+
+    document.addEventListener("wheel", (event) => {
+        const asset = event.target.closest("[data-edit-part]");
+        if (!asset) return;
+        const part = asset.dataset.editPart;
+        const transform = creatureTransform(part);
+        state.draftCreature.selectedPart = part;
+
+        if (event.shiftKey && part !== "body") {
+            transform.rotation = Math.max(-180, Math.min(180, transform.rotation + (event.deltaY > 0 ? 6 : -6)));
+        } else {
+            transform.scale = Math.max(40, Math.min(180, transform.scale + (event.deltaY > 0 ? -5 : 5)));
+        }
+        applyCreatureTransformToStage(part);
+        saveState();
+        event.preventDefault();
+    }, { passive: false });
 
     async function handleQuiz(choice) {
         const animal = getAnimal();
@@ -3997,6 +4053,8 @@
 
     function applyCreaturePart(type, id) {
         const parts = ensureCreatureParts();
+        state.draftCreature.selectedPart = type;
+        creatureTransform(type);
         if (type === "body") {
             state.draftCreature.body = normalizeCreatureBody(id);
         }
@@ -4005,14 +4063,83 @@
             if (!parts.includes("wing")) parts.push("wing");
         }
         if (type === "tail") {
-            state.draftCreature.tail = normalizeCreatureTail(id) || "curl";
+            state.draftCreature.tail = normalizeCreatureTail(id) || "fox";
             if (!parts.includes("tail")) parts.push("tail");
         }
         if (type === "horn" && !parts.includes("horn")) {
             parts.push("horn");
         }
         saveState();
+        renderImagineWithoutJump();
+    }
+
+    function applyCreatureTransformToStage(part) {
+        const element = document.querySelector(`[data-edit-part="${part}"]`)
+            || (part === "body" ? document.querySelector(".asset-body") : null);
+        if (!element) return;
+        const transform = creatureTransform(part);
+        element.style.setProperty("--part-scale", transform.scale / 100);
+        if (part !== "body") {
+            element.style.setProperty("--part-rotation", `${transform.rotation}deg`);
+            element.style.setProperty("--part-x", `${transform.x}px`);
+            element.style.setProperty("--part-y", `${transform.y}px`);
+        }
+    }
+
+    function resetCreaturePartTransform() {
+        const part = activeCreaturePart();
+        state.draftCreature.transforms[part] = defaultCreatureTransform(part);
+        saveState();
         render();
+        showToast(`已恢复${{ body: "身体", wing: "翅膀", tail: "尾巴", horn: "星角" }[part]}默认位置`);
+    }
+
+    function creaturePointerPair() {
+        return [...creaturePointers.values()].slice(0, 2);
+    }
+
+    function creaturePointerDistance(pair) {
+        return Math.hypot(pair[1].x - pair[0].x, pair[1].y - pair[0].y);
+    }
+
+    function creaturePointerAngle(pair) {
+        return Math.atan2(pair[1].y - pair[0].y, pair[1].x - pair[0].x) * 180 / Math.PI;
+    }
+
+    function beginCreatureGesture(part) {
+        const pair = creaturePointerPair();
+        if (pair.length < 2) return;
+        const transform = creatureTransform(part);
+        creatureGesture = {
+            part,
+            distance: Math.max(1, creaturePointerDistance(pair)),
+            angle: creaturePointerAngle(pair),
+            scale: transform.scale,
+            rotation: transform.rotation
+        };
+    }
+
+    function updateCreatureGesture() {
+        const pair = creaturePointerPair();
+        if (!creatureGesture || pair.length < 2) return;
+        const transform = creatureTransform(creatureGesture.part);
+        transform.scale = Math.max(40, Math.min(180, Math.round(
+            creatureGesture.scale * creaturePointerDistance(pair) / creatureGesture.distance
+        )));
+        if (creatureGesture.part !== "body") {
+            transform.rotation = Math.max(-180, Math.min(180, Math.round(
+                creatureGesture.rotation + creaturePointerAngle(pair) - creatureGesture.angle
+            )));
+        }
+        applyCreatureTransformToStage(creatureGesture.part);
+    }
+
+    function finishCreaturePartDrag(event) {
+        if (!creaturePointers.has(event.pointerId)) return;
+        creaturePointers.delete(event.pointerId);
+        if (draggedCreaturePart?.pointerId === event.pointerId) draggedCreaturePart = null;
+        if (creaturePointers.size < 2) creatureGesture = null;
+        saveState();
     }
 
     function clearCreatureParts() {
@@ -4020,6 +4147,8 @@
         state.draftCreature.wing = "";
         state.draftCreature.tail = "";
         state.draftCreature.parts = [];
+        state.draftCreature.selectedPart = "body";
+        state.draftCreature.transforms = clone(defaultState.draftCreature.transforms);
         saveState();
         render();
         showToast("已清除配件");
@@ -4061,11 +4190,18 @@
             name: pick(names),
             habitat: pick(habitats),
             mood: pick(moods),
-            color: pick(creatureColors.map(([color]) => color)),
+            color: "#8fc6f5",
             body: pick(bodies),
             wing: pick(wings),
             tail: pick(tails),
-            parts: pick(partSets)
+            parts: pick(partSets),
+            selectedPart: "body",
+            transforms: {
+                body: { scale: 80 + Math.floor(Math.random() * 61) },
+                wing: { scale: 70 + Math.floor(Math.random() * 81), rotation: -25 + Math.floor(Math.random() * 51), x: -25 + Math.floor(Math.random() * 51), y: -18 + Math.floor(Math.random() * 37) },
+                tail: { scale: 70 + Math.floor(Math.random() * 81), rotation: -35 + Math.floor(Math.random() * 71), x: -25 + Math.floor(Math.random() * 51), y: -18 + Math.floor(Math.random() * 37) },
+                horn: { scale: 70 + Math.floor(Math.random() * 71), rotation: -20 + Math.floor(Math.random() * 41), x: -18 + Math.floor(Math.random() * 37), y: -12 + Math.floor(Math.random() * 25) }
+            }
         };
         saveState();
         render();
