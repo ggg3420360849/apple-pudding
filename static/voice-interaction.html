@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音交互 - 苹果布丁</title>
+    <style>
+        :root {
+            --bg: #F7F5F1;
+            --surface: #FFFFFF;
+            --border: #E7E3DA;
+            --ink: #1E2227;
+            --muted: #6B7077;
+            --accent: #3C5A78;
+            --green: #3f9a68;
+            --coral: #ef7d61;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .voice-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 48px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .voice-button:hover {
+            transform: scale(1.05);
+        }
+
+        .voice-button.recording {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 18px;
+            font-weight: 500;
+            min-height: 28px;
+        }
+
+        .wave-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 60px;
+            margin: 20px 0;
+        }
+
+        .wave-bar {
+            width: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 30px; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; height: 40px; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; height: 30px; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 20px; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.5); }
+        }
+
+        .transcript {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            min-height: 60px;
+            font-size: 16px;
+        }
+
+        .score-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .score-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        select, button {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: #2E4760;
+        }
+
+        button.secondary {
+            background: var(--surface);
+            color: var(--ink);
+            border: 1px solid var(--border);
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .settings-row label {
+            min-width: 100px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🎤 语音交互</h1>
+            <p class="subtitle">点击麦克风按钮开始说话</p>
+
+            <div class="settings-row">
+                <label>语音服务：</label>
+                <select id="speechProvider">
+                    <option value="mock">模拟模式（测试）</option>
+                    <option value="tencent">腾讯云语音</option>
+                    <option value="alibaba">阿里云语音</option>
+                </select>
+            </div>
+
+            <div class="settings-row">
+                <label>交互模式：</label>
+                <select id="interactionMode">
+                    <option value="transcribe">语音识别</option>
+                    <option value="assess">发音评估</option>
+                    <option value="chat">语音对话</option>
+                </select>
+            </div>
+
+            <div id="assessmentText" style="display: none;" class="settings-row">
+                <label>参考文本：</label>
+                <input type="text" id="referenceText" placeholder="请输入要评估的文本"
+                       style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+            </div>
+
+            <button class="voice-button" id="voiceButton" onclick="toggleRecording()">
+                🎤
+            </button>
+
+            <div class="status" id="status">点击麦克风开始</div>
+
+            <div id="waveContainer" style="display: none;" class="wave-container">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+
+            <div class="transcript" id="transcript">
+                识别结果将显示在这里...
+            </div>
+
+            <div id="scoreDisplay" style="display: none;" class="score-display">
+                <div class="score-card">
+                    <div class="score-value" id="overallScore">0</div>
+                    <div class="score-label">综合得分</div>
+                </div>
+                <div class="score-card">
+                    <div class="score-value" id="pronunciationScore">0</div>
+                    <div class="score-label">发音得分</div>
+                </div>
+                <div class="score-card">
+                    <div class="score-value" id="fluencyScore">0</div>
+                    <div class="score-label">流畅度</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 16px;">配置说明</h2>
+            <p style="color: var(--muted); margin-bottom: 12px;">
+                要使用真实的语音服务，需要在 <code>.env</code> 文件中配置API密钥：
+            </p>
+            <pre style="background: #f8f9fa; padding: 12px; border-radius: 6px; overflow-x: auto;">
+# 腾讯云
+TENCENT_SECRET_ID=your_secret_id
+TENCENT_SECRET_KEY=your_secret_key
+TENCENT_APP_ID=your_app_id
+
+# 阿里云
+ALIBABA_ACCESS_KEY_ID=your_access_key_id
+ALIBABA_ACCESS_KEY_SECRET=your_access_key_secret
+ALIBABA_APP_KEY=your_app_key
+            </pre>
+            <button class="secondary" onclick="location.href='/static/family-dashboard.html'" style="margin-top: 16px;">
+                返回控制台
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+
+        const voiceButton = document.getElementById('voiceButton');
+        const status = document.getElementById('status');
+        const transcript = document.getElementById('transcript');
+        const waveContainer = document.getElementById('waveContainer');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const modeSelect = document.getElementById('interactionMode');
+        const assessmentTextDiv = document.getElementById('assessmentText');
+
+        // 监听模式切换
+        modeSelect.addEventListener('change', () => {
+            const mode = modeSelect.value;
+            if (mode === 'assess') {
+                assessmentTextDiv.style.display = 'flex';
+                scoreDisplay.style.display = 'grid';
+            } else {
+                assessmentTextDiv.style.display = 'none';
+                scoreDisplay.style.display = 'none';
+            }
+        });
+
+        async function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                await startRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    await processAudio(audioBlob);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                voiceButton.classList.add('recording');
+                voiceButton.textContent = '⏹️';
+                status.textContent = '正在录音...';
+                waveContainer.style.display = 'flex';
+                transcript.textContent = '正在录音，点击停止...';
+
+            } catch (error) {
+                console.error('录音失败:', error);
+                status.textContent = '录音失败：' + error.message;
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+
+                voiceButton.classList.remove('recording');
+                voiceButton.textContent = '🎤';
+                status.textContent = '处理中...';
+                waveContainer.style.display = 'none';
+            }
+        }
+
+        async function processAudio(audioBlob) {
+            const mode = document.getElementById('interactionMode').value;
+            const provider = document.getElementById('speechProvider').value;
+
+            try {
+                if (mode === 'transcribe' || mode === 'chat') {
+                    await transcribeAudio(audioBlob, provider);
+                } else if (mode === 'assess') {
+                    await assessPronunciation(audioBlob, provider);
+                }
+            } catch (error) {
+                console.error('处理失败:', error);
+                transcript.textContent = '处理失败：' + error.message;
+                status.textContent = '处理失败';
+            }
+        }
+
+        async function transcribeAudio(audioBlob, provider) {
+            // 模拟模式
+            if (provider === 'mock') {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                transcript.textContent = '这是模拟的语音识别结果。真实服务需要配置API密钥。';
+                status.textContent = '识别完成';
+                return;
+            }
+
+            // 创建 FormData 并上传
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.wav');
+            formData.append('provider', provider);
+
+            const response = await fetch('/api/speech/transcribe', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                transcript.textContent = data.text || '未识别到内容';
+                status.textContent = '识别完成';
+            } else {
+                throw new Error('识别失败');
+            }
+        }
+
+        async function assessPronunciation(audioBlob, provider) {
+            const referenceText = document.getElementById('referenceText').value.trim();
+
+            if (!referenceText) {
+                transcript.textContent = '请先输入参考文本';
+                status.textContent = '需要参考文本';
+                return;
+            }
+
+            // 模拟模式
+            if (provider === 'mock') {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                document.getElementById('overallScore').textContent = '85';
+                document.getElementById('pronunciationScore').textContent = '88';
+                document.getElementById('fluencyScore').textContent = '82';
+                transcript.textContent = `参考文本：${referenceText}\n评估完成！这是模拟结果。`;
+                status.textContent = '评估完成';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.wav');
+            formData.append('provider', provider);
+            formData.append('reference_text', referenceText);
+
+            const response = await fetch('/api/speech/assess', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('overallScore').textContent = Math.round(data.overall_score);
+                document.getElementById('pronunciationScore').textContent = Math.round(data.pronunciation_score);
+                document.getElementById('fluencyScore').textContent = Math.round(data.fluency_score);
+                transcript.textContent = `参考文本：${referenceText}\n评估完成！`;
+                status.textContent = '评估完成';
+            } else {
+                throw new Error('评估失败');
+            }
+        }
+    </script>
+</body>
+</html>

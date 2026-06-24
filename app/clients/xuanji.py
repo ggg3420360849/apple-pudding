@@ -33,7 +33,7 @@ class XuanjiClient:
             self.settings.xuanji_api_url,
             headers=headers,
             json=body,
-            timeout=60,
+            timeout=30,
         )
 
         try:

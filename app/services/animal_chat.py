@@ -3,12 +3,20 @@ from app.config import Settings
 from app.schemas import ChatRequest
 from app.services.prompts import build_system_prompt
 from app.services.reply_parser import parse_reply
+from app.services.speech_recognition import create_speech_service
+from app.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class AnimalChatService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.client = XuanjiClient(settings)
+
+        # 初始化语音识别服务
+        self.speech_service = create_speech_service(settings.speech_provider)
+        logger.info("AnimalChatService initialized", speech_provider=settings.speech_provider)
 
     def get_models(self) -> dict:
         return {
@@ -21,13 +29,13 @@ class AnimalChatService:
         if not self.settings.xuanji_api_key:
             return {
                 "success": False,
-                "error": "没有读取到 XUANJI_API_KEY，请检查 .env 文件",
+                "error": "AI服务暂时不可用，请稍后再试",
             }
 
         if not self.settings.xuanji_api_url:
             return {
                 "success": False,
-                "error": "没有读取到 XUANJI_API_URL，请检查 .env 文件",
+                "error": "AI服务暂时不可用，请稍后再试",
             }
 
         selected_model = req.model or self.settings.default_model
@@ -68,13 +76,12 @@ class AnimalChatService:
         }
 
     def transcribe_audio(self, audio_path: str) -> str:
-        """使用玄机API进行语音识别"""
-        if not self.settings.xuanji_api_key:
-            raise Exception("没有配置 XUANJI_API_KEY")
-
+        """使用配置的语音识别服务进行转录"""
         try:
-            # 调用玄机API的语音识别接口
-            result = self.client.transcribe(audio_path)
-            return result.get("text", "")
+            logger.info("Transcribing audio", path=audio_path, provider=self.settings.speech_provider)
+            text = self.speech_service.transcribe(audio_path)
+            logger.info("Transcription succeeded", text_length=len(text))
+            return text
         except Exception as e:
+            logger.error("Transcription failed", error=str(e), exc_info=True)
             raise Exception(f"语音识别失败: {str(e)}")
