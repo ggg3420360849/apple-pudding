@@ -1,11 +1,13 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'apple-pudding-v1';
+const CACHE_NAME = 'apple-pudding-v7';
 const RUNTIME_CACHE = 'runtime-cache';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
     '/',
     '/static/index.html',
+    '/static/assets/map/storybook-habitats.png',
+    '/static/assets/map/storybook-habitats-portrait.png',
     // Add more static assets as needed
 ];
 

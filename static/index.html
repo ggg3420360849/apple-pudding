@@ -704,12 +704,34 @@
 
         .map-canvas {
             position: relative;
-            min-height: 470px;
+            width: 100%;
+            min-height: 0;
+            aspect-ratio: 9 / 16;
             overflow: hidden;
-            border-radius: 8px;
-            border: 1px solid #b9d6cd;
-            background:
-                linear-gradient(180deg, #cfefff 0 27%, #f5f5cf 27% 100%);
+            isolation: isolate;
+            border-radius: 22px;
+            border: 3px solid #fff8df;
+            background: #bde4f4 url("/static/assets/map/storybook-habitats-portrait.png") center / cover no-repeat;
+            box-shadow:
+                0 15px 30px rgba(55, 91, 72, 0.18),
+                0 0 0 2px #8abf9c;
+        }
+
+        .map-viewport {
+            width: 100%;
+            overflow: visible;
+            padding: 2px;
+        }
+
+        .map-scroll-hint {
+            margin: 8px 0 0;
+            color: #668374;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .map-panel {
+            padding: 8px;
         }
 
         .map-canvas::before {
@@ -717,124 +739,276 @@
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(145deg, transparent 0 44%, rgba(44, 137, 92, 0.18) 44% 46%, transparent 46% 100%),
-                linear-gradient(18deg, transparent 0 58%, rgba(38, 120, 199, 0.18) 58% 63%, transparent 63% 100%);
+                linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 36%),
+                radial-gradient(circle at 50% 45%, transparent 52%, rgba(37, 74, 56, 0.08) 100%);
             pointer-events: none;
+            z-index: 1;
+        }
+
+        .map-canvas::after {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 2px dashed rgba(255, 255, 255, 0.72);
+            border-radius: 17px;
+            pointer-events: none;
+            z-index: 5;
         }
 
         .biome {
-            position: absolute;
-            border-radius: 8px;
-            border: 1px solid rgba(45, 78, 65, 0.12);
-            box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.04);
-        }
-
-        .biome.forest {
-            left: -4%;
-            top: 30%;
-            width: 38%;
-            height: 48%;
-            background: #89c877;
-            clip-path: polygon(0 10%, 80% 0, 100% 70%, 38% 100%, 0 82%);
-        }
-
-        .biome.mountain {
-            left: 22%;
-            top: 21%;
-            width: 30%;
-            height: 40%;
-            background: #b6c3b6;
-            clip-path: polygon(4% 78%, 34% 8%, 54% 51%, 73% 16%, 100% 83%);
-        }
-
-        .biome.grassland {
-            left: 39%;
-            top: 44%;
-            width: 34%;
-            height: 36%;
-            background: #c8d96f;
-            clip-path: polygon(4% 22%, 92% 0, 100% 86%, 7% 100%);
-        }
-
-        .biome.ocean {
-            right: -5%;
-            top: 32%;
-            width: 39%;
-            height: 54%;
-            background: #75c9da;
-            clip-path: polygon(18% 0, 100% 0, 100% 100%, 5% 84%, 0 30%);
-        }
-
-        .biome.wetland {
-            left: 19%;
-            bottom: -4%;
-            width: 36%;
-            height: 30%;
-            background: #96c7a6;
-            clip-path: polygon(0 18%, 86% 0, 100% 68%, 8% 100%);
-        }
-
-        .biome.polar {
-            right: 4%;
-            top: 8%;
-            width: 31%;
-            height: 28%;
-            background: #f3fbff;
-            clip-path: polygon(0 40%, 27% 8%, 58% 28%, 100% 0, 96% 88%, 8% 100%);
-        }
-
-        .biome.desert {
-            left: 53%;
-            bottom: 2%;
-            width: 28%;
-            height: 27%;
-            background: #eecb74;
-            clip-path: polygon(0 18%, 68% 0, 100% 56%, 20% 100%);
+            display: none;
         }
 
         .map-label {
             position: absolute;
-            padding: 5px 8px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.82);
-            border: 1px solid rgba(104, 132, 120, 0.24);
-            color: #355244;
+            z-index: 3;
+            padding: 6px 11px;
+            border-radius: 999px 999px 999px 5px;
+            background: rgba(255, 252, 230, 0.78);
+            border: 1px solid rgba(72, 112, 80, 0.45);
+            color: #31593f;
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            box-shadow: 0 3px 0 rgba(68, 105, 70, 0.18);
+            transform: rotate(var(--tilt, -2deg));
+            backdrop-filter: blur(2px);
+        }
+
+        .map-route {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .map-route .trail-shadow {
+            fill: none;
+            stroke: rgba(72, 62, 39, 0.34);
+            stroke-width: 1.15;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1 3;
+        }
+
+        .map-route .trail {
+            fill: none;
+            stroke: #fff8d2;
+            stroke-width: 0.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1 3;
+        }
+
+        .map-route .route-dot {
+            fill: #fff8d2;
+            stroke: rgba(74, 83, 51, 0.7);
+            stroke-width: 0.35;
         }
 
         .marker {
             position: absolute;
-            width: 82px;
-            min-height: 82px;
-            padding: 7px 5px;
+            z-index: 6;
+            width: 52px;
+            min-height: 52px;
+            padding: 0;
             display: grid;
             place-items: center;
-            gap: 2px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.92);
-            border: 2px solid rgba(255, 255, 255, 0.94);
+            border-radius: 50%;
+            background: transparent;
+            border: 0;
             color: var(--ink);
-            box-shadow: 0 10px 22px rgba(34, 63, 73, 0.16);
+            box-shadow: none;
             cursor: pointer;
             transform: translate(-50%, -50%);
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .marker:hover:not(:disabled) {
+            transform: translate(-50%, -55%) rotate(-2deg) scale(1.08);
+            filter: drop-shadow(0 8px 6px rgba(30, 67, 46, 0.28));
         }
 
         .marker.locked {
-            background: rgba(200, 200, 200, 0.5);
-            border-color: rgba(150, 150, 150, 0.6);
-            cursor: not-allowed;
-            opacity: 0.6;
+            width: var(--lock-width, 102px);
+            min-height: 38px;
+            background: transparent;
+            cursor: pointer;
+            opacity: 1;
         }
 
         .marker.locked .animal-face {
-            filter: grayscale(100%);
-            opacity: 0.4;
+            display: none;
         }
 
-        .marker.locked .animal-name {
-            color: #888;
+        .marker.locked::before {
+            content: "🔒";
+            position: relative;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 38px;
+            box-sizing: border-box;
+            border: 1.5px solid rgba(255, 255, 255, 0.78);
+            border-radius: 999px 999px 999px 7px;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(213, 236, 244, 0.26));
+            box-shadow:
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 1px rgba(124, 164, 177, 0.16),
+                0 5px 12px rgba(50, 83, 92, 0.22);
+            font-size: 19px;
+            backdrop-filter: blur(7px) saturate(1.2);
+            -webkit-backdrop-filter: blur(7px) saturate(1.2);
+            transform-origin: 50% 15%;
+        }
+
+        .marker.locked.is-shaking::before {
+            animation: lockWiggle 0.62s ease-in-out;
+        }
+
+        .marker.locked.hint-open {
+            z-index: 30;
+        }
+
+        @keyframes lockWiggle {
+            0%, 100% { transform: rotate(0); }
+            18% { transform: rotate(-10deg); }
+            36% { transform: rotate(8deg); }
+            54% { transform: rotate(-6deg); }
+            72% { transform: rotate(4deg); }
+        }
+
+        .unlock-bubble {
+            position: absolute;
+            z-index: 50;
+            left: 50%;
+            bottom: calc(100% + 8px);
+            width: 190px;
+            padding: 10px 12px;
+            border: 2px solid #f1c36d;
+            border-radius: 18px 18px 18px 6px;
+            background: linear-gradient(180deg, #fffdf2, #fff3c9);
+            color: #59472c;
+            box-shadow: 0 8px 18px rgba(77, 67, 44, 0.22);
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.5;
+            text-align: left;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, 8px) scale(0.86);
+            transition: opacity 0.4s ease, transform 0.25s cubic-bezier(.2, .9, .3, 1.25);
+        }
+
+        .unlock-bubble.bubble-left {
+            left: auto;
+            right: -10px;
+            transform: translate(0, 8px) scale(0.86);
+        }
+
+        .unlock-bubble.bubble-right {
+            left: -10px;
+            transform: translate(0, 8px) scale(0.86);
+        }
+
+        .unlock-bubble.bubble-bottom {
+            top: calc(100% + 8px);
+            bottom: auto;
+            border-radius: 6px 18px 18px 18px;
+        }
+
+        .unlock-bubble.show {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .unlock-bubble.bubble-left.show,
+        .unlock-bubble.bubble-right.show {
+            transform: translate(0, 0) scale(1);
+        }
+
+        .unlock-bubble strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #d47442;
+            font-size: 13px;
+        }
+
+        .unlock-bubble .unlock-meter {
+            display: block;
+            height: 6px;
+            margin-top: 7px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(211, 170, 86, 0.25);
+        }
+
+        .unlock-bubble .unlock-meter i {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #8fd39d, #f5c45e);
+        }
+
+        .animal-greeting {
+            position: fixed;
+            z-index: 10020;
+            left: 50%;
+            top: 50%;
+            width: min(310px, calc(100vw - 42px));
+            padding: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px 24px 24px 8px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(239, 251, 235, 0.94));
+            box-shadow: 0 18px 44px rgba(48, 79, 64, 0.28);
+            color: #365344;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -46%) scale(0.86);
+            transition: opacity 0.28s ease, transform 0.32s cubic-bezier(.2, .9, .3, 1.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .animal-greeting.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .animal-greeting .greeting-face {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 58px;
+            filter: drop-shadow(0 5px 4px rgba(50, 79, 63, 0.18));
+        }
+
+        .animal-greeting strong {
+            display: block;
+            margin-bottom: 7px;
+            color: #2f7752;
+            font-size: 18px;
+        }
+
+        .animal-greeting p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .animal-greeting .greeting-home {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #fff1bf;
+            color: #7a5b26;
+            font-size: 12px;
+            font-weight: 700;
         }
 
         .marker.almost-unlocked {
@@ -906,20 +1080,23 @@
         }
 
         .marker.active {
-            border-color: var(--coral);
-            background: #fff3ec;
+            background: transparent;
+            filter:
+                drop-shadow(0 0 2px #fff)
+                drop-shadow(0 0 7px #ffb26b)
+                drop-shadow(0 8px 5px rgba(30, 67, 46, 0.25));
         }
 
         .marker .animal-face {
-            font-size: 30px;
+            font-size: 46px;
             line-height: 1;
+            filter:
+                drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95))
+                drop-shadow(0 5px 4px rgba(31, 67, 45, 0.3));
         }
 
         .marker .animal-name {
-            font-weight: 700;
-            font-size: 13px;
-            line-height: 1.15;
-            text-align: center;
+            display: none;
         }
 
         .animal-summary {
@@ -2716,25 +2893,35 @@
             justify-content: flex-start;
         }
 
-        .map-canvas {
-            min-height: 315px;
-        }
+            .map-canvas {
+                width: 100%;
+                min-height: 0;
+            }
 
-        .map-label {
-            display: none;
-        }
+            .map-label {
+                display: block;
+                padding: 5px 9px;
+                border-width: 1px;
+                font-size: 12px;
+                box-shadow: 0 2px 0 rgba(68, 105, 70, 0.16);
+            }
 
-        .marker {
-            width: 54px;
-            min-height: 54px;
-            padding: 4px 3px;
-            border-width: 1px;
-            box-shadow: 0 6px 14px rgba(34, 63, 73, 0.14);
-        }
+            .marker {
+                width: 46px;
+                min-height: 46px;
+                padding: 0;
+                border: 0;
+                box-shadow: none;
+            }
 
-        .marker .animal-face {
-            font-size: 23px;
-        }
+            .marker.locked {
+                width: var(--lock-width, 102px);
+                min-height: 38px;
+            }
+
+            .marker .animal-face {
+                font-size: 42px;
+            }
 
         .marker .animal-name {
             font-size: 10px;
@@ -4032,8 +4219,8 @@
             icon: "🐼",
             habitat: "竹林山地",
             biome: "森林",
-            x: 20,
-            y: 55,
+            x: 46,
+            y: 29,
             color: "#8fcf7a",
             diet: "竹子、竹笋，也会吃少量水果。",
             fact: "大熊猫每天会花很久吃竹子，因为竹子能量不高，它需要慢慢补充力气。",
@@ -4057,8 +4244,8 @@
             icon: "🐰",
             habitat: "草地和洞穴",
             biome: "草地",
-            x: 46,
-            y: 78,
+            x: 62,
+            y: 52,
             color: "#e6c4d6",
             diet: "草、叶子和少量蔬菜。",
             fact: "兔子的长耳朵能帮助它听到远处声音，也能帮助散热。",
@@ -4071,12 +4258,14 @@
             quick: ["兔子为什么总在咬东西？", "兔子能洗澡吗？", "兔子害怕时会怎样？"],
             tier: 2,
             unlockRequirements: {
-                type: "chat",
+                type: "grassland-group",
                 conditions: [
-                    { stat: "animalInteraction", target: "panda", count: 3 }
+                    { stat: "animalInteraction", target: "panda", count: 3 },
+                    { stat: "storiesCompleted", count: 1 },
+                    { stat: "quizPassed", count: 1 }
                 ]
             },
-            unlockHint: "和熊猫聊够3次，草地上会有新朋友来哦！"
+            unlockHint: "和熊猫聊3次，再完成1个故事和1次测验，兔子与大象会一起跑出草原！"
         },
         {
             id: "frog",
@@ -4084,8 +4273,8 @@
             icon: "🐸",
             habitat: "池塘和湿地",
             biome: "湿地",
-            x: 29,
-            y: 83,
+            x: 25,
+            y: 65,
             color: "#73bd72",
             diet: "小虫、蚊子和其他小型无脊椎动物。",
             fact: "青蛙小时候是蝌蚪，长大后会长出腿，能在水边跳来跳去。",
@@ -4111,8 +4300,8 @@
             icon: "🐧",
             habitat: "寒冷海岸",
             biome: "冰原",
-            x: 76,
-            y: 24,
+            x: 72,
+            y: 10,
             color: "#dceef7",
             diet: "小鱼、磷虾和乌贼。",
             fact: "企鹅不会飞，但很会游泳，翅膀像小船桨。",
@@ -4138,8 +4327,8 @@
             icon: "🐬",
             habitat: "温暖海洋",
             biome: "海洋",
-            x: 80,
-            y: 58,
+            x: 83,
+            y: 70,
             color: "#76c8dd",
             diet: "小鱼、乌贼和甲壳类动物。",
             fact: "海豚会用声音互相联系，还会用回声找到附近的东西。",
@@ -4166,8 +4355,8 @@
             icon: "🐘",
             habitat: "草原和森林",
             biome: "草原",
-            x: 57,
-            y: 58,
+            x: 43,
+            y: 47,
             color: "#c7d47a",
             diet: "草、树叶、树皮和水果。",
             fact: "大象的鼻子又像手又像吸管，可以拿食物、喝水、闻气味。",
@@ -4180,13 +4369,14 @@
             quick: ["大象鼻子有多灵活？", "大象为什么喜欢泥巴？", "小象怎么跟妈妈走路？"],
             tier: 3,
             unlockRequirements: {
-                type: "compound",
+                type: "grassland-group",
                 conditions: [
+                    { stat: "animalInteraction", target: "panda", count: 3 },
                     { stat: "storiesCompleted", count: 1 },
                     { stat: "quizPassed", count: 1 }
                 ]
             },
-            unlockHint: "听完一个完整故事，草原上会有大家伙来访！"
+            unlockHint: "和熊猫聊3次，再完成1个故事和1次测验，兔子与大象会一起跑出草原！"
         },
         {
             id: "tiger",
@@ -4194,8 +4384,8 @@
             icon: "🐯",
             habitat: "森林和草丛",
             biome: "森林",
-            x: 34,
-            y: 44,
+            x: 78,
+            y: 35,
             color: "#f3b05b",
             diet: "鹿、野猪等动物，是肉食动物。",
             fact: "老虎身上的条纹像森林里的影子，可以帮助它隐藏自己。",
@@ -4223,8 +4413,8 @@
             icon: "🐫",
             habitat: "沙漠和戈壁",
             biome: "沙漠",
-            x: 66,
-            y: 84,
+            x: 45,
+            y: 88,
             color: "#e3bc6f",
             diet: "干草、灌木和耐旱植物。",
             fact: "骆驼的驼峰主要储存脂肪，可以在缺少食物时提供能量。",
@@ -4366,9 +4556,32 @@
     function loadState() {
         const activeId = sessionStorage.getItem(ACTIVE_SESSION_KEY);
         if (activeId && sessionStore.sessions[activeId]) {
-            return mergeState(clone(defaultState), sessionStore.sessions[activeId]);
+            const loaded = mergeState(clone(defaultState), sessionStore.sessions[activeId]);
+            synchronizeGrasslandUnlocks(loaded);
+            return loaded;
         }
         return clone(defaultState);
+    }
+
+    function synchronizeGrasslandUnlocks(targetState) {
+        const rabbitUnlocked = targetState.animalUnlocks?.rabbit?.unlocked;
+        const elephantUnlocked = targetState.animalUnlocks?.elephant?.unlocked;
+        if (!rabbitUnlocked && !elephantUnlocked) return;
+
+        const unlockedAt = targetState.animalUnlocks.rabbit?.unlockedAt
+            || targetState.animalUnlocks.elephant?.unlockedAt
+            || new Date().toISOString();
+
+        ["rabbit", "elephant"].forEach((animalId) => {
+            targetState.animalUnlocks[animalId] = {
+                interactionCount: 0,
+                quizPassed: false,
+                quickQACount: 0,
+                ...(targetState.animalUnlocks[animalId] || {}),
+                unlocked: true,
+                unlockedAt
+            };
+        });
     }
 
     function mergeState(base, saved) {
@@ -4621,13 +4834,65 @@
         };
     }
 
+    function getUnlockInstruction(animal) {
+        const requirements = animal.unlockRequirements?.conditions || [];
+        const descriptions = requirements.map((condition) => {
+            const targetName = animals.find((item) => item.id === condition.target)?.name || "指定动物";
+            switch (condition.stat) {
+                case "animalInteraction":
+                    return `与${targetName}完成 ${condition.count} 次对话`;
+                case "totalQuestions":
+                    return `累计提出 ${condition.count} 个问题`;
+                case "quickQA":
+                    return `完成${targetName}的 ${condition.count} 次快问快答`;
+                case "totalChats":
+                    return `累计完成 ${condition.count} 次动物对话`;
+                case "uniqueAnimals":
+                    return `与 ${condition.count} 种不同动物互动`;
+                case "storiesCompleted":
+                    return `完整阅读 ${condition.count} 个故事`;
+                case "quizPassed":
+                    return `通过 ${condition.count} 次动物测验`;
+                case "unlockedAnimals":
+                    return `解锁 ${condition.count} 种动物`;
+                case "totalStories":
+                    return `生成 ${condition.count} 个故事`;
+                case "allQuizPassed":
+                    return "通过所有已解锁动物的测验";
+                default:
+                    return "";
+            }
+        }).filter(Boolean);
+
+        return descriptions.length ? `需要：${descriptions.join("，并且")}` : "继续完成动物探索任务即可解锁";
+    }
+
     /**
      * 检查并触发解锁
      */
     function checkAndUnlockAnimals() {
         const newUnlocks = [];
+        const grasslandAnimals = animals.filter((animal) => ["rabbit", "elephant"].includes(animal.id));
+        const grasslandLocked = grasslandAnimals.some((animal) => !isAnimalUnlocked(animal.id));
+        const grasslandReady = grasslandAnimals.every((animal) => checkUnlockConditions(animal));
+
+        if (grasslandLocked && grasslandReady) {
+            const unlockedAt = new Date().toISOString();
+            grasslandAnimals.forEach((animal) => {
+                if (isAnimalUnlocked(animal.id)) return;
+                state.animalUnlocks[animal.id] = {
+                    unlocked: true,
+                    unlockedAt,
+                    interactionCount: 0,
+                    quizPassed: false,
+                    quickQACount: 0
+                };
+                newUnlocks.push(animal);
+            });
+        }
 
         animals.forEach(animal => {
+            if (["rabbit", "elephant"].includes(animal.id)) return;
             if (!isAnimalUnlocked(animal.id) && checkUnlockConditions(animal)) {
                 // 解锁动物
                 state.animalUnlocks[animal.id] = {
@@ -4644,9 +4909,13 @@
         if (newUnlocks.length > 0) {
             saveState();
             // 触发解锁动画
-            newUnlocks.forEach(animal => {
-                triggerUnlockAnimation(animal);
-            });
+            const grasslandUnlocks = newUnlocks.filter((animal) => ["rabbit", "elephant"].includes(animal.id));
+            newUnlocks
+                .filter((animal) => !["rabbit", "elephant"].includes(animal.id))
+                .forEach((animal) => triggerUnlockAnimation(animal));
+            if (grasslandUnlocks.length) {
+                triggerUnlockAnimation(grasslandUnlocks);
+            }
         }
 
         return newUnlocks;
@@ -4655,7 +4924,12 @@
     /**
      * 触发解锁动画和提示
      */
-    function triggerUnlockAnimation(animal) {
+    function triggerUnlockAnimation(animalOrAnimals) {
+        const unlockedAnimals = Array.isArray(animalOrAnimals) ? animalOrAnimals : [animalOrAnimals];
+        const icons = unlockedAnimals.map((animal) => animal.icon).join(" ");
+        const names = unlockedAnimals.map((animal) => animal.name).join("和");
+        const habitat = unlockedAnimals.length > 1 ? "阳光草原" : unlockedAnimals[0].habitat;
+
         // 创建解锁提示
         const notification = document.createElement('div');
         notification.style.cssText = `
@@ -4674,10 +4948,10 @@
         `;
 
         notification.innerHTML = `
-            <div style="font-size: 64px; margin-bottom: 16px;">${animal.icon}</div>
-            <div style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">解锁新动物！</div>
-            <div style="font-size: 18px; opacity: 0.95;">${animal.name}</div>
-            <div style="font-size: 14px; opacity: 0.8; margin-top: 12px;">${animal.habitat}</div>
+            <div style="font-size: 64px; margin-bottom: 16px;">${icons}</div>
+            <div style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">${unlockedAnimals.length > 1 ? "草原伙伴一起出现啦！" : "解锁新动物！"}</div>
+            <div style="font-size: 18px; opacity: 0.95;">${names}</div>
+            <div style="font-size: 14px; opacity: 0.8; margin-top: 12px;">${habitat}</div>
         `;
 
         document.body.appendChild(notification);
@@ -4719,7 +4993,7 @@
         }, 3000);
 
         // 显示Toast提示
-        showToast(`🎉 解锁了新动物：${animal.name}！`);
+        showToast(`🎉 解锁了新动物：${names}！`);
     }
 
     /**
@@ -5035,6 +5309,7 @@
 
     function selectAnimal(id, source = "地图探索") {
         const animal = animals.find(a => a.id === id);
+        const childName = state.profile?.name ? `${state.profile.name}，` : "";
         state.selectedAnimalId = id;
         state.selectedAnimal = id; // Also set for new QA view
         state.lastQuiz = null;
@@ -5048,6 +5323,29 @@
         addActivity("探索", `${getAnimalDisplayName(id)}：${source}`, id);
         saveState();
         render();
+        window.setTimeout(() => showAnimalGreeting(animal, childName), 40);
+    }
+
+    function showAnimalGreeting(animal, childName = "") {
+        document.querySelector(".animal-greeting")?.remove();
+        window.clearTimeout(showAnimalGreeting.timer);
+
+        const greeting = document.createElement("div");
+        greeting.className = "animal-greeting";
+        greeting.setAttribute("role", "status");
+        greeting.innerHTML = `
+            <span class="greeting-face">${animal.icon}</span>
+            <strong>${escapeHtml(childName)}你好呀！我是${escapeHtml(getAnimalDisplayName(animal.id))}！</strong>
+            <p>${escapeHtml(animal.fact)}</p>
+            <span class="greeting-home">🏡 我的家：${escapeHtml(animal.habitat)}</span>
+        `;
+        document.body.appendChild(greeting);
+        requestAnimationFrame(() => greeting.classList.add("show"));
+
+        showAnimalGreeting.timer = window.setTimeout(() => {
+            greeting.classList.remove("show");
+            window.setTimeout(() => greeting.remove(), 350);
+        }, 3200);
     }
 
     function addActivity(type, label, animalId = state.selectedAnimalId) {
@@ -5224,11 +5522,11 @@
         const animal = getAnimal();
         return `
             <section class="view">
-                <div class="grid-2">
-                    <div class="panel">
+                <div class="grid-2 map-layout">
+                    <div class="panel map-panel">
                         <div class="panel-title">
-                            <h3>栖息地地图</h3>
-                            <span>${animals.length} 个动物点</span>
+                            <h3>🌿 栖息地大冒险</h3>
+                            <span>${animals.length} 位动物朋友</span>
                         </div>
                         ${mapCanvas(true)}
                     </div>
@@ -5257,7 +5555,20 @@
     }
 
     function mapCanvas(clickable) {
+        const lockPositions = {
+            penguin: { x: 78, y: 6, width: 108 },
+            panda: { x: 43, y: 25, width: 108 },
+            tiger: { x: 80, y: 33, width: 82 },
+            frog: { x: 21, y: 61, width: 108 },
+            dolphin: { x: 79, y: 66, width: 108 },
+            camel: { x: 45, y: 84, width: 108 }
+        };
+        const grasslandUnlocked = isAnimalUnlocked("rabbit") && isAnimalUnlocked("elephant");
+        const grasslandAnimal = animals.find((animal) => animal.id === "rabbit");
+        const grasslandProgress = grasslandUnlocked ? null : calculateUnlockProgress(grasslandAnimal);
+
         return `
+            <div class="map-viewport" aria-label="动物栖息地地图">
             <div class="map-canvas">
                 <div class="biome forest"></div>
                 <div class="biome mountain"></div>
@@ -5266,38 +5577,68 @@
                 <div class="biome wetland"></div>
                 <div class="biome polar"></div>
                 <div class="biome desert"></div>
-                <div class="map-label" style="left: 6%; top: 35%;">竹林</div>
-                <div class="map-label" style="left: 45%; top: 48%;">草原</div>
-                <div class="map-label" style="right: 8%; top: 43%;">海洋</div>
-                <div class="map-label" style="right: 11%; top: 13%;">冰原</div>
+                <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <path class="trail-shadow" d="M72 10 C62 17 53 23 46 29 S61 31 78 35 C67 40 52 43 43 47 S51 50 62 52 C48 57 34 61 25 65 C47 67 68 68 83 70 C69 77 54 82 45 88" />
+                    <path class="trail" d="M72 10 C62 17 53 23 46 29 S61 31 78 35 C67 40 52 43 43 47 S51 50 62 52 C48 57 34 61 25 65 C47 67 68 68 83 70 C69 77 54 82 45 88" />
+                    <circle class="route-dot" cx="58" cy="24" r="1" />
+                    <circle class="route-dot" cx="52" cy="44" r="1" />
+                    <circle class="route-dot" cx="48" cy="67" r="1" />
+                </svg>
+                <div class="map-label" style="right: 5%; top: 4%; --tilt: -2deg;">❄️ 冰雪海岸</div>
+                <div class="map-label" style="left: 25%; top: 23%; --tilt: -3deg;">🎋 竹林山地</div>
+                <div class="map-label" style="right: 7%; top: 31%; --tilt: 2deg;">🌲 森林</div>
+                <div class="map-label" style="left: 32%; top: 43%; --tilt: -2deg;">🌼 阳光草原</div>
+                <div class="map-label" style="left: 5%; top: 59%; --tilt: 2deg;">🪷 池塘湿地</div>
+                <div class="map-label" style="right: 3%; top: 64%; --tilt: 2deg;">🌊 珊瑚海湾</div>
+                <div class="map-label" style="left: 28%; top: 82%; --tilt: -2deg;">🏜️ 沙漠绿洲</div>
+                ${!grasslandUnlocked ? `
+                    <button class="marker locked ${grasslandProgress?.percentage >= 80 ? 'almost-unlocked' : ''}"
+                            type="button"
+                            style="left:52%; top:44%; --lock-width:116px;"
+                            data-locked-animal="grassland"
+                            aria-label="查看兔子和大象的共同解锁方法">
+                        <span class="unlock-bubble">
+                            <strong>🔒 发现草原上的新朋友</strong>
+                            ${escapeHtml(getUnlockInstruction(grasslandAnimal))}
+                            <span class="unlock-meter"><i style="width:${grasslandProgress?.percentage || 0}%"></i></span>
+                            当前解锁进度：${grasslandProgress?.percentage || 0}%
+                        </span>
+                    </button>
+                ` : ''}
                 ${animals.map((animal) => {
                     const unlocked = isAnimalUnlocked(animal.id);
+                    if (["rabbit", "elephant"].includes(animal.id) && !grasslandUnlocked) return "";
                     const progress = unlocked ? null : calculateUnlockProgress(animal);
                     const isAlmostUnlocked = progress && progress.percentage >= 80;
                     const lockedClass = unlocked ? '' : 'locked';
                     const almostClass = isAlmostUnlocked ? 'almost-unlocked' : '';
                     const animalName = unlocked ? getAnimalDisplayName(animal.id) : '???';
+                    const markerPosition = unlocked
+                        ? { x: animal.x, y: animal.y, width: 52 }
+                        : (lockPositions[animal.id] || { x: animal.x, y: animal.y, width: 102 });
 
                     return `
                     <button class="marker ${animal.id === state.selectedAnimalId ? "active" : ""} ${lockedClass} ${almostClass}"
                             type="button"
-                            style="left:${animal.x}%; top:${animal.y}%;"
-                            ${clickable && unlocked ? `data-animal="${animal.id}"` : 'tabindex="-1"'}
-                            ${!unlocked ? 'disabled' : ''}>
+                            style="left:${markerPosition.x}%; top:${markerPosition.y}%; --lock-width:${markerPosition.width}px;"
+                            ${clickable && unlocked ? `data-animal="${animal.id}"` : ''}
+                            ${clickable && !unlocked ? `data-locked-animal="${animal.id}" aria-label="查看${animal.name}解锁方法"` : ''}
+                            ${!clickable ? 'tabindex="-1"' : ''}>
                         <span class="animal-face">${animal.icon}</span>
                         <span class="animal-name">${animalName}</span>
                         ${!unlocked ? `
-                            <span class="lock-badge">🔒</span>
-                            ${progress ? `
-                                <div class="unlock-progress">
-                                    <div class="unlock-progress-bar" style="width: ${progress.percentage}%"></div>
-                                </div>
-                                <div class="unlock-hint">${animal.unlockHint || '完成任务解锁'}</div>
-                            ` : ''}
+                            <span class="unlock-bubble ${animal.x > 68 ? 'bubble-left' : animal.x < 32 ? 'bubble-right' : ''} ${animal.y < 18 ? 'bubble-bottom' : ''}">
+                                <strong>🔒 发现一位神秘新朋友</strong>
+                                ${escapeHtml(getUnlockInstruction(animal))}
+                                <span class="unlock-meter"><i style="width:${progress?.percentage || 0}%"></i></span>
+                                当前解锁进度：${progress?.percentage || 0}%
+                            </span>
                         ` : ''}
                     </button>
                 `}).join("")}
             </div>
+            </div>
+            <p class="map-scroll-hint">✨ 点击玻璃锁，看看怎样邀请新朋友出现</p>
         `;
     }
 
@@ -6394,6 +6735,27 @@
         showToast.timer = window.setTimeout(() => toast.classList.add("hide"), 2200);
     }
 
+    function showLockedAnimalHint(button) {
+        const bubble = button.querySelector(".unlock-bubble");
+        document.querySelectorAll(".unlock-bubble.show").forEach((item) => {
+            if (item !== bubble) {
+                item.classList.remove("show");
+                item.closest(".marker")?.classList.remove("hint-open");
+            }
+        });
+
+        button.classList.remove("is-shaking");
+        void button.offsetWidth;
+        button.classList.add("is-shaking", "hint-open");
+        bubble?.classList.add("show");
+
+        window.clearTimeout(button.unlockHintTimer);
+        button.unlockHintTimer = window.setTimeout(() => {
+            button.classList.remove("is-shaking", "hint-open");
+            bubble?.classList.remove("show");
+        }, 3000);
+    }
+
     document.addEventListener("click", async (event) => {
         if (state.profile && state.settingsOpen && !event.target.closest(".settings-menu") && !event.target.closest("[data-action='toggle-settings']")) {
             state.settingsOpen = false;
@@ -6410,6 +6772,12 @@
         const routeButton = event.target.closest("[data-route]");
         if (routeButton && state.profile) {
             setRoute(routeButton.dataset.route);
+            return;
+        }
+
+        const lockedAnimalButton = event.target.closest("[data-locked-animal]");
+        if (lockedAnimalButton && state.profile) {
+            showLockedAnimalHint(lockedAnimalButton);
             return;
         }
 
@@ -8284,19 +8652,26 @@
         if (answerDiv) answerDiv.textContent = "医生正在分析...";
 
         try {
-            const response = await fetch("/api/animal/ask-doctor", {
+            const response = await fetch("/api/animal/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    animal_id: animal.id,
-                    symptom: question,
-                    detail: question
+                    mode: "doctor",
+                    message: question,
+                    animal: animal.name,
+                    model: state.model
                 })
             });
 
-            if (!response.ok) throw new Error("网络错误");
-
-            const data = await response.json();
+            let data;
+            try {
+                data = await response.json();
+            } catch {
+                throw new Error(`服务返回异常（HTTP ${response.status}）`);
+            }
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || `问诊请求失败（HTTP ${response.status}）`);
+            }
             const reply = data.reply || "医生暂时无法回答。";
 
             state.doctorLogs.unshift({
@@ -8304,7 +8679,7 @@
                 symptom: question,
                 detail: question,
                 reply: reply,
-                source: data.source || "AI医生",
+                source: data.model ? `模型：${data.model}` : "AI医生",
                 time: Date.now()
             });
 
@@ -8319,8 +8694,13 @@
             saveState();
             render();
         } catch (error) {
-            if (answerDiv) answerDiv.textContent = "出错了，请重试。";
-            showToast("网络错误，请检查连接");
+            console.error("AI医生咨询失败:", error);
+            const isNetworkError = error instanceof TypeError;
+            const message = isNetworkError
+                ? "无法连接到服务，请确认后端已启动"
+                : (error.message || "问诊失败，请重试");
+            if (answerDiv) answerDiv.textContent = message;
+            showToast(message);
         }
     }
 
