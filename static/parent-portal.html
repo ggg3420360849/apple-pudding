@@ -413,6 +413,7 @@
             background: rgba(0,0,0,0.3);
         }
     </style>
+    <link rel="stylesheet" href="/static/styles/handdrawn.css">
 </head>
 <body>
     <div class="mobile-container">
@@ -493,6 +494,7 @@
         </div>
     </div>
 
+    <script src="/static/auth-fetch.js"></script>
     <script>
         let currentAccount = null;
         let selectedAvatar = '👦';
@@ -519,7 +521,7 @@
             if (!currentAccount) return;
 
             try {
-                const response = await fetch(`/api/family/accounts/${currentAccount.id}`);
+                const response = await authFetch(`/api/family/accounts/${currentAccount.id}`);
                 if (response.ok) {
                     const data = await response.json();
                     const children = data.account.children || [];
@@ -675,7 +677,7 @@
                     }
 
                     try {
-                        const response = await fetch(`/api/family/accounts/${currentAccount.id}/children`, {
+                        const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({

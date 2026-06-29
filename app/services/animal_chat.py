@@ -58,9 +58,10 @@ class AnimalChatService:
         try:
             result = self.client.chat(selected_model, system_prompt, user_question)
         except Exception as e:
+            logger.error("Upstream chat request failed", error=str(e), exc_info=True)
             return {
                 "success": False,
-                "error": str(e),
+                "error": "AI服务请求失败",
             }
 
         if not result.get("success"):

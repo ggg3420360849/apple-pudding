@@ -5,7 +5,18 @@ from enum import Enum
 from pydantic import BaseModel, Field
 import json
 import os
+import tempfile
+import threading
+from functools import wraps
 from pathlib import Path
+
+
+def synchronized(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        with self._lock:
+            return method(self, *args, **kwargs)
+    return wrapper
 
 
 class UserRole(str, Enum):
@@ -61,6 +72,7 @@ class SessionStore:
     """File-based session storage for family accounts"""
 
     def __init__(self, storage_dir: str = "data"):
+        self._lock = threading.RLock()
         self.storage_dir = Path(storage_dir)
         self.storage_dir.mkdir(exist_ok=True)
         self.accounts_file = self.storage_dir / "family_accounts.json"
@@ -79,8 +91,7 @@ class SessionStore:
 
     def _save_accounts(self, accounts: dict):
         """Save all family accounts"""
-        with open(self.accounts_file, 'w', encoding='utf-8') as f:
-            json.dump(accounts, f, ensure_ascii=False, indent=2, default=str)
+        self._atomic_json_write(self.accounts_file, accounts)
 
     def _load_goals(self) -> dict:
         """Load all weekly goals"""
@@ -89,10 +100,25 @@ class SessionStore:
 
     def _save_goals(self, goals: dict):
         """Save all weekly goals"""
-        with open(self.goals_file, 'w', encoding='utf-8') as f:
-            json.dump(goals, f, ensure_ascii=False, indent=2, default=str)
+        self._atomic_json_write(self.goals_file, goals)
+
+    def _atomic_json_write(self, path: Path, value) -> None:
+        fd, temporary_path = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                json.dump(value, handle, ensure_ascii=False, indent=2, default=str)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary_path, path)
+        except Exception:
+            try:
+                os.unlink(temporary_path)
+            except FileNotFoundError:
+                pass
+            raise
 
     # Family Account Operations
+    @synchronized
     def create_family_account(self, account: FamilyAccount) -> FamilyAccount:
         """Create a new family account"""
         accounts = self._load_accounts()
@@ -100,6 +126,7 @@ class SessionStore:
         self._save_accounts(accounts)
         return account
 
+    @synchronized
     def get_family_account(self, account_id: str) -> Optional[FamilyAccount]:
         """Get family account by ID"""
         accounts = self._load_accounts()
@@ -107,6 +134,7 @@ class SessionStore:
             return FamilyAccount(**accounts[account_id])
         return None
 
+    @synchronized
     def get_family_account_by_phone(self, phone: str) -> Optional[FamilyAccount]:
         """Get family account by phone number"""
         accounts = self._load_accounts()
@@ -115,6 +143,7 @@ class SessionStore:
                 return FamilyAccount(**account_data)
         return None
 
+    @synchronized
     def get_family_account_by_email(self, email: str) -> Optional[FamilyAccount]:
         """Get family account by email"""
         accounts = self._load_accounts()
@@ -123,6 +152,7 @@ class SessionStore:
                 return FamilyAccount(**account_data)
         return None
 
+    @synchronized
     def update_family_account(self, account: FamilyAccount) -> FamilyAccount:
         """Update family account"""
         accounts = self._load_accounts()
@@ -131,6 +161,7 @@ class SessionStore:
         return account
 
     # Child Profile Operations
+    @synchronized
     def add_child_profile(self, account_id: str, child: ChildProfile) -> Optional[FamilyAccount]:
         """Add a child profile to family account"""
         account = self.get_family_account(account_id)
@@ -140,6 +171,7 @@ class SessionStore:
         account.children.append(child)
         return self.update_family_account(account)
 
+    @synchronized
     def get_child_profile(self, account_id: str, child_id: str) -> Optional[ChildProfile]:
         """Get specific child profile"""
         account = self.get_family_account(account_id)
@@ -151,6 +183,7 @@ class SessionStore:
                 return child
         return None
 
+    @synchronized
     def update_child_profile(self, account_id: str, child: ChildProfile) -> Optional[FamilyAccount]:
         """Update child profile"""
         account = self.get_family_account(account_id)
@@ -164,6 +197,7 @@ class SessionStore:
         return None
 
     # Learning Progress Operations
+    @synchronized
     def record_animal_explored(self, account_id: str, child_id: str, animal: str) -> bool:
         """Record that a child explored an animal"""
         child = self.get_child_profile(account_id, child_id)
@@ -171,44 +205,44 @@ class SessionStore:
             return False
 
         if animal not in child.animals_explored:
+            previous_activity_date = child.last_activity_date
             child.animals_explored.append(animal)
             child.last_activity_date = datetime.now()
+            self._update_streak(child, previous_activity_date)
             self.update_child_profile(account_id, child)
-
-            # Update streak
-            self._update_streak(account_id, child_id)
         return True
 
+    @synchronized
     def record_question_answer(self, account_id: str, child_id: str, correct: bool) -> bool:
         """Record a question answer"""
         child = self.get_child_profile(account_id, child_id)
         if not child:
             return False
 
+        previous_activity_date = child.last_activity_date
         child.questions_answered += 1
         if correct:
             child.questions_correct += 1
         child.last_activity_date = datetime.now()
+        self._update_streak(child, previous_activity_date)
         self.update_child_profile(account_id, child)
-
-        # Update streak
-        self._update_streak(account_id, child_id)
         return True
 
+    @synchronized
     def record_story_created(self, account_id: str, child_id: str) -> bool:
         """Record that a child created a story"""
         child = self.get_child_profile(account_id, child_id)
         if not child:
             return False
 
+        previous_activity_date = child.last_activity_date
         child.stories_created += 1
         child.last_activity_date = datetime.now()
+        self._update_streak(child, previous_activity_date)
         self.update_child_profile(account_id, child)
-
-        # Update streak
-        self._update_streak(account_id, child_id)
         return True
 
+    @synchronized
     def add_imagined_animal(self, account_id: str, child_id: str, animal_data: dict) -> bool:
         """Add an imagined animal to child's collection"""
         child = self.get_child_profile(account_id, child_id)
@@ -220,27 +254,23 @@ class SessionStore:
         self.update_child_profile(account_id, child)
         return True
 
-    def _update_streak(self, account_id: str, child_id: str):
+    def _update_streak(self, child: ChildProfile, previous_activity_date: Optional[datetime]):
         """Update child's learning streak"""
-        child = self.get_child_profile(account_id, child_id)
-        if not child or not child.last_activity_date:
+        if not child.last_activity_date:
             return
-
-        today = datetime.now().date()
-        last_date = child.last_activity_date.date()
-
-        # If activity is today or yesterday, continue streak
-        if (today - last_date).days <= 1:
-            child.current_streak += 1
-            if child.current_streak > child.longest_streak:
-                child.longest_streak = child.current_streak
-        else:
-            # Streak broken
+        if previous_activity_date is None:
             child.current_streak = 1
-
-        self.update_child_profile(account_id, child)
+        else:
+            days = (child.last_activity_date.date() - previous_activity_date.date()).days
+            if days == 1:
+                child.current_streak = max(1, child.current_streak + 1)
+            elif days > 1:
+                child.current_streak = 1
+            # days == 0: another activity today, streak stays unchanged.
+        child.longest_streak = max(child.longest_streak, child.current_streak)
 
     # Weekly Goals Operations
+    @synchronized
     def create_weekly_goal(self, goal: WeeklyGoal) -> WeeklyGoal:
         """Create a weekly goal for a child"""
         goals = self._load_goals()
@@ -248,6 +278,7 @@ class SessionStore:
         self._save_goals(goals)
         return goal
 
+    @synchronized
     def get_child_weekly_goals(self, child_id: str) -> List[WeeklyGoal]:
         """Get all weekly goals for a child"""
         goals = self._load_goals()
@@ -257,6 +288,7 @@ class SessionStore:
                 child_goals.append(WeeklyGoal(**goal_data))
         return child_goals
 
+    @synchronized
     def update_goal_progress(self, goal_id: str, progress: int) -> Optional[WeeklyGoal]:
         """Update progress on a weekly goal"""
         goals = self._load_goals()
@@ -273,6 +305,7 @@ class SessionStore:
         return goal
 
     # Badge/Achievement Operations
+    @synchronized
     def award_badge(self, account_id: str, child_id: str, badge_name: str) -> bool:
         """Award a badge to a child"""
         child = self.get_child_profile(account_id, child_id)
@@ -284,6 +317,7 @@ class SessionStore:
             self.update_child_profile(account_id, child)
         return True
 
+    @synchronized
     def get_comparison_report(self, account_id: str) -> dict:
         """Generate comparison report for all children in family"""
         account = self.get_family_account(account_id)

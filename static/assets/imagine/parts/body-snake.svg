@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360" role="img" aria-label="snake body">
+  <g stroke="#5b4838" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M160 190c-46 2-84-18-86-53-3-46 42-85 99-74 51 10 84 50 72 96-10 41-49 65-98 71-42 5-67 27-64 55 4 39 63 50 120 19" fill="none" stroke="#5b4838" stroke-width="44"/>
+    <path d="M160 190c-46 2-84-18-86-53-3-46 42-85 99-74 51 10 84 50 72 96-10 41-49 65-98 71-42 5-67 27-64 55 4 39 63 50 120 19" fill="none" stroke="#8ecf76" stroke-width="32"/>
+    <path d="M72 130c1-38 33-66 79-70 47-4 86 20 94 60 8 43-19 82-63 94-38 11-85 1-104-27-7-11-8-34-6-57z" fill="#98d47b"/>
+    <path d="M107 146c33 24 78 25 108 0-6 28-27 47-56 48-27 1-48-17-52-48z" fill="#fff2d5"/>
+    <path d="M123 116c9-10 24-9 29 2 4 9-4 20-18 20-13 0-21-12-11-22z" fill="#3f332d"/>
+    <path d="M196 116c-9-10-24-9-29 2-4 9 4 20 18 20 13 0 21-12 11-22z" fill="#3f332d"/>
+    <path d="M131 115c4-3 8-3 12 0M188 115c-4-3-8-3-12 0" fill="none" stroke="#fffdf4" stroke-width="3"/>
+    <path d="M150 141c7 6 18 6 25 0M164 150c-2 11-12 20-26 22M164 150c3 11 13 19 28 20" fill="none" stroke-width="5"/>
+    <path d="M101 156c-9 3-18 2-26-1M218 155c9 3 18 3 26 0" fill="none" stroke="#ea9786" stroke-width="4.5"/>
+    <path d="M134 175c12 12 44 12 58 0 1 12 0 25-1 35-15 13-42 13-56 0-1-11-1-23-1-35z" fill="#8ecf76"/>
+    <path d="M80 213c-21 15-27 39-12 53 14 13 39 2 52-25-14-3-28-12-40-28z" fill="#8ecf76"/>
+    <path d="M224 214c22 15 28 39 13 53-15 13-40 2-53-25 14-3 28-12 40-28z" fill="#8ecf76"/>
+    <path d="M90 232c7 4 17 5 27 2M214 233c-7 4-17 5-27 2" fill="none" stroke="#dff2a5" stroke-width="4.5"/>
+    <path d="M98 282c28 15 73 14 106-5M126 78c27-13 64-9 88 12M103 205c17 10 43 13 69 8" fill="none" stroke="#dff2a5" stroke-width="4"/>
+    <path d="M222 280c-9 10-21 19-35 26M96 256c16 9 41 9 65 1" fill="none" stroke="#f0d978" stroke-width="3.5"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="angel wing">
+  <g fill="none" stroke="#5f4a38" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#f6fbff" d="M150 95C107 28 47 24 29 58 9 95 42 147 126 147c15 0 30-16 24-52z"/>
+    <path fill="#f6fbff" d="M170 95c43-67 103-71 121-37 20 37-13 89-97 89-15 0-30-16-24-52z"/>
+    <path stroke="#a6d5ee" stroke-width="6" d="M61 80c26 12 49 31 63 58M106 57c17 22 27 49 28 82M259 80c-26 12-49 31-63 58M214 57c-17 22-27 49-28 82"/>
+    <path stroke="#fff2a1" stroke-width="5" d="M113 39c-19-12-47-10-65 7M207 39c19-12 47-10 65 7"/>
+  </g>
+</svg>

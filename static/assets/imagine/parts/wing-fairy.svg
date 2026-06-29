@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="fairy wing">
+  <g fill="none" stroke="#5f4a38" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#ffc4db" d="M151 103C112 31 51 25 34 58c-18 35 18 83 88 82 20 0 35-17 29-37z"/>
+    <path fill="#ffd96e" d="M144 115c-34 12-57 42-43 63 16 24 55 12 76-38"/>
+    <path fill="#b8e6ff" d="M169 103c39-72 100-78 117-45 18 35-18 83-88 82-20 0-35-17-29-37z"/>
+    <path fill="#c9ef83" d="M176 115c34 12 57 42 43 63-16 24-55 12-76-38"/>
+    <path stroke="#fff8c4" stroke-width="5" d="M76 77c19 4 36 15 50 33M244 77c-19 4-36 15-50 33M110 153c15-10 30-15 45-14M210 153c-15-10-30-15-45-14"/>
+    <path fill="#fff8c4" stroke="none" d="M93 75l4 6 7 3-7 3-4 6-4-6-7-3 7-3z"/>
+    <path fill="#fff8c4" stroke="none" d="M229 77l4 6 7 3-7 3-4 6-4-6-7-3 7-3z"/>
+    <path fill="#fff8c4" stroke="none" d="M126 154l3 5 6 2-6 3-3 5-3-5-6-3 6-2z"/>
+    <path fill="#fff8c4" stroke="none" d="M194 153l3 5 6 2-6 3-3 5-3-5-6-3 6-2z"/>
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>想象动物区视觉检查</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+<body>
+<div id="app" class="app-root"></div>
+<script>
+    const visualSessionId = "visual-imagine";
+    localStorage.setItem("applePuddingAnimalSessionsV3", JSON.stringify({
+        sessions: {
+            [visualSessionId]: {
+                sessionId: visualSessionId,
+                route: "imagine",
+                profile: { name: "小画家", role: "child", avatar: "🦊" },
+                draftCreature: {
+                    name: "云朵团团",
+                    habitat: "彩虹森林",
+                    mood: "好奇",
+                    body: "panda",
+                    wing: "fairy",
+                    tail: "fox",
+                    selectedPart: "body",
+                    color: "#8fc6f5",
+                    parts: ["wing", "tail"],
+                    transforms: {}
+                }
+            }
+        },
+        order: [visualSessionId]
+    }));
+    sessionStorage.setItem("applePuddingActiveSessionId", visualSessionId);
+</script>
+<script src="/static/parent-report-enhanced.js"></script>
+<script src="/static/src/infrastructure/browser-storage.js"></script>
+<script src="/static/src/infrastructure/api-client.js"></script>
+<script src="/static/src/application/animal-chat-service.js"></script>
+<script src="/static/src/domain/catalog.js"></script>
+<script src="/static/src/core/session-state.js"></script>
+<script src="/static/src/domain/unlock-rules.js"></script>
+<script src="/static/src/shared/view-helpers.js"></script>
+<script src="/static/src/presentation/views.js"></script>
+<script src="/static/src/presentation/ai-controller.js"></script>
+<script src="/static/src/features/animal-care.js"></script>
+<script src="/static/src/features/creature-studio.js"></script>
+<script src="/static/src/features/storytelling.js"></script>
+<script src="/static/src/features/speech.js"></script>
+<script src="/static/src/features/settings.js"></script>
+<script src="/static/src/presentation/interactions.js"></script>
+<script src="/static/src/bootstrap.js"></script>
+</body>
+</html>

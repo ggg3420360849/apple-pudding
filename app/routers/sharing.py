@@ -7,6 +7,7 @@ from app.database import get_session_store, SessionStore
 from app.services.sharing_service import SharingService
 from app.schemas import ShareCardRequest
 from app.logger import get_logger
+from app.security import AccountPrincipal, get_current_account, require_account, require_child
 
 logger = get_logger(__name__)
 limiter = Limiter(key_func=get_remote_address)
@@ -23,10 +24,13 @@ async def generate_animal_card(
     request: Request,
     req: ShareCardRequest,
     store: SessionStore = Depends(get_session_store),
-    sharing_service: SharingService = Depends(get_sharing_service)
+    sharing_service: SharingService = Depends(get_sharing_service),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> Response:
     """Generate shareable card for imagined animal"""
     try:
+        require_account(principal, req.account_id)
+        require_child(store, principal, req.child_id)
         # Get child profile
         child = store.get_child_profile(req.account_id, req.child_id)
         if not child:
@@ -68,7 +72,7 @@ async def generate_animal_card(
         raise
     except Exception as e:
         logger.error("Failed to generate animal card", error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="生成动物分享卡失败")
 
 
 @router.post("/card/story")
@@ -77,10 +81,13 @@ async def generate_story_card(
     request: Request,
     req: ShareCardRequest,
     store: SessionStore = Depends(get_session_store),
-    sharing_service: SharingService = Depends(get_sharing_service)
+    sharing_service: SharingService = Depends(get_sharing_service),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> Response:
     """Generate shareable card for story"""
     try:
+        require_account(principal, req.account_id)
+        require_child(store, principal, req.child_id)
         # Get child profile
         child = store.get_child_profile(req.account_id, req.child_id)
         if not child:
@@ -113,7 +120,7 @@ async def generate_story_card(
         raise
     except Exception as e:
         logger.error("Failed to generate story card", error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="生成故事分享卡失败")
 
 
 @router.get("/qr-code")
@@ -121,10 +128,12 @@ async def generate_story_card(
 async def generate_invite_qr(
     request: Request,
     account_id: str,
-    sharing_service: SharingService = Depends(get_sharing_service)
+    sharing_service: SharingService = Depends(get_sharing_service),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> Response:
     """Generate QR code for inviting friends"""
     try:
+        require_account(principal, account_id)
         # Generate invite URL (you'd want a proper domain in production)
         invite_url = f"https://apple-pudding.app/invite?ref={account_id}"
 
@@ -137,6 +146,8 @@ async def generate_invite_qr(
             media_type="image/png"
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to generate QR code", error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="生成二维码失败")

@@ -3,7 +3,7 @@
 // 生成并下载想象动物分享卡片
 async function downloadAnimalCard(accountId, childId, animalId) {
     try {
-        const response = await fetch('/api/sharing/card/animal', {
+        const response = await authFetch('/api/sharing/card/animal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -43,7 +43,7 @@ async function downloadAnimalCard(accountId, childId, animalId) {
 // 生成并下载故事分享卡片
 async function downloadStoryCard(accountId, childId, storyId) {
     try {
-        const response = await fetch('/api/sharing/card/story', {
+        const response = await authFetch('/api/sharing/card/story', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -83,7 +83,7 @@ async function downloadStoryCard(accountId, childId, storyId) {
 // 生成邀请二维码
 async function showInviteQRCode(accountId) {
     try {
-        const response = await fetch(`/api/sharing/qr-code?account_id=${accountId}`);
+        const response = await authFetch(`/api/sharing/qr-code?account_id=${accountId}`);
 
         if (response.ok) {
             const blob = await response.blob();

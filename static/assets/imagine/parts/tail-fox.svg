@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 220" role="img" aria-label="fox tail">
+  <g fill="none" stroke="#624836" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#e98c48" d="M42 162c-22-45 0-105 49-124 30-12 56-1 63 20 9 29-14 52-48 68-24 12-34 28-31 58-14-1-25-8-33-22z"/>
+    <path fill="#fff4d8" d="M95 40c30-13 54-2 59 21-23-1-45 10-63 32-12 15-20 35-18 59-23-40-9-91 22-112z"/>
+    <path stroke="#f8c274" stroke-width="5" d="M62 154c2-45 24-82 69-105M71 172c24-22 48-40 73-55"/>
+  </g>
+</svg>

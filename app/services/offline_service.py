@@ -1,6 +1,9 @@
 """Offline queue service for syncing activities when back online"""
 import json
 import os
+import tempfile
+import threading
+from functools import wraps
 from pathlib import Path
 from typing import List, Dict
 from datetime import datetime
@@ -10,10 +13,19 @@ from app.logger import get_logger
 logger = get_logger(__name__)
 
 
+def synchronized(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        with self._lock:
+            return method(self, *args, **kwargs)
+    return wrapper
+
+
 class OfflineQueue:
     """Manage offline activity queue"""
 
     def __init__(self, queue_dir: str = "data/offline_queue"):
+        self._lock = threading.RLock()
         self.queue_dir = Path(queue_dir)
         self.queue_dir.mkdir(parents=True, exist_ok=True)
         self.queue_file = self.queue_dir / "activities.json"
@@ -33,11 +45,16 @@ class OfflineQueue:
     def _save_queue(self, queue: List[Dict]):
         """Save queued activities"""
         try:
-            with open(self.queue_file, 'w', encoding='utf-8') as f:
+            fd, temporary_path = tempfile.mkstemp(prefix=".activities.", suffix=".tmp", dir=self.queue_dir)
+            with os.fdopen(fd, 'w', encoding='utf-8') as f:
                 json.dump(queue, f, ensure_ascii=False, indent=2, default=str)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(temporary_path, self.queue_file)
         except Exception as e:
             logger.error("Failed to save offline queue", error=str(e))
 
+    @synchronized
     def enqueue(self, activity: Dict) -> bool:
         """Add activity to offline queue"""
         try:
@@ -55,17 +72,19 @@ class OfflineQueue:
             logger.error("Failed to queue activity", error=str(e))
             return False
 
+    @synchronized
     def get_pending(self) -> List[Dict]:
         """Get all pending (unsynced) activities"""
         queue = self._load_queue()
         return [item for item in queue if not item.get('synced', False)]
 
-    def mark_synced(self, activity_id: str) -> bool:
+    @synchronized
+    def mark_synced(self, activity_id: str, account_id: str) -> bool:
         """Mark activity as synced"""
         try:
             queue = self._load_queue()
             for item in queue:
-                if item.get('id') == activity_id:
+                if item.get('id') == activity_id and item.get('account_id') == account_id:
                     item['synced'] = True
                     item['synced_at'] = datetime.now().isoformat()
 
@@ -77,11 +96,15 @@ class OfflineQueue:
             logger.error("Failed to mark activity as synced", error=str(e))
             return False
 
-    def clear_synced(self) -> int:
+    @synchronized
+    def clear_synced(self, account_id: str) -> int:
         """Remove all synced activities from queue"""
         try:
             queue = self._load_queue()
-            pending = [item for item in queue if not item.get('synced', False)]
+            pending = [
+                item for item in queue
+                if item.get('account_id') != account_id or not item.get('synced', False)
+            ]
             removed_count = len(queue) - len(pending)
 
             self._save_queue(pending)
@@ -92,9 +115,11 @@ class OfflineQueue:
             logger.error("Failed to clear synced activities", error=str(e))
             return 0
 
-    def get_stats(self) -> Dict:
+    @synchronized
+    def get_stats(self, account_id: str) -> Dict:
         """Get queue statistics"""
         queue = self._load_queue()
+        queue = [item for item in queue if item.get('account_id') == account_id]
         pending = [item for item in queue if not item.get('synced', False)]
         synced = [item for item in queue if item.get('synced', False)]
 

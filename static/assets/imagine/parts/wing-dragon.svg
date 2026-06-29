@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="dragon wing">
+  <g fill="none" stroke="#5e4a36" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#83c972" d="M151 102C122 36 67 23 37 54c23 10 26 29 13 52 26-10 43 0 48 27 20-18 36-16 56 5"/>
+    <path fill="#83c972" d="M169 102c29-66 84-79 114-48-23 10-26 29-13 52-26-10-43 0-48 27-20-18-36-16-56 5"/>
+    <path fill="#f4cf64" d="M52 58c10-18 22-27 36-30-3 17 5 28 22 33"/>
+    <path fill="#f4cf64" d="M268 58c-10-18-22-27-36-30 3 17-5 28-22 33"/>
+    <path stroke="#dcf0ac" stroke-width="5" d="M68 80c29 12 54 32 84 58M114 52c14 25 22 52 25 81M252 80c-29 12-54 32-84 58M206 52c-14 25-22 52-25 81"/>
+  </g>
+</svg>

@@ -28,9 +28,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 从 localStorage 加载账号信息
     loadAccountFromStorage();
 
-    // 如果没有账号，创建一个
+    // 家庭数据只能在登录后访问。
     if (!currentAccount) {
-        await initializeAccount();
+        const parentAccount = localStorage.getItem('parentAccount');
+        if (parentAccount) currentAccount = JSON.parse(parentAccount);
+    }
+    if (!currentAccount || !localStorage.getItem('parentToken')) {
+        window.location.href = '/static/index-login.html';
+        return;
     } else {
         await loadChildren();
         await loadDashboard();
@@ -66,7 +71,7 @@ function saveAccountToStorage() {
 // 初始化账号
 async function initializeAccount() {
     try {
-        const response = await fetch('/api/family/accounts', {
+        const response = await authFetch('/api/family/accounts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -94,7 +99,7 @@ async function loadChildren() {
     if (!currentAccount) return;
 
     try {
-        const response = await fetch(`/api/family/accounts/${currentAccount.id}`);
+        const response = await authFetch(`/api/family/accounts/${currentAccount.id}`);
         if (response.ok) {
             const data = await response.json();
             const children = data.account.children || [];
@@ -129,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const childId = e.target.value;
             if (childId && currentAccount) {
                 try {
-                    const response = await fetch(`/api/family/accounts/${currentAccount.id}/children/${childId}`);
+                    const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children/${childId}`);
                     if (response.ok) {
                         const data = await response.json();
                         currentChild = data.child;
@@ -187,7 +192,7 @@ async function loadDashboard() {
     if (!currentChild || !currentAccount) return;
 
     try {
-        const response = await fetch(`/api/family/accounts/${currentAccount.id}/children/${currentChild.id}`);
+        const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children/${currentChild.id}`);
         if (response.ok) {
             const data = await response.json();
             const child = data.child;
@@ -225,11 +230,11 @@ async function loadAchievements() {
 
     try {
         // 获取所有成就
-        const allResponse = await fetch('/api/achievements/all');
+        const allResponse = await authFetch('/api/achievements/all');
         const allData = await allResponse.json();
 
         // 获取进度
-        const progressResponse = await fetch(`/api/achievements/progress/${currentAccount.id}/${currentChild.id}`);
+        const progressResponse = await authFetch(`/api/achievements/progress/${currentAccount.id}/${currentChild.id}`);
         const progressData = await progressResponse.json();
 
         const container = document.getElementById('achievementsList');
@@ -272,7 +277,7 @@ async function loadCalendar() {
     if (!currentChild || !currentAccount) return;
 
     try {
-        const response = await fetch(`/api/achievements/calendar/${currentAccount.id}/${currentChild.id}`);
+        const response = await authFetch(`/api/achievements/calendar/${currentAccount.id}/${currentChild.id}`);
         const data = await response.json();
         const calendar = data.calendar;
 
@@ -305,7 +310,7 @@ async function loadGoals() {
     if (!currentChild || !currentAccount) return;
 
     try {
-        const response = await fetch(`/api/family/goals/${currentChild.id}`);
+        const response = await authFetch(`/api/family/goals/${currentChild.id}`);
         const data = await response.json();
         const goals = data.goals || [];
 
@@ -351,7 +356,7 @@ async function loadLeaderboard() {
     if (!currentAccount) return;
 
     try {
-        const response = await fetch(`/api/achievements/leaderboard/${currentAccount.id}`);
+        const response = await authFetch(`/api/achievements/leaderboard/${currentAccount.id}`);
         const data = await response.json();
         const leaderboard = data.leaderboard || [];
 
@@ -402,20 +407,6 @@ function getGoalTypeUnit(type) {
         'daily_streak': '天'
     };
     return units[type] || '个';
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${goal.percentage}%">
-                            ${Math.round(goal.percentage)}%
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            goalsDiv.innerHTML = '<p style="color: #61707d;">暂无目标</p>';
-        }
-    } catch (error) {
-        console.error('加载日历失败:', error);
-    }
 }
 
 // 加载排行榜
@@ -423,7 +414,7 @@ async function loadLeaderboard() {
     if (!currentAccount) return;
 
     try {
-        const response = await fetch(`/api/achievements/leaderboard/${currentAccount.id}`);
+        const response = await authFetch(`/api/achievements/leaderboard/${currentAccount.id}`);
         const data = await response.json();
         const leaderboard = data.leaderboard;
 
@@ -480,7 +471,7 @@ async function addChild() {
     }
 
     try {
-        const response = await fetch(`/api/family/accounts/${currentAccount.id}/children`, {
+        const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -514,7 +505,7 @@ async function createWeeklyGoal() {
     const target = parseInt(document.getElementById('goalTarget').value);
 
     try {
-        const response = await fetch('/api/family/goals', {
+        const response = await authFetch('/api/family/goals', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -547,7 +538,7 @@ async function generateAnimalCard() {
 
     try {
         // 这里假设有想象动物数据，实际应该从后端获取
-        const response = await fetch('/api/sharing/card/animal', {
+        const response = await authFetch('/api/sharing/card/animal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -588,7 +579,7 @@ async function generateStoryCard() {
     showNotification('正在生成卡片...', 'info');
 
     try {
-        const response = await fetch('/api/sharing/card/story', {
+        const response = await authFetch('/api/sharing/card/story', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -627,7 +618,7 @@ async function generateQRCode() {
     }
 
     try {
-        const response = await fetch(`/api/sharing/qr-code?account_id=${currentAccount.id}`);
+        const response = await authFetch(`/api/sharing/qr-code?account_id=${currentAccount.id}`);
 
         if (response.ok) {
             const blob = await response.blob();
@@ -686,7 +677,7 @@ async function syncOfflineData() {
     if (offlineQueue.length === 0) return;
 
     try {
-        const response = await fetch('/api/offline/sync', {
+        const response = await authFetch('/api/offline/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(offlineQueue)
@@ -727,7 +718,7 @@ async function recordActivity(activityType, data = {}) {
 
     if (navigator.onLine) {
         try {
-            await fetch('/api/family/activity', {
+            await authFetch('/api/family/activity', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activity)
@@ -755,7 +746,7 @@ async function checkNewAchievements() {
     if (!currentChild || !currentAccount) return;
 
     try {
-        const response = await fetch(`/api/achievements/check/${currentAccount.id}/${currentChild.id}`, {
+        const response = await authFetch(`/api/achievements/check/${currentAccount.id}/${currentChild.id}`, {
             method: 'POST'
         });
 
@@ -829,7 +820,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch(`/api/family/accounts/${currentAccount.id}/children`, {
+                const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -869,7 +860,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('/api/family/goals', {
+                const response = await authFetch('/api/family/goals', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -917,7 +908,7 @@ async function loadImaginedAnimals() {
     if (!currentChild || !currentAccount) return;
 
     try {
-        const response = await fetch(`/api/family/accounts/${currentAccount.id}/children/${currentChild.id}`);
+        const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children/${currentChild.id}`);
         if (response.ok) {
             const data = await response.json();
             const child = data.child;
@@ -971,7 +962,7 @@ async function loadOfflineStats() {
         document.getElementById('pendingActivities').textContent = pendingCount;
 
         // 获取服务器端队列统计
-        const response = await fetch('/api/offline/queue/stats');
+        const response = await authFetch('/api/offline/queue/stats');
         if (response.ok) {
             const data = await response.json();
             document.getElementById('syncedActivities').textContent = data.stats.synced || 0;
@@ -1036,7 +1027,7 @@ async function syncNow() {
     try {
         showNotification('正在同步数据...', 'info');
 
-        const response = await fetch('/api/offline/sync', {
+        const response = await authFetch('/api/offline/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(queue)
@@ -1070,7 +1061,7 @@ async function clearSyncedQueue() {
     }
 
     try {
-        const response = await fetch('/api/offline/queue/clear', {
+        const response = await authFetch('/api/offline/queue/clear', {
             method: 'POST'
         });
 

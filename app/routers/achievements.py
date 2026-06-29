@@ -11,6 +11,7 @@ from app.services.achievement_service import (
     CalendarService
 )
 from app.logger import get_logger
+from app.security import AccountPrincipal, get_current_account, require_account, require_child
 
 logger = get_logger(__name__)
 limiter = Limiter(key_func=get_remote_address)
@@ -34,9 +35,12 @@ def get_achievement_progress(
     account_id: str,
     child_id: str,
     store: SessionStore = Depends(get_session_store),
-    achievement_service: AchievementService = Depends(get_achievement_service)
+    achievement_service: AchievementService = Depends(get_achievement_service),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Get child's achievement progress"""
+    require_account(principal, account_id)
+    require_child(store, principal, child_id)
     progress = achievement_service.get_child_progress(account_id, child_id, store)
 
     if not progress:
@@ -55,10 +59,13 @@ async def check_new_achievements(
     account_id: str,
     child_id: str,
     store: SessionStore = Depends(get_session_store),
-    achievement_service: AchievementService = Depends(get_achievement_service)
+    achievement_service: AchievementService = Depends(get_achievement_service),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Check and award new achievements"""
     try:
+        require_account(principal, account_id)
+        require_child(store, principal, child_id)
         newly_earned = achievement_service.check_achievements(
             account_id,
             child_id,
@@ -89,9 +96,11 @@ async def check_new_achievements(
             "count": len(newly_earned)
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to check achievements", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="检查成就失败")
 
 
 @router.get("/calendar/{account_id}/{child_id}")
@@ -99,9 +108,12 @@ def get_weekly_calendar(
     account_id: str,
     child_id: str,
     store: SessionStore = Depends(get_session_store),
-    calendar_service: CalendarService = Depends(get_calendar_service)
+    calendar_service: CalendarService = Depends(get_calendar_service),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Get child's weekly learning calendar"""
+    require_account(principal, account_id)
+    require_child(store, principal, child_id)
     calendar = calendar_service.get_weekly_calendar(account_id, child_id, store)
 
     if not calendar:
@@ -116,9 +128,11 @@ def get_weekly_calendar(
 @router.get("/leaderboard/{account_id}")
 def get_family_leaderboard(
     account_id: str,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Get family leaderboard comparing all children"""
+    require_account(principal, account_id)
     account = store.get_family_account(account_id)
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")

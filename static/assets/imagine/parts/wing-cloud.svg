@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="cloud wing">
+  <g fill="none" stroke="#5f4a38" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#d9f1ff" d="M148 100c-25-30-67-39-93-20-30 22-22 64 18 70 7 31 50 40 78 17 19 22 54 22 69 0 29 22 72 13 78-18 38-8 45-51 15-71-26-18-68-8-93 22-20-10-52-10-72 0z"/>
+    <path stroke="#fff8c9" stroke-width="5" d="M64 103c26-18 62-13 82 12M256 103c-26-18-62-13-82 12M113 163c26 14 67 14 94 0"/>
+    <path fill="#fff8c9" stroke="none" d="M82 112l5 7 8 3-8 4-5 7-5-7-8-4 8-3z"/>
+    <path fill="#fff8c9" stroke="none" d="M238 112l5 7 8 3-8 4-5 7-5-7-8-4 8-3z"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-label="bat wing">
+  <g fill="none" stroke="#56413b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#8b76bd" d="M151 103C106 48 60 43 31 69c23 8 23 31 9 48 26-9 37 6 37 27 25-20 51-11 75-5"/>
+    <path fill="#8b76bd" d="M169 103c45-55 91-60 120-34-23 8-23 31-9 48-26-9-37 6-37 27-25-20-51-11-75-5"/>
+    <path stroke="#c5b3e9" stroke-width="5" d="M61 79c28 16 55 36 90 61M101 66c17 23 25 47 28 73M259 79c-28 16-55 36-90 61M219 66c-17 23-25 47-28 73"/>
+    <path stroke="#fff1a6" stroke-width="4" d="M83 54c18-8 40-6 55 7M237 54c-18-8-40-6-55 7"/>
+  </g>
+</svg>

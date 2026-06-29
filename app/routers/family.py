@@ -2,17 +2,21 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from typing import List
 import uuid
-import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.database import get_session_store, SessionStore, FamilyAccount, ChildProfile, WeeklyGoal
 from app.schemas import (
     CreateFamilyAccountRequest,
+    LoginRequest,
     CreateChildProfileRequest,
     CreateWeeklyGoalRequest,
     RecordActivityRequest
+)
+from app.config import Settings, get_settings
+from app.security import (
+    AccountPrincipal, create_access_token, get_current_account, hash_password,
+    public_account, require_account, require_child, verify_password,
 )
 from app.logger import get_logger
 
@@ -21,22 +25,13 @@ limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/family")
 
 
-def hash_password(password: str) -> str:
-    """简单的密码哈希（生产环境应使用bcrypt）"""
-    return hashlib.sha256(password.encode()).hexdigest()
-
-
-def generate_token(account_id: str) -> str:
-    """生成简单的token（生产环境应使用JWT）"""
-    return hashlib.sha256(f"{account_id}_{datetime.now().isoformat()}".encode()).hexdigest()
-
-
 @router.post("/register")
 @limiter.limit("5/hour")
 def register_account(
     request: Request,
     req: CreateFamilyAccountRequest,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    settings: Settings = Depends(get_settings),
 ) -> dict:
     """注册家长账号"""
     try:
@@ -45,6 +40,8 @@ def register_account(
             existing = store.get_family_account_by_phone(req.phone)
             if existing:
                 raise HTTPException(status_code=400, detail="该手机号已注册")
+        if req.email and store.get_family_account_by_email(req.email):
+            raise HTTPException(status_code=400, detail="该邮箱已注册")
 
         account = FamilyAccount(
             id=str(uuid.uuid4()),
@@ -54,41 +51,34 @@ def register_account(
             password_hash=hash_password(req.password)
         )
         created_account = store.create_family_account(account)
-        token = generate_token(created_account.id)
+        token = create_access_token(created_account.id, settings)
 
         logger.info("Family account registered", account_id=created_account.id, phone=req.phone)
 
         return {
             "success": True,
             "token": token,
-            "account": {
-                "id": created_account.id,
-                "parent_name": created_account.parent_name,
-                "phone": created_account.phone,
-                "email": created_account.email
-            }
+            "account": public_account(created_account)
         }
     except HTTPException:
         raise
     except Exception as e:
         logger.error("Failed to register account", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="注册失败")
 
 
 @router.post("/login")
 @limiter.limit("10/minute")
 def login_account(
     request: Request,
-    credentials: dict,  # 接收 {username, password}
-    store: SessionStore = Depends(get_session_store)
+    credentials: LoginRequest,
+    store: SessionStore = Depends(get_session_store),
+    settings: Settings = Depends(get_settings),
 ) -> dict:
     """家长登录"""
     try:
-        username = credentials.get('username')
-        password = credentials.get('password')
-
-        if not username or not password:
-            raise HTTPException(status_code=400, detail="请提供用户名和密码")
+        username = credentials.username
+        password = credentials.password
 
         # 尝试通过手机号查找
         account = store.get_family_account_by_phone(username)
@@ -101,10 +91,14 @@ def login_account(
             raise HTTPException(status_code=401, detail="账号不存在")
 
         # 验证密码
-        if account.password_hash != hash_password(password):
+        valid_password, should_rehash = verify_password(password, account.password_hash)
+        if not valid_password:
             raise HTTPException(status_code=401, detail="密码错误")
+        if should_rehash:
+            account.password_hash = hash_password(password)
+            store.update_family_account(account)
 
-        token = generate_token(account.id)
+        token = create_access_token(account.id, settings)
 
         logger.info("User logged in", account_id=account.id)
 
@@ -112,12 +106,7 @@ def login_account(
             "success": True,
             "message": "登录成功",
             "token": token,
-            "account": {
-                "id": account.id,
-                "parent_name": account.parent_name,
-                "phone": account.phone,
-                "email": account.email
-            }
+            "account": public_account(account)
         }
     except HTTPException:
         raise
@@ -131,7 +120,8 @@ def login_account(
 def create_family_account(
     request: Request,
     req: CreateFamilyAccountRequest,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    settings: Settings = Depends(get_settings),
 ) -> dict:
     """Create a new family account"""
     try:
@@ -139,34 +129,41 @@ def create_family_account(
             id=str(uuid.uuid4()),
             parent_name=req.parent_name,
             email=req.email,
-            password_hash=req.password  # TODO: Implement proper password hashing
+            phone=req.phone,
+            password_hash=hash_password(req.password)
         )
         created_account = store.create_family_account(account)
         logger.info("Family account created", account_id=created_account.id)
 
         return {
             "success": True,
+            "token": create_access_token(created_account.id, settings),
             "account_id": created_account.id,
-            "parent_name": created_account.parent_name
+            "parent_name": created_account.parent_name,
+            "account": public_account(created_account),
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to create family account", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="创建账户失败")
 
 
 @router.get("/accounts/{account_id}")
 def get_family_account(
     account_id: str,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Get family account details"""
+    require_account(principal, account_id)
     account = store.get_family_account(account_id)
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
 
     return {
         "success": True,
-        "account": account.model_dump(mode='json')
+        "account": public_account(account)
     }
 
 
@@ -176,10 +173,12 @@ def add_child_profile(
     request: Request,
     account_id: str,
     req: CreateChildProfileRequest,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Add a child profile to family account"""
     try:
+        require_account(principal, account_id)
         child = ChildProfile(
             id=str(uuid.uuid4()),
             name=req.name,
@@ -202,16 +201,18 @@ def add_child_profile(
         raise
     except Exception as e:
         logger.error("Failed to add child profile", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="添加孩子失败")
 
 
 @router.get("/accounts/{account_id}/children/{child_id}")
 def get_child_profile(
     account_id: str,
     child_id: str,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Get child profile with progress"""
+    require_account(principal, account_id)
     child = store.get_child_profile(account_id, child_id)
     if not child:
         raise HTTPException(status_code=404, detail="Child profile not found")
@@ -225,9 +226,11 @@ def get_child_profile(
 @router.get("/accounts/{account_id}/report")
 def get_family_report(
     account_id: str,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Get comparison report for all children"""
+    require_account(principal, account_id)
     report = store.get_comparison_report(account_id)
     if not report:
         raise HTTPException(status_code=404, detail="Account not found")
@@ -243,10 +246,13 @@ def get_family_report(
 def record_activity(
     request: Request,
     req: RecordActivityRequest,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Record learning activity for a child"""
     try:
+        require_account(principal, req.account_id)
+        require_child(store, principal, req.child_id)
         success = False
 
         if req.activity_type == "animal_explored":
@@ -279,7 +285,7 @@ def record_activity(
         raise
     except Exception as e:
         logger.error("Failed to record activity", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="记录活动失败")
 
 
 @router.post("/goals")
@@ -287,10 +293,12 @@ def record_activity(
 def create_weekly_goal(
     request: Request,
     req: CreateWeeklyGoalRequest,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Create a weekly learning goal"""
     try:
+        require_child(store, principal, req.child_id)
         goal = WeeklyGoal(
             id=str(uuid.uuid4()),
             child_id=req.child_id,
@@ -309,17 +317,21 @@ def create_weekly_goal(
             "success": True,
             "goal": created_goal.model_dump(mode='json')
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to create weekly goal", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="创建目标失败")
 
 
 @router.get("/goals/{child_id}")
 def get_child_goals(
     child_id: str,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Get all weekly goals for a child"""
+    require_child(store, principal, child_id)
     goals = store.get_child_weekly_goals(child_id)
 
     return {
@@ -335,10 +347,13 @@ def award_badge(
     account_id: str,
     child_id: str,
     badge_name: str,
-    store: SessionStore = Depends(get_session_store)
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
 ) -> dict:
     """Award a badge to a child"""
     try:
+        require_account(principal, account_id)
+        require_child(store, principal, child_id)
         success = store.award_badge(account_id, child_id, badge_name)
 
         if not success:
@@ -355,4 +370,4 @@ def award_badge(
         raise
     except Exception as e:
         logger.error("Failed to award badge", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="授予徽章失败")

@@ -1,4 +1,5 @@
 import os
+import secrets
 from functools import lru_cache
 
 from dotenv import load_dotenv
@@ -21,6 +22,9 @@ class Settings:
         self.xuanji_api_url = (os.getenv("XUANJI_API_URL") or "").strip()
         self.default_model = (os.getenv("DEFAULT_MODEL") or "Doubao-Seed-2.0-pro").strip()
         self.allowed_models = ALLOWED_MODELS
+        self.auth_secret = (os.getenv("AUTH_SECRET") or secrets.token_urlsafe(48)).strip()
+        self.auth_token_ttl_seconds = int(os.getenv("AUTH_TOKEN_TTL_SECONDS") or "86400")
+        self.max_upload_bytes = int(os.getenv("MAX_UPLOAD_BYTES") or str(10 * 1024 * 1024))
 
         # 语音识别服务配置
         self.speech_provider = (os.getenv("SPEECH_PROVIDER") or "mock").strip()

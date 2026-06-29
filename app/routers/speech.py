@@ -6,15 +6,13 @@ import tempfile
 import os
 
 from app.services.speech_service import SpeechRecognitionService
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.logger import get_logger
+from app.uploads import save_upload_limited
 
 logger = get_logger(__name__)
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/speech")
-
-settings = get_settings()
-
 
 def get_speech_service(provider: str = "mock") -> SpeechRecognitionService:
     """Get speech recognition service instance"""
@@ -26,7 +24,8 @@ def get_speech_service(provider: str = "mock") -> SpeechRecognitionService:
 async def transcribe_audio(
     request: Request,
     audio: UploadFile = File(...),
-    provider: str = Form("mock")
+    provider: str = Form("mock"),
+    settings: Settings = Depends(get_settings),
 ) -> dict:
     """转录音频为文本"""
     tmp_path = None
@@ -35,9 +34,8 @@ async def transcribe_audio(
 
         # 保存上传的音频到临时文件
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            content = await audio.read()
-            tmp.write(content)
             tmp_path = tmp.name
+        await save_upload_limited(audio, tmp_path, settings.max_upload_bytes)
 
         # 调用语音识别服务
         speech_service = get_speech_service(provider)
@@ -51,9 +49,11 @@ async def transcribe_audio(
             "provider": provider
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Transcription failed", error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"转录失败: {str(e)}")
+        raise HTTPException(status_code=500, detail="语音转录失败")
 
     finally:
         if tmp_path and os.path.exists(tmp_path):
@@ -69,7 +69,8 @@ async def assess_pronunciation(
     request: Request,
     audio: UploadFile = File(...),
     provider: str = Form("mock"),
-    reference_text: str = Form(...)
+    reference_text: str = Form(...),
+    settings: Settings = Depends(get_settings),
 ) -> dict:
     """评估发音质量"""
     tmp_path = None
@@ -78,9 +79,8 @@ async def assess_pronunciation(
 
         # 保存上传的音频到临时文件
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            content = await audio.read()
-            tmp.write(content)
             tmp_path = tmp.name
+        await save_upload_limited(audio, tmp_path, settings.max_upload_bytes)
 
         # 调用发音评估服务
         speech_service = get_speech_service(provider)
@@ -97,9 +97,11 @@ async def assess_pronunciation(
             "provider": provider
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Assessment failed", error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"评估失败: {str(e)}")
+        raise HTTPException(status_code=500, detail="发音评估失败")
 
     finally:
         if tmp_path and os.path.exists(tmp_path):
