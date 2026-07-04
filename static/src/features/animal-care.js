@@ -1,13 +1,16 @@
 async function handleQuiz(choice) {
     const animal = getAnimal();
-    const correct = choice === animal.quiz.answer;
+    const quiz = getActiveAnimalQuiz(animal);
+    const correct = choice === quiz.answer;
 
     // 保存当前滚动位置
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
     state.progress.quizTotal += 1;
     state.lastQuiz = {
         animalId: animal.id,
+        quizIndex: quiz.index,
+        question: quiz.question,
+        options: quiz.options,
+        answer: quiz.answer,
         choice,
         correct,
         food: animal.diet.replace(/[。.]$/, ""),
@@ -27,26 +30,22 @@ async function handleQuiz(choice) {
 
     document.querySelectorAll("[data-quiz-choice]").forEach((button) => {
         const index = Number(button.dataset.quizChoice);
-        button.classList.toggle("correct", index === animal.quiz.answer);
+        button.classList.toggle("correct", index === quiz.answer);
         button.classList.toggle("wrong", index === choice && !correct);
         button.disabled = true;
     });
     const result = document.getElementById("quizResult");
     result.textContent = correct
         ? `答对了，已经给${getAnimalDisplayName(animal.id)}喂养：${state.lastQuiz.food}`
-        : `答错了，正确答案是：${animal.quiz.options[animal.quiz.answer]}。正在展示正确示范...`;
+        : `答错了，正确答案是：${quiz.options[quiz.answer]}。可以请AI医生帮小动物治疗和复习。`;
 
     saveState();
     if (correct) {
-        // Update only the necessary parts without full re-render to keep scroll position
         showToast(`已喂养${getAnimalDisplayName(animal.id)}`);
-        // Update stats without re-rendering the entire page
-        updateCareStats(animal);
-        return;
+    } else {
+        showToast("答错了，去动物学堂里的医生治疗看看吧");
     }
-
-    // 答错后：1. 展示正确示范动画 2. 进入医生问答
-    await showCorrectDemonstration(animal, choice);
+    render();
 }
 
 function updateCareStats(animal) {
@@ -101,7 +100,11 @@ async function showCorrectDemonstration(animal, wrongChoice) {
 
 async function treatAnimalAfterWrongAnswer(animal, choice) {
     try {
-        const message = `孩子在小测验中答错了。题目：${animal.quiz.question}。孩子选择：${animal.quiz.options[choice]}。正确答案：${animal.quiz.options[animal.quiz.answer]}。请用AI动物医生的口吻，安慰${animal.name}，给出温和治疗和复习建议。`;
+        const quiz = state.lastQuiz?.animalId === animal.id
+            ? state.lastQuiz
+            : getActiveAnimalQuiz(animal);
+        const options = quiz.options || [];
+        const message = `孩子在小测验中答错了。题目：${quiz.question}。孩子选择：${options[choice]}。正确答案：${options[quiz.answer]}。请用AI动物医生的口吻，安慰${animal.name}，给出温和治疗和复习建议。`;
         const result = await askAI("doctor", message, "doctorAnswer", "doctorMeta", { model: state.model });
         state.progress.doctorChecks += 1;
         state.progress.treatments = (state.progress.treatments || 0) + 1;

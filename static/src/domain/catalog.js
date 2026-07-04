@@ -44,6 +44,9 @@ const creatureTails = [
     { id: "cat", label: "星星猫尾", file: "parts/tail-cat.svg" },
     { id: "puppy", label: "饼干小狗尾", file: "parts/tail-puppy.svg" }
 ];
+const creatureSpecials = [
+    { id: "horn", label: "发光星角", file: "parts/horn-sparkles.svg" }
+];
 const animals = [
     {
         id: "panda",
@@ -270,6 +273,173 @@ const animals = [
     }
 ];
 
+const animalQuizBank = {
+    panda: [
+        {
+            question: "大熊猫主要住在哪里？",
+            options: ["沙漠", "竹林山地", "海底"],
+            answer: 1
+        },
+        {
+            question: "保护熊猫最重要的是保护什么？",
+            options: ["竹林家园", "玩具车", "糖果屋"],
+            answer: 0
+        },
+        {
+            question: "熊猫宝宝刚出生时通常怎样？",
+            options: ["已经会飞", "很小很需要照顾", "会自己做饭"],
+            answer: 1
+        }
+    ],
+    rabbit: [
+        {
+            question: "兔子住在哪里更安全？",
+            options: ["很吵的马路", "安静的草地洞穴", "深海里"],
+            answer: 1
+        },
+        {
+            question: "兔子为什么常常咬东西？",
+            options: ["牙齿会慢慢长", "想变成老虎", "耳朵会变短"],
+            answer: 0
+        },
+        {
+            question: "兔子适合吃哪类食物？",
+            options: ["巧克力", "鱼骨头", "干草和叶子"],
+            answer: 2
+        }
+    ],
+    frog: [
+        {
+            question: "青蛙喜欢什么样的地方？",
+            options: ["干热沙漠", "湿润水边", "雪山顶"],
+            answer: 1
+        },
+        {
+            question: "青蛙用什么帮助跳跃？",
+            options: ["有力的后腿", "长鼻子", "小翅膀"],
+            answer: 0
+        },
+        {
+            question: "青蛙常吃什么？",
+            options: ["石头", "竹子", "小虫子"],
+            answer: 2
+        }
+    ],
+    penguin: [
+        {
+            question: "企鹅的翅膀游泳时像什么？",
+            options: ["小船桨", "大雨伞", "长铲子"],
+            answer: 0
+        },
+        {
+            question: "企鹅常生活在什么地方？",
+            options: ["竹林山地", "寒冷海岸", "热沙漠"],
+            answer: 1
+        },
+        {
+            question: "企鹅宝宝需要什么？",
+            options: ["糖水", "火堆", "保暖和照顾"],
+            answer: 2
+        }
+    ],
+    dolphin: [
+        {
+            question: "海豚呼吸要到哪里？",
+            options: ["水面", "地下", "树洞"],
+            answer: 0
+        },
+        {
+            question: "海豚喜欢吃什么？",
+            options: ["青草", "小鱼和乌贼", "竹叶"],
+            answer: 1
+        },
+        {
+            question: "海豚用声音可以做什么？",
+            options: ["织毛衣", "挖山洞", "寻找和交流"],
+            answer: 2
+        }
+    ],
+    elephant: [
+        {
+            question: "大象为什么喜欢泥巴？",
+            options: ["帮助降温防晒", "变成石头", "装饰鼻子"],
+            answer: 0
+        },
+        {
+            question: "大象的大耳朵能帮助什么？",
+            options: ["在天空飞", "帮助散热", "装满食物"],
+            answer: 1
+        },
+        {
+            question: "小象通常和谁一起走？",
+            options: ["小鱼", "独自去月亮", "象群家人"],
+            answer: 2
+        }
+    ],
+    tiger: [
+        {
+            question: "老虎属于哪类动物？",
+            options: ["食肉动物", "只吃草的动物", "小昆虫"],
+            answer: 0
+        },
+        {
+            question: "老虎会游泳吗？",
+            options: ["只会飞", "会游泳", "不能碰水"],
+            answer: 1
+        },
+        {
+            question: "为什么要保护老虎？",
+            options: ["让它住进教室", "给它穿衣服", "维持森林生态"],
+            answer: 2
+        }
+    ],
+    camel: [
+        {
+            question: "骆驼宽宽的脚掌有什么用？",
+            options: ["不容易陷进沙里", "游得更快", "抓树枝"],
+            answer: 0
+        },
+        {
+            question: "骆驼长睫毛能帮助什么？",
+            options: ["发光", "挡风沙", "听声音"],
+            answer: 1
+        },
+        {
+            question: "驼峰里的脂肪能帮助骆驼什么？",
+            options: ["变成鱼", "挖沙洞", "缺食物时有能量"],
+            answer: 2
+        }
+    ]
+};
+
+function getAnimalQuizList(animal) {
+    const extraQuestions = animalQuizBank[animal.id] || [];
+    return [animal.quiz, ...extraQuestions].filter(Boolean).map((quiz, index) => ({
+        ...quiz,
+        index,
+        total: extraQuestions.length + 1
+    }));
+}
+
+function getAnimalQuizCursor(animal) {
+    const list = getAnimalQuizList(animal);
+    const cursor = Number(state.quizCursor?.[animal.id] || 0);
+    if (!Number.isFinite(cursor) || cursor < 0) return 0;
+    return cursor % list.length;
+}
+
+function getActiveAnimalQuiz(animal) {
+    const list = getAnimalQuizList(animal);
+    return list[getAnimalQuizCursor(animal)] || animal.quiz;
+}
+
+function moveToNextAnimalQuiz(animal) {
+    const list = getAnimalQuizList(animal);
+    if (!state.quizCursor) state.quizCursor = {};
+    state.quizCursor[animal.id] = (getAnimalQuizCursor(animal) + 1) % list.length;
+    state.lastQuiz = null;
+}
+
 const defaultState = {
     profile: null,
     pendingRole: "child",
@@ -323,6 +493,7 @@ const defaultState = {
     doctorLogs: [],
     feedingLogs: [],
     lastQuiz: null,
+    quizCursor: {},
     creations: [],
     stories: [],
     draftCreature: {

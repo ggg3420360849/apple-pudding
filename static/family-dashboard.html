@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>家庭学习中心 - 苹果布丁</title>
     <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#3f9a68">
+    <link rel="icon" href="/static/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icon-180.png">
     <style>
         :root {
             --bg: #F7F5F1;
@@ -414,7 +418,7 @@
             color: white;
         }
     </style>
-    <link rel="stylesheet" href="/static/styles/handdrawn.css">
+    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260629-formalign">
 </head>
 <body>
     <div class="offline-indicator" id="offlineIndicator">
@@ -432,7 +436,7 @@
                 <button onclick="showAddChildModal()">+ 添加孩子</button>
                 <button class="secondary" onclick="location.href='/static/voice-interaction.html'">🎤 语音交互</button>
                 <button class="secondary" onclick="showInviteQRCode(currentAccount?.id)">📱 邀请好友</button>
-                <button class="secondary" onclick="location.href='/static/index.html'">返回主页</button>
+                <button class="secondary" onclick="location.href='/static/index.html?v=20260629-formalign'">返回主页</button>
             </div>
         </header>
 

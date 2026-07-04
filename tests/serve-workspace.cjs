@@ -2,7 +2,13 @@ const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const types = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css", ".png": "image/png" };
+const types = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "text/javascript; charset=utf-8",
+    ".css": "text/css",
+    ".png": "image/png",
+    ".svg": "image/svg+xml"
+};
 const server = http.createServer((request, response) => {
     const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname).replace(/^\/+/, "");
     const file = path.resolve(process.cwd(), pathname || "static/index.html");

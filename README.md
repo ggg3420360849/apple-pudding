@@ -72,3 +72,7 @@ node tests/frontend-smoke.cjs
 ```bash
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
+
+## 素材来源
+
+想象动物区的动物身体、翅膀、尾巴、星角和装饰贴纸素材来自 [OpenMoji](https://openmoji.org/)，授权为 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。

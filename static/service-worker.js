@@ -1,11 +1,17 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'apple-pudding-v7';
-const RUNTIME_CACHE = 'runtime-cache';
+const CACHE_NAME = 'apple-pudding-v9';
+const RUNTIME_CACHE = 'runtime-cache-v9';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
     '/',
     '/static/index.html',
+    '/static/index-login.html',
+    '/static/manifest.json',
+    '/static/favicon.ico',
+    '/static/icon-180.png',
+    '/static/icon-192.png',
+    '/static/icon-512.png',
     '/static/assets/map/storybook-habitats.png',
     '/static/assets/map/storybook-habitats-portrait.png',
     // Add more static assets as needed
@@ -59,8 +65,14 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // For API requests, use network-first strategy
-    if (url.pathname.startsWith('/api/')) {
+    // Pages and code assets should update immediately during development.
+    if (
+        url.pathname === '/' ||
+        url.pathname.endsWith('.html') ||
+        request.destination === 'script' ||
+        request.destination === 'style' ||
+        url.pathname.startsWith('/api/')
+    ) {
         event.respondWith(networkFirst(request));
         return;
     }

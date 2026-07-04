@@ -123,7 +123,7 @@ document.addEventListener("click", async (event) => {
         return;
     }
     if (action === "reset-quiz") {
-        state.lastQuiz = null;
+        moveToNextAnimalQuiz(getAnimal());
         saveState();
         render();
         return;
@@ -145,6 +145,7 @@ document.addEventListener("click", async (event) => {
                 question: animal.quick?.[0] || `${animal.name}有什么特别的地方？`,
                 isGenerating: false
             };
+            state.lastQuiz = null;
             saveState();
             render();
             // Simulate loading animation for 2.5 seconds

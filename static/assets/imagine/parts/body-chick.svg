@@ -1,20 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360" role="img" aria-label="chick body">
-  <g stroke="#65503d" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M113 58c3-22 17-34 32-11 10-25 29-24 37 6 13-8 25 2 24 25-29-11-62-13-93-2z" fill="#ffd65f"/>
-    <path d="M65 128c-1-44 31-75 77-81 50-6 94 17 102 61 8 42-18 82-59 94-33 10-78 3-101-20-13-13-19-31-19-54z" fill="#ffd85c"/>
-    <path d="M111 116c9-10 24-8 28 4 3 10-6 21-20 20-14-1-19-13-8-24z" fill="#4b3d32"/>
-    <path d="M189 116c-9-10-24-8-28 4-3 10 6 21 20 20 14-1 19-13 8-24z" fill="#4b3d32"/>
-    <path d="M119 115c4-3 8-3 12 0M181 115c-4-3-8-3-12 0" fill="none" stroke="#fffdf4" stroke-width="3"/>
-    <path d="M126 148c15-14 34-14 49 0-5 9-13 15-24 16-11 0-20-6-25-16z" fill="#ff9b45"/>
-    <path d="M93 157c-10 3-20 2-29-2M207 157c10 3 20 2 29-2" fill="none" stroke="#ea9778" stroke-width="4.5"/>
-    <path d="M124 189c12 11 42 12 53 0 1 14 0 30-2 43-15 12-39 12-51 0-1-13-1-29 0-43z" fill="#ffda61"/>
-    <path d="M75 223c-34 9-56 33-51 58 5 24 35 29 58 12 17-13 29-33 39-56-15-3-31-8-46-14z" fill="#ffd85c"/>
-    <path d="M225 223c34 9 56 33 51 58-5 24-35 29-58 12-17-13-29-33-39-56 15-3 31-8 46-14z" fill="#ffd85c"/>
-    <path d="M91 242c10 7 24 9 39 6M209 242c-10 7-24 9-39 6" fill="none" stroke="#fff2a2" stroke-width="4.5"/>
-    <path d="M75 255c0-38 30-66 71-70 43-4 80 19 88 59 8 41-12 82-46 97-28 13-66 9-89-13-17-17-25-43-24-73z" fill="#ffda61"/>
-    <path d="M110 255c18 18 60 20 82 0 10 23 5 51-11 66-17 16-48 15-65-1-15-16-18-42-6-65z" fill="#ffe887" stroke="#eeb94d" stroke-width="5"/>
-    <path d="M120 309c-9 20-24 30-43 35M180 309c9 20 24 30 43 35" fill="none" stroke="#d9923a" stroke-width="6"/>
-    <path d="M104 337c-17 11-37 11-55 3M196 337c17 11 37 11 55 3" fill="none" stroke="#d9923a" stroke-width="7"/>
-    <path d="M123 226c11 8 27 11 43 9M121 275c17 13 43 16 65 5" fill="none" stroke="#fff4a8" stroke-width="3.5"/>
+<svg id="emoji" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <g id="color">
+    <path fill="#fcea2b" stroke="#fcea2b" stroke-miterlimit="10" stroke-width="1.8" d="m36,32c8.2843,0,12.8894,5.3033,15,11,1.5787,4.2609-5.4843,11.7165-15.0067,11.0122-9.3743-.6933-16.1286-5.0122-14.9933-11.0122,1.1294-5.9692,6.7157-11,15-11Z"/>
+    <path fill="#fcea2b" d="m42.25,36c2,9,9,9,9,9,2-6-6-11-6-11,7-6,1-10,1-10,0-10-10.375-11-10.375-11-10.375,2-9.625,11-9.625,11-6,4,.625,9.75.625,9.75,0,0-7.625,4.25-5.625,11.25,0,0,8,0,8-9"/>
+    <path fill="#f1b31c" d="m36.6219,26.6032s5.9251-.2907,0,5.2324c0,0-5.9251-5.2324,0-5.2324Z"/>
+  </g>
+  <g id="line">
+    <path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m23,49s4.7974,5.0246,13.48,5.0122c8.52-.0122,12.52-5.0122,12.52-5.0122"/>
+    <line x1="33.625" x2="31.125" y1="13.5" y2="11.625" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <line x1="35.125" x2="34.125" y1="12.875" y2="10.75" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <line x1="37.125" x2="37.25" y1="13.25" y2="10" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <polyline fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="31.5958 53.7306 30.625 58.25 27.5 60"/>
+    <line x1="33.5" x2="30.625" y1="59" y2="58.25" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <polyline fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="39.9042 53.7306 40.875 58.25 44 60"/>
+    <line x1="38" x2="40.875" y1="59" y2="58.25" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <circle cx="32.25" cy="23" r="2"/>
+    <circle cx="40.25" cy="23" r="2"/>
+    <path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m36.3719,26.6032s5.9132-.2907,0,5.2324c0,0-5.9132-5.2324,0-5.2324Z"/>
+    <path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m42,36c2,9,9,9,9,9,2-6-6-11-6-11,7-6,1-10,1-10,0-10-10.375-11-10.375-11-10.375,2-9.625,11-9.625,11-6,4,.625,9.75.625,9.75,0,0-7.625,4.25-5.625,11.25,0,0,8,0,8-9"/>
   </g>
 </svg>

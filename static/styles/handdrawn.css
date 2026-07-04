@@ -288,16 +288,13 @@ h3 {
     z-index: 0;
     right: 11px;
     top: 9px;
-    width: 31px;
-    height: 24px;
+    width: 42px;
+    height: 42px;
     pointer-events: none;
-    background:
-        linear-gradient(135deg, transparent 0 44%, rgba(91, 72, 56, 0.24) 45% 53%, transparent 54% 100%),
-        radial-gradient(ellipse at 26% 72%, rgba(94, 157, 104, 0.34) 0 34%, transparent 36%),
-        radial-gradient(ellipse at 70% 35%, rgba(94, 157, 104, 0.28) 0 32%, transparent 34%);
-    border-radius: 58% 42% 60% 40%;
-    transform: rotate(12deg);
-    opacity: 0.9;
+    background: url("/static/assets/stickers/flower-doodle.svg") center / contain no-repeat;
+    transform: rotate(7deg);
+    opacity: 0.72;
+    filter: drop-shadow(0 2px 1px rgba(91, 72, 56, 0.12));
 }
 
 .panel::after,
@@ -323,17 +320,15 @@ h3 {
     z-index: 0;
     left: 10px;
     bottom: 9px;
-    width: 38px;
-    height: 22px;
+    width: 56px;
+    height: 34px;
     pointer-events: none;
-    background:
-        linear-gradient(110deg, transparent 0 45%, rgba(91, 72, 56, 0.18) 46% 53%, transparent 54% 100%),
-        radial-gradient(ellipse at 20% 70%, rgba(242, 191, 75, 0.34) 0 28%, transparent 30%),
-        radial-gradient(ellipse at 50% 42%, rgba(232, 121, 97, 0.25) 0 24%, transparent 26%),
-        radial-gradient(ellipse at 78% 66%, rgba(92, 159, 201, 0.28) 0 24%, transparent 26%);
-    border-radius: 999px;
-    transform: rotate(-8deg);
-    opacity: 0.85;
+    background: url("/static/assets/stickers/leaf-sprig.svg") center / contain no-repeat;
+    border: 0;
+    border-radius: 0;
+    transform: rotate(-9deg);
+    opacity: 0.6;
+    box-shadow: none;
 }
 
 .panel > *,
@@ -389,26 +384,22 @@ h3 {
     right: 10px;
     top: 8px;
     width: 46px;
-    height: 36px;
-    background:
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.76) 0 24%, transparent 26%),
-        conic-gradient(from 18deg, #f2bf4b 0 10%, transparent 10% 20%, #e87961 20% 30%, transparent 30% 42%, #5c9fc9 42% 52%, transparent 52% 64%, #5e9d68 64% 74%, transparent 74% 100%);
-    border-radius: 50%;
-    transform: rotate(10deg);
+    height: 46px;
+    background: url("/static/assets/stickers/star-doodle.svg") center / contain no-repeat;
+    transform: rotate(9deg);
+    opacity: 0.7;
 }
 
 .answer-panel::after {
     left: 9px;
     bottom: 8px;
-    width: 52px;
-    height: 28px;
-    background:
-        radial-gradient(ellipse at 18% 60%, rgba(94, 157, 104, 0.34) 0 28%, transparent 30%),
-        radial-gradient(ellipse at 48% 42%, rgba(94, 157, 104, 0.28) 0 25%, transparent 27%),
-        radial-gradient(ellipse at 78% 60%, rgba(94, 157, 104, 0.32) 0 27%, transparent 29%),
-        linear-gradient(90deg, transparent 0 45%, rgba(91,72,56,0.24) 46% 52%, transparent 53% 100%);
-    border-radius: 999px;
+    width: 66px;
+    height: 40px;
+    background: url("/static/assets/stickers/leaf-sprig.svg") center / contain no-repeat;
+    border: 0;
+    border-radius: 0;
     transform: rotate(-6deg);
+    opacity: 0.62;
 }
 
 .quiz-box {
@@ -437,11 +428,10 @@ h3 {
     right: 12px;
     top: -2px;
     width: 44px;
-    height: 38px;
-    background:
-        radial-gradient(circle at 50% 50%, #fff8d8 0 18%, transparent 19%),
-        conic-gradient(from 0deg, #f2bf4b 0 8%, transparent 8% 17%, #f2bf4b 17% 25%, transparent 25% 34%, #f2bf4b 34% 42%, transparent 42% 51%, #f2bf4b 51% 59%, transparent 59% 68%, #f2bf4b 68% 76%, transparent 76% 100%);
+    height: 44px;
+    background: url("/static/assets/stickers/star-doodle.svg") center / contain no-repeat;
     transform: rotate(12deg);
+    opacity: 0.68;
 }
 
 .choice-button {
@@ -455,13 +445,13 @@ h3 {
     position: absolute;
     left: 9px;
     top: 8px;
-    width: 13px;
-    height: 13px;
-    border-radius: 52% 48% 55% 45%;
-    background: rgba(232, 121, 97, 0.28);
-    box-shadow:
-        20px 18px 0 rgba(92, 159, 201, 0.2),
-        calc(100% - 8px) 2px 0 rgba(94, 157, 104, 0.22);
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 0;
+    background: url("/static/assets/stickers/flower-doodle.svg") center / contain no-repeat;
+    transform: rotate(-10deg);
+    opacity: 0.34;
     pointer-events: none;
 }
 
@@ -476,14 +466,12 @@ h3 {
     right: 14px;
     bottom: 12px;
     width: 62px;
-    height: 42px;
-    background:
-        radial-gradient(ellipse at 18% 64%, rgba(94, 157, 104, 0.34) 0 25%, transparent 27%),
-        radial-gradient(ellipse at 45% 38%, rgba(94, 157, 104, 0.28) 0 23%, transparent 25%),
-        radial-gradient(ellipse at 72% 64%, rgba(94, 157, 104, 0.32) 0 24%, transparent 26%),
-        linear-gradient(110deg, transparent 0 46%, rgba(91,72,56,0.20) 47% 52%, transparent 53% 100%);
-    border-radius: 999px;
+    height: 36px;
+    background: url("/static/assets/stickers/leaf-sprig.svg") center / contain no-repeat;
+    border: 0;
+    border-radius: 0;
     transform: rotate(7deg);
+    opacity: 0.66;
 }
 
 .animal-summary .detail-list {
@@ -494,13 +482,13 @@ h3 {
 .stage-card::before {
     right: 8px;
     top: 8px;
-    width: 36px;
-    height: 36px;
-    background:
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.74) 0 22%, transparent 23%),
-        conic-gradient(from 18deg, rgba(242,191,75,0.72), transparent 12%, rgba(232,121,97,0.66) 24%, transparent 36%, rgba(92,159,201,0.65) 48%, transparent 60%, rgba(94,157,104,0.66) 72%, transparent 100%);
-    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    background: url("/static/assets/stickers/flower-doodle.svg") center / contain no-repeat;
+    border: 0;
+    border-radius: 0;
     transform: rotate(-10deg);
+    opacity: 0.62;
 }
 
 .qa-answer-box {
@@ -510,12 +498,13 @@ h3 {
 .qa-answer-box::before {
     left: 4px;
     top: 2px;
-    width: 48px;
-    height: 16px;
-    border-radius: 999px;
-    background:
-        linear-gradient(90deg, rgba(242,191,75,0.46), rgba(232,121,97,0.34), rgba(92,159,201,0.34));
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 0;
+    background: url("/static/assets/stickers/star-doodle.svg") center / contain no-repeat;
     transform: rotate(-2deg);
+    opacity: 0.45;
 }
 
 .panel-title {
@@ -599,6 +588,12 @@ button.primary,
 .save-creature-button {
     color: #fffdf7;
     background: linear-gradient(180deg, #6eaa70, #4f8f5c);
+}
+
+.quiz-doctor-button {
+    background: linear-gradient(180deg, var(--kid-blue), #4a80a8);
+    border-color: rgba(63, 115, 154, 0.28);
+    transform: rotate(0.45deg);
 }
 
 .secondary-button,
@@ -932,6 +927,194 @@ button:active,
     max-width: 100%;
 }
 
+.main.route-imagine {
+    background: #ffffff;
+    color: var(--kid-ink);
+    scrollbar-gutter: stable both-edges;
+}
+
+.route-imagine::before {
+    display: none;
+}
+
+.route-imagine::after {
+    display: none;
+}
+
+.route-imagine .topbar {
+    background:
+        linear-gradient(180deg, rgba(255, 252, 236, 0.82), rgba(244, 250, 224, 0.68));
+    backdrop-filter: blur(2px);
+}
+
+.route-imagine .imagine-stage {
+    background: #ffffff;
+}
+
+.imagine-sticker {
+    position: absolute;
+    z-index: 8;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 2px rgba(91, 72, 56, 0.14));
+}
+
+.sticker-star {
+    top: 17px;
+    left: 18px;
+    width: 46px;
+    height: 46px;
+    background: url("/static/assets/stickers/star-doodle.svg") center / contain no-repeat;
+    transform: rotate(-11deg);
+    opacity: 0.76;
+}
+
+.sticker-leaf {
+    right: 17px;
+    top: 24px;
+    width: 64px;
+    height: 40px;
+    background: url("/static/assets/stickers/leaf-sprig.svg") center / contain no-repeat;
+    border: 0;
+    border-radius: 0;
+    transform: rotate(12deg);
+    opacity: 0.68;
+}
+
+.sticker-pencil {
+    left: 18px;
+    bottom: 20px;
+    width: 72px;
+    height: 26px;
+    background: url("/static/assets/stickers/crayon-doodle.svg") center / contain no-repeat;
+    border: 0;
+    border-radius: 0;
+    transform: rotate(-17deg);
+    opacity: 0.7;
+}
+
+.route-imagine .stage-card::after {
+    content: "";
+    position: absolute;
+    z-index: 5;
+    right: 30px;
+    bottom: 28px;
+    width: 52px;
+    height: 22px;
+    pointer-events: none;
+    background: url("/static/assets/stickers/flower-doodle.svg") center / contain no-repeat;
+    border: 0;
+    border-radius: 0;
+    transform: rotate(9deg);
+    opacity: 0.54;
+    filter: drop-shadow(0 3px 2px rgba(91, 72, 56, 0.12));
+}
+
+.route-imagine .creature-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    width: min(100% - 28px, 376px);
+    margin-inline: auto;
+    text-align: center;
+    gap: 14px;
+    padding: 18px 14px;
+    background:
+        radial-gradient(circle at 22px 18px, rgba(242, 191, 75, 0.18) 0 6px, transparent 7px),
+        radial-gradient(circle at calc(100% - 24px) 20px, rgba(92, 159, 201, 0.16) 0 6px, transparent 7px),
+        linear-gradient(180deg, rgba(255, 249, 224, 0.82), rgba(234, 248, 224, 0.72));
+}
+
+.route-imagine .creature-thumb {
+    justify-self: center;
+    width: 72px;
+    height: 72px;
+}
+
+.route-imagine .creature-notes {
+    --creature-form-width: min(100%, 300px);
+    --creature-label-width: 112px;
+    --creature-field-width: calc(var(--creature-form-width) - var(--creature-label-width) - 8px);
+    width: var(--creature-form-width);
+    display: grid;
+    margin-inline: auto;
+    justify-items: stretch;
+    gap: 8px;
+}
+
+.route-imagine .note-row {
+    width: var(--creature-form-width);
+    display: grid;
+    grid-template-columns: var(--creature-label-width) var(--creature-field-width);
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    justify-items: stretch;
+}
+
+.route-imagine .note-label {
+    width: var(--creature-label-width);
+    text-align: right;
+    justify-self: end;
+    padding-right: 2px;
+    white-space: nowrap;
+}
+
+.route-imagine .creature-card .text-input,
+.route-imagine .creature-card .select-input {
+    width: var(--creature-field-width);
+    min-width: 0;
+    min-height: 56px;
+    height: 56px;
+    padding-inline: 12px;
+    text-align: center;
+}
+
+.route-imagine .creature-summary {
+    width: var(--creature-form-width);
+    margin-top: 2px;
+    margin-inline: auto;
+    color: var(--kid-muted);
+    text-align: center;
+}
+
+.route-imagine .imagine-actions {
+    width: min(100% - 28px, 376px);
+    margin-inline: auto;
+}
+
+@media (max-width: 380px) {
+    .route-imagine .creature-notes {
+        --creature-form-width: min(100%, 268px);
+        --creature-label-width: 104px;
+    }
+}
+
+@media (max-width: 340px) {
+    .route-imagine .creature-notes {
+        --creature-form-width: min(100%, 238px);
+    }
+
+    .route-imagine .note-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .route-imagine .note-label {
+        width: 100%;
+        padding-right: 0;
+        text-align: center;
+        justify-self: center;
+    }
+
+    .route-imagine .creature-card .text-input,
+    .route-imagine .creature-card .select-input {
+        width: 100%;
+    }
+}
+
 @media (min-width: 761px) {
     body {
         min-height: 100dvh;
@@ -987,6 +1170,7 @@ button:active,
 
     .main.route-imagine {
         padding: 0 0 calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+        background: #ffffff;
     }
 
     .topbar {
@@ -1016,19 +1200,263 @@ button:active,
 
 @media (max-width: 390px) {
     :root {
-        --bottom-nav-height: 74px;
+        --bottom-nav-height: 86px;
     }
 
     .nav-item,
     .report-nav-item {
-        min-height: 54px;
-        font-size: 10px;
+        min-height: 66px;
+        font-size: 13px;
     }
 
     .nav-icon,
     .report-nav-icon {
-        width: 24px;
-        height: 24px;
-        font-size: 17px;
+        width: 30px;
+        height: 30px;
+        font-size: 22px;
     }
+}
+
+/* Larger kid-readable type across the app. */
+:root {
+    --bottom-nav-height: 104px;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-size: 20px;
+}
+
+.main {
+    padding-bottom: calc(var(--bottom-nav-height) + 14px + env(safe-area-inset-bottom));
+}
+
+.sidebar {
+    min-height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+}
+
+.nav-item,
+.report-nav-item {
+    min-height: 80px;
+    gap: 6px;
+    font-size: 16px;
+    line-height: 1.15;
+}
+
+.nav-icon,
+.report-nav-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 28px;
+}
+
+.page-title h2 {
+    font-size: 31px;
+}
+
+.page-title p,
+.panel-title span,
+.subtitle,
+.muted,
+.meta-line,
+.animal-status-text,
+.loading-subtext {
+    font-size: 19px;
+    line-height: 1.45;
+}
+
+.panel-title h3,
+.quiz-question,
+.answer-label,
+.story-title,
+.selection-title {
+    font-size: 26px;
+    line-height: 1.35;
+}
+
+.detail-list,
+.detail-list p,
+.answer-panel,
+.qa-answer-box,
+.doctor-note,
+.care-answer,
+.collection-item,
+.story-item,
+.activity-item,
+.animal-status-text,
+.creature-summary {
+    font-size: 20px;
+    line-height: 1.65;
+}
+
+.text-input,
+.select-input,
+.textarea-input,
+.primary-button,
+.secondary-button,
+.danger-button,
+.choice-button,
+.tool-button,
+.back-button,
+.chip,
+.animal-chip {
+    font-size: 20px;
+    min-height: 64px;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button,
+.choice-button,
+.tool-button,
+.back-button {
+    padding-inline: 16px;
+}
+
+.map-label,
+.marker .animal-name,
+.unlock-bubble,
+.map-scroll-hint {
+    font-size: 18px;
+    line-height: 1.35;
+}
+
+.imagine-kicker,
+.material-title,
+.note-label,
+.creature-card p,
+.route-imagine .creature-summary {
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.imagine-intro h3 {
+    font-size: 31px;
+}
+
+.imagine-intro p {
+    font-size: 18px;
+}
+
+.creature-card .text-input,
+.creature-card .select-input {
+    min-height: 54px;
+    font-size: 19px;
+}
+
+.note-row {
+    grid-template-columns: 122px minmax(0, 1fr);
+}
+
+@media (max-width: 760px) {
+    .main {
+        padding-bottom: calc(var(--bottom-nav-height) + 12px + env(safe-area-inset-bottom));
+    }
+
+    .main.route-imagine {
+        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+    }
+
+    .page-title h2 {
+        font-size: 29px;
+    }
+
+    .page-title p {
+        font-size: 19px;
+    }
+
+    .panel-title h3 {
+        font-size: 25px;
+    }
+}
+
+/* Standalone login / parent pages also load this stylesheet. */
+.login-container,
+.mobile-container,
+.container {
+    font-size: 20px;
+}
+
+.login-container .header p,
+.login-container .settings-link,
+.login-container .links,
+.mobile-container .header-title p,
+.mobile-container .welcome-section p,
+.mobile-container .child-age,
+.mobile-container .stat-label,
+.container .stat-label,
+.container .calendar-date,
+.container .achievement-description,
+.container .activity-time,
+.container .empty-state {
+    font-size: 19px;
+    line-height: 1.45;
+}
+
+.login-container .role-tab,
+.login-container .form-group label,
+.login-container .form-group input,
+.login-container .form-group select,
+.login-container .auth-tab,
+.login-container .submit-btn,
+.mobile-container .logout-btn,
+.mobile-container .form-group label,
+.mobile-container .form-group input,
+.mobile-container .form-group select,
+.mobile-container .form-actions button,
+.container select,
+.container button,
+.container .tab,
+.container .form-group input,
+.container .form-group select {
+    font-size: 20px;
+    min-height: 58px;
+}
+
+.login-container .header h1,
+.mobile-container .header-title h1,
+.mobile-container .welcome-section h2 {
+    font-size: 31px;
+}
+
+.login-container p,
+.login-container a,
+.login-container label,
+.login-container input,
+.login-container select,
+.login-container button,
+.login-container .message,
+.mobile-container p,
+.mobile-container a,
+.mobile-container label,
+.mobile-container input,
+.mobile-container select,
+.mobile-container button,
+.mobile-container .child-card,
+.mobile-container .quick-action,
+.container p,
+.container span,
+.container label,
+.container input,
+.container select,
+.container button,
+.container th,
+.container td,
+.container .tab,
+.container .card,
+.container .achievement {
+    font-size: 20px;
+    line-height: 1.45;
+}
+
+.login-container .header p,
+.mobile-container .header-title p,
+.mobile-container .stat-label,
+.container .stat-label,
+.container .calendar-date,
+.container .activity-time {
+    font-size: 19px;
 }

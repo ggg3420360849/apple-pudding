@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#3f9a68">
+    <link rel="icon" href="/static/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icon-180.png">
     <title>苹果布丁动物乐园 - 登录</title>
     <style>
         :root {
@@ -50,8 +55,22 @@
         }
 
         .logo-icon {
-            font-size: 64px;
+            width: 88px;
+            height: 88px;
             margin-bottom: 16px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #fffdf7;
+            box-shadow: 0 8px 22px rgba(31, 41, 51, 0.12);
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
         }
 
         h1 {
@@ -176,7 +195,7 @@
 <body>
     <div class="login-container">
         <div class="logo">
-            <div class="logo-icon">🍎</div>
+            <div class="logo-icon"><img src="/static/icon-192.png" alt=""></div>
             <h1>苹果布丁动物乐园</h1>
             <p class="subtitle">家长登录后可为孩子创建专属账号</p>
         </div>

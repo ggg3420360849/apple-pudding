@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#3f9a68">
+    <link rel="icon" href="/static/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icon-180.png">
     <title>家长门户 - 苹果布丁</title>
     <style>
         :root {
@@ -413,7 +418,7 @@
             background: rgba(0,0,0,0.3);
         }
     </style>
-    <link rel="stylesheet" href="/static/styles/handdrawn.css">
+    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260629-formalign">
 </head>
 <body>
     <div class="mobile-container">
@@ -632,7 +637,7 @@
             sessionStorage.setItem(activeSessionKey, sessionId);
 
             // 跳转到主应用（家长端界面）
-            window.location.href = '/static/index.html';
+            window.location.href = '/static/index.html?v=20260629-formalign';
         }
 
         // 显示添加孩子模态框
@@ -738,7 +743,7 @@
             const currentChild = localStorage.getItem('currentChild');
             if (currentChild) {
                 // 跳转到 index.html 并设置路由到报告页面
-                window.location.href = '/static/index.html#report-overview';
+                window.location.href = '/static/index.html?v=20260629-formalign#report-overview';
             } else {
                 showToast('请先选择一个孩子', 'error');
             }
@@ -750,7 +755,7 @@
             const currentChild = localStorage.getItem('currentChild');
             if (currentChild) {
                 // 跳转到 index.html 并设置路由到设置页面
-                window.location.href = '/static/index.html#report-settings';
+                window.location.href = '/static/index.html?v=20260629-formalign#report-settings';
             } else {
                 showToast('请先选择一个孩子', 'error');
             }

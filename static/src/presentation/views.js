@@ -1,4 +1,42 @@
+const routeScrollPositions = new Map();
+
+function getMainRouteKey(main = document.querySelector(".main")) {
+    const routeClass = Array.from(main?.classList || []).find((name) => name.startsWith("route-"));
+    return routeClass ? routeClass.slice("route-".length) : state.route;
+}
+
+function captureMainScrollPosition() {
+    const main = document.querySelector(".main");
+    if (!main) return null;
+    const key = getMainRouteKey(main);
+    const position = {
+        mainTop: main.scrollTop,
+        windowTop: window.pageYOffset || document.documentElement.scrollTop || 0
+    };
+    routeScrollPositions.set(key, position);
+    return { key, position };
+}
+
+function restoreMainScrollPosition(previous) {
+    const key = state.route;
+    const saved = routeScrollPositions.get(key) || (previous?.key === key ? previous.position : null);
+    if (!saved) return;
+
+    const restore = () => {
+        const main = document.querySelector(".main");
+        if (main) main.scrollTop = saved.mainTop;
+        window.scrollTo({ top: saved.windowTop, behavior: "auto" });
+    };
+
+    restore();
+    window.requestAnimationFrame(() => {
+        restore();
+        window.requestAnimationFrame(restore);
+    });
+}
+
 function render() {
+    const scrollPosition = captureMainScrollPosition();
     // 如果没有 profile，尝试从 index-login.html 创建的会话加载
     if (!state.profile) {
         // 重新加载状态，以防会话刚刚创建
@@ -13,6 +51,7 @@ function render() {
     }
     validateAndFixRoute();
     renderShell();
+    restoreMainScrollPosition(scrollPosition);
 }
 
 function renderImagineWithoutJump() {
@@ -160,7 +199,6 @@ function mapView() {
                     <div class="action-row">
                         <button class="primary-button" type="button" data-route="qa">动物学堂</button>
                         <button class="secondary-button" type="button" data-route="story">写故事</button>
-                        <button class="secondary-button" type="button" data-route="qa">医生治疗</button>
                     </div>
                 </div>
             </div>
@@ -285,19 +323,19 @@ function modelSelect(id) {
     `;
 }
 
-function quizChoiceButton(animal, option, index, currentQuiz) {
+function quizChoiceButton(quiz, option, index, currentQuiz) {
     let className = "choice-button";
     if (currentQuiz) {
-        if (index === animal.quiz.answer) className += " correct";
+        if (index === quiz.answer) className += " correct";
         if (index === currentQuiz.choice && !currentQuiz.correct) className += " wrong";
     }
     return `<button class="${className}" type="button" data-quiz-choice="${index}" ${currentQuiz ? "disabled" : ""}>${escapeHtml(option)}</button>`;
 }
 
-function quizResultText(animal, currentQuiz) {
+function quizResultText(animal, currentQuiz, quiz) {
     if (!currentQuiz) return "";
     if (currentQuiz.correct) return `答对了，已经给${getAnimalDisplayName(animal.id)}喂养：${currentQuiz.food}`;
-    return `答错了，正确答案是：${animal.quiz.options[animal.quiz.answer]}。AI医生已经开始治疗。`;
+    return `答错了，正确答案是：${quiz.options[quiz.answer]}。可以请AI医生帮小动物治疗和复习。`;
 }
 
 function qaView() {
@@ -428,7 +466,14 @@ function renderAnimalCare(animal) {
     const lastAnswer = state.answers[0];
     const lastDoctorLog = state.doctorLogs.find((item) => item.animalId === animal.id);
     const lastFeeding = state.feedingLogs.find((item) => item.animalId === animal.id);
-    const currentQuiz = state.lastQuiz && state.lastQuiz.animalId === animal.id ? state.lastQuiz : null;
+    const activeQuiz = getActiveAnimalQuiz(animal);
+    const quizList = getAnimalQuizList(animal);
+    const quizCursor = getAnimalQuizCursor(animal);
+    const currentQuiz = state.lastQuiz
+        && state.lastQuiz.animalId === animal.id
+        && state.lastQuiz.quizIndex === activeQuiz.index
+        ? state.lastQuiz
+        : null;
     const animalFeedings = state.feedingLogs.filter((item) => item.animalId === animal.id).length;
     const animalTreatments = state.doctorLogs.filter((item) => item.animalId === animal.id).length;
     const animalLevel = Math.floor(animalFeedings / 3) + 1; // Level up every 3 feedings
@@ -559,15 +604,20 @@ function renderAnimalCare(animal) {
                 <div class="panel">
                     <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 style="font-size: 24px; margin: 0;">答题喂养</h3>
-                        <span>正确 ${state.progress.quizCorrect}/${state.progress.quizTotal}</span>
+                        <span>第 ${quizCursor + 1}/${quizList.length} 题 · 正确 ${state.progress.quizCorrect}/${state.progress.quizTotal}</span>
                     </div>
                     <div class="quiz-box">
-                        <p class="quiz-question">${animal.quiz.question}</p>
+                        <p class="quiz-question">${activeQuiz.question}</p>
                         <div class="choice-list">
-                            ${animal.quiz.options.map((option, index) => quizChoiceButton(animal, option, index, currentQuiz)).join("")}
+                            ${activeQuiz.options.map((option, index) => quizChoiceButton(activeQuiz, option, index, currentQuiz)).join("")}
                         </div>
-                        <div id="quizResult" class="meta-line">${escapeHtml(quizResultText(animal, currentQuiz))}</div>
-                        ${currentQuiz ? `<button class="secondary-button" type="button" data-action="reset-quiz">再答一次</button>` : ""}
+                        <div id="quizResult" class="meta-line">${escapeHtml(quizResultText(animal, currentQuiz, activeQuiz))}</div>
+                        ${currentQuiz ? `
+                            <div class="quiz-followup-actions">
+                                ${!currentQuiz.correct ? `<button class="primary-button quiz-doctor-button" type="button" data-action="open-doctor">医生治疗</button>` : ""}
+                                <button class="secondary-button" type="button" data-action="reset-quiz">下一题</button>
+                            </div>
+                        ` : ""}
                     </div>
                 </div>
             </div>
@@ -710,6 +760,9 @@ function imagineView() {
                     </div>
                 </div>
                 <div class="stage-card">
+                    <span class="imagine-sticker sticker-star" aria-hidden="true"></span>
+                    <span class="imagine-sticker sticker-leaf" aria-hidden="true"></span>
+                    <span class="imagine-sticker sticker-pencil" aria-hidden="true"></span>
                     ${creaturePreview(draft)}
                 </div>
                 <div class="material-rail">
@@ -722,7 +775,7 @@ function imagineView() {
                     <div class="material-group">
                         <p class="material-title"><span>④</span> 星角</p>
                         <div class="material-list">
-                            <button class="material-button ${hasHorn ? "active" : ""}" type="button" draggable="true" data-creature-part-type="horn" data-creature-part-id="horn" data-creature-part="horn" aria-label="发光星角" title="发光星角"><span class="mini-horn"></span></button>
+                            ${creatureSpecials.map((item) => creatureMaterialButton("horn", item, hasHorn)).join("")}
                         </div>
                     </div>
                 </div>
@@ -736,19 +789,21 @@ function imagineView() {
             <div class="creature-card">
                 <div class="creature-thumb" style="background: linear-gradient(180deg, ${draft.color || "#8fc6f5"}55, #d6edb9);"><img src="${creatureAssetUrl("body", body)}" alt=""></div>
                 <div class="creature-notes">
-                    <span class="note-label">我的新朋友叫</span>
-                    <input class="text-input" id="creatureName" maxlength="16" value="${escapeHtml(draft.name)}" placeholder="给它取个名字" aria-label="动物名字">
-                    <div class="field note-field">
-                        <span class="note-label">它住在</span>
+                    <div class="note-row">
+                        <label class="note-label" for="creatureName">我的新朋友叫</label>
+                        <input class="text-input" id="creatureName" maxlength="16" value="${escapeHtml(draft.name)}" placeholder="给它取个名字" aria-label="动物名字">
+                    </div>
+                    <div class="note-row">
+                        <label class="note-label" for="creatureHabitat">它住在</label>
                         <input class="text-input" id="creatureHabitat" maxlength="18" value="${escapeHtml(draft.habitat)}" aria-label="栖息地">
                     </div>
-                    <div class="field note-field">
-                        <span class="note-label">它的性格</span>
+                    <div class="note-row">
+                        <label class="note-label" for="creatureMood">它的性格</label>
                         <select class="select-input" id="creatureMood" aria-label="性格">
                             ${["好奇", "勇敢", "温柔", "爱唱歌", "慢悠悠"].map((mood) => `<option ${draft.mood === mood ? "selected" : ""}>${mood}</option>`).join("")}
                         </select>
                     </div>
-                    <p>${escapeHtml(draft.mood)}，住在${escapeHtml(draft.habitat)}。已经选择 ${[wing && "翅膀", tail && "尾巴", hasHorn && "星角"].filter(Boolean).join("、") || "身体"}。</p>
+                    <p class="creature-summary">${escapeHtml(draft.mood)}，住在${escapeHtml(draft.habitat)}。已经选择 ${[wing && "翅膀", tail && "尾巴", hasHorn && "星角"].filter(Boolean).join("、") || "身体"}。</p>
                 </div>
             </div>
             <div class="imagine-actions">
@@ -772,7 +827,7 @@ function imagineView() {
 }
 
 function creatureAssetUrl(type, id) {
-    const list = type === "body" ? creatureBodies : type === "wing" ? creatureWings : creatureTails;
+    const list = type === "body" ? creatureBodies : type === "wing" ? creatureWings : type === "horn" ? creatureSpecials : creatureTails;
     const fallback = list[0];
     const item = list.find((asset) => asset.id === id) || fallback;
     return `${imagineAssetBase}${item.file}`;
@@ -793,7 +848,8 @@ function normalizeCreatureTail(id) {
 }
 
 function creatureMaterialButton(type, item, active) {
-    return `<button class="material-button ${active ? "active" : ""}" type="button" draggable="true" data-creature-part-type="${type}" data-creature-part-id="${item.id}" data-creature-${type}="${item.id}" aria-label="${item.label}" title="${item.label}"><img class="material-img" src="${imagineAssetBase}${item.file}" alt=""></button>`;
+    const partToggle = type === "horn" ? ` data-creature-part="${item.id}"` : "";
+    return `<button class="material-button ${active ? "active" : ""}" type="button" draggable="true" data-creature-part-type="${type}" data-creature-part-id="${item.id}" data-creature-${type}="${item.id}"${partToggle} aria-label="${item.label}" title="${item.label}"><img class="material-img" src="${imagineAssetBase}${item.file}" alt=""></button>`;
 }
 
 function creatureThumbEmoji(body) {
@@ -851,7 +907,7 @@ function creaturePreview(draft) {
                 ${tail ? `<img class="creature-asset asset-tail ${activeCreaturePart(draft) === "tail" ? "selected-part" : ""}" data-edit-part="tail" data-tail="${tail}" style="${creatureTransformStyle("tail")}" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
                 ${wing ? `<img class="creature-asset asset-wing ${activeCreaturePart(draft) === "wing" ? "selected-part" : ""}" data-edit-part="wing" data-wing="${wing}" style="${creatureTransformStyle("wing")}" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
                 <img class="creature-asset asset-body ${activeCreaturePart(draft) === "body" ? "selected-part" : ""}" data-edit-part="body" data-body="${body}" style="${creatureTransformStyle("body")}" src="${creatureAssetUrl("body", body)}" alt="">
-                ${hasHorn ? `<span class="asset-horn ${activeCreaturePart(draft) === "horn" ? "selected-part" : ""}" data-edit-part="horn" style="${creatureTransformStyle("horn")}" aria-hidden="true"></span>` : ""}
+                ${hasHorn ? `<img class="creature-asset asset-horn ${activeCreaturePart(draft) === "horn" ? "selected-part" : ""}" data-edit-part="horn" data-horn="horn" style="${creatureTransformStyle("horn")}" src="${creatureAssetUrl("horn", "horn")}" alt="">` : ""}
             </div>
         </div>
     `;

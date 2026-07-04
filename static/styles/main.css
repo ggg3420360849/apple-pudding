@@ -121,6 +121,14 @@ button {
     background: #ffe7a6;
     border: 1px solid #e9c769;
     font-size: 28px;
+    overflow: hidden;
+}
+
+.brand-mark img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
 }
 
 .brand h1 {
@@ -1233,6 +1241,22 @@ button {
     gap: 8px;
 }
 
+.quiz-followup-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.quiz-followup-actions > button {
+    width: 100%;
+    justify-content: center;
+}
+
+.quiz-doctor-button {
+    background: linear-gradient(180deg, #5da7d8, #347aa9);
+    box-shadow: 0 6px 14px rgba(52, 122, 169, 0.22);
+}
+
 .choice-button {
     text-align: left;
     background: #ffffff;
@@ -1420,15 +1444,13 @@ button {
 .route-imagine {
     position: relative;
     padding: 0 0 calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
-    background:
-        radial-gradient(circle at 18% 13%, rgba(255, 255, 255, 0.86) 0 22px, transparent 23px),
-        radial-gradient(circle at 80% 16%, rgba(255, 255, 255, 0.58) 0 28px, transparent 29px),
-        linear-gradient(180deg, #fff0be 0, #ffeab1 21%, #cbe9a6 72%, #98d68b 100%);
+    background: #ffffff;
 }
 
 .route-imagine::before,
 .route-imagine::after {
     content: "";
+    display: none;
     position: absolute;
     z-index: 0;
     pointer-events: none;
@@ -1773,10 +1795,7 @@ button {
     min-height: 292px;
     border-radius: 18px;
     border: 0;
-    background:
-        radial-gradient(circle at 24% 22%, rgba(255, 255, 255, 0.54) 0 26px, transparent 27px),
-        radial-gradient(circle at 78% 30%, rgba(255, 255, 255, 0.42) 0 24px, transparent 25px),
-        linear-gradient(180deg, #fff8e8 0, #dff1cf 66%, #a9d67d 100%);
+    background: #ffffff;
     overflow: hidden;
 }
 
@@ -1886,18 +1905,12 @@ button {
 }
 
 .asset-horn {
-    position: absolute;
     z-index: 4;
     left: 50%;
-    top: 44px;
-    width: 44px;
-    height: 74px;
+    top: 38px;
+    width: 72px;
+    height: 72px;
     transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
-    border-radius: 50% 50% 18% 18%;
-    background:
-        linear-gradient(120deg, transparent 0 45%, rgba(255, 255, 255, 0.6) 46% 53%, transparent 54% 100%),
-        linear-gradient(180deg, #fff4a3 0, #ffc75a 48%, #e88d34 100%);
-    clip-path: polygon(50% 0, 88% 100%, 12% 100%);
     filter: drop-shadow(0 8px 8px rgba(129, 91, 28, 0.18));
     cursor: grab;
     touch-action: none;
@@ -4192,16 +4205,13 @@ body {
     transform: rotate(-2deg);
 }
 
-/* Forest craft table: the generated watercolor establishes the same visual
-   language as the habitat map, while UI pieces behave like paper cut-outs. */
 .main.route-imagine {
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 247, 214, 0.16)),
-        url("/static/assets/imagine/forest-craft-studio-portrait.png") center top / cover no-repeat;
+    background: #ffffff;
     color: var(--pencil);
 }
 
 .route-imagine::before {
+    display: none;
     inset: 0;
     height: auto;
     opacity: 0.3;
@@ -4213,6 +4223,7 @@ body {
 }
 
 .route-imagine::after {
+    display: none;
     inset: 118px 10px auto auto;
     width: 54px;
     height: 76px;
@@ -4249,53 +4260,62 @@ body {
 
 .imagine-intro {
     position: relative;
-    width: calc(100% - 46px);
-    margin: 0 auto 1px;
-    padding: 7px 14px 8px;
+    width: min(100% - 38px, 360px);
+    margin: 0 auto 3px;
+    padding: 8px 18px 9px;
     color: #5c523f;
     text-align: center;
-    background: linear-gradient(180deg, rgba(255, 238, 171, 0.34), rgba(255, 232, 163, 0.12));
+    background:
+        radial-gradient(circle at 18px 16px, rgba(242, 191, 75, 0.18) 0 5px, transparent 6px),
+        radial-gradient(circle at calc(100% - 20px) 18px, rgba(92, 159, 201, 0.13) 0 5px, transparent 6px),
+        linear-gradient(180deg, rgba(255, 250, 226, 0.92), rgba(255, 244, 198, 0.72));
     border: 1px dashed rgba(101, 116, 79, 0.2);
-    border-radius: 45% 55% 48% 52% / 28% 34% 66% 72%;
+    border-radius: 22px 18px 24px 17px;
     box-shadow: 0 9px 18px rgba(80, 86, 58, 0.08);
     backdrop-filter: blur(2px);
-    transform: rotate(-0.5deg);
+    transform: rotate(-0.35deg);
+    overflow: visible;
 }
 
 .imagine-intro::before,
 .imagine-intro::after {
     content: "";
     position: absolute;
-    top: -8px;
-    width: 42px;
-    height: 14px;
+    top: -7px;
+    width: 38px;
+    height: 13px;
     background: rgba(244, 203, 99, 0.48);
     border: 1px solid rgba(151, 116, 50, 0.08);
+    border-radius: 6px 8px 5px 7px;
 }
 
-.imagine-intro::before { left: 16px; transform: rotate(-5deg); }
-.imagine-intro::after { right: 16px; transform: rotate(5deg); }
+.imagine-intro::before { left: 18px; transform: rotate(-5deg); }
+.imagine-intro::after { right: 18px; transform: rotate(5deg); }
 
 .imagine-kicker {
     color: #d06f58;
     font-size: 11px;
     font-weight: 900;
     letter-spacing: 0.12em;
+    display: block;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .imagine-intro h3 {
-    margin: 1px 0 2px;
+    margin: 3px 0 3px;
     color: #456f4c;
     font-family: "STKaiti", "KaiTi", "Comic Sans MS", sans-serif;
-    font-size: 22px;
+    font-size: 21px;
     line-height: 1.1;
 }
 
 .imagine-intro p {
     margin: 0;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     line-height: 1.35;
+    white-space: nowrap;
 }
 
 .creator-board {
@@ -4426,6 +4446,51 @@ body {
     box-shadow: none;
 }
 
+.imagine-sticker {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 2px rgba(91, 72, 56, 0.12));
+}
+
+.sticker-star {
+    top: 18px;
+    left: 18px;
+    width: 42px;
+    height: 42px;
+    background:
+        radial-gradient(circle at 50% 50%, #fff8d8 0 22%, transparent 24%),
+        conic-gradient(from 18deg, #f2bf4b 0 10%, transparent 10% 20%, #e87961 20% 30%, transparent 30% 42%, #5c9fc9 42% 52%, transparent 52% 64%, #5e9d68 64% 74%, transparent 74% 100%);
+    border-radius: 50%;
+    transform: rotate(-12deg);
+}
+
+.sticker-leaf {
+    right: 20px;
+    top: 26px;
+    width: 52px;
+    height: 34px;
+    background:
+        radial-gradient(ellipse at 24% 64%, rgba(94, 157, 104, 0.42) 0 28%, transparent 30%),
+        radial-gradient(ellipse at 54% 42%, rgba(94, 157, 104, 0.36) 0 27%, transparent 29%),
+        radial-gradient(ellipse at 82% 62%, rgba(120, 181, 116, 0.36) 0 28%, transparent 30%),
+        linear-gradient(90deg, transparent 0 44%, rgba(91, 72, 56, 0.23) 45% 52%, transparent 53% 100%);
+    border-radius: 999px;
+    transform: rotate(14deg);
+}
+
+.sticker-pencil {
+    left: 22px;
+    bottom: 22px;
+    width: 58px;
+    height: 18px;
+    background:
+        linear-gradient(90deg, #70553a 0 8%, #f7d66e 9% 76%, #f0a65a 77% 88%, transparent 89%),
+        linear-gradient(135deg, transparent 0 49%, #e87961 50% 100%);
+    border-radius: 999px 8px 8px 999px;
+    transform: rotate(-18deg);
+}
+
 .stage-card::before {
     content: "在这里拼出新朋友";
     position: absolute;
@@ -4447,10 +4512,7 @@ body {
     min-height: 330px;
     border: 0;
     border-radius: 28px 22px 30px 24px;
-    background:
-        radial-gradient(circle at 18% 18%, rgba(255,255,255,.34) 0 4px, transparent 5px),
-        radial-gradient(circle at 84% 25%, rgba(245,197,83,.34) 0 4px, transparent 5px),
-        linear-gradient(180deg, rgba(232, 247, 234, 0.2), rgba(249, 241, 188, 0.1));
+    background: #ffffff;
     box-shadow: 0 18px 32px rgba(63, 78, 54, 0.06);
     backdrop-filter: blur(1.5px);
 }
@@ -4505,7 +4567,9 @@ body {
 
 .creature-card {
     grid-template-columns: 82px minmax(0, 1fr);
-    padding: 12px;
+    gap: 12px;
+    padding: 13px 12px 12px;
+    overflow: hidden;
 }
 
 .creature-thumb {
@@ -4522,9 +4586,8 @@ body {
 
 .creature-notes {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 5px 7px;
-    align-items: center;
+    gap: 6px;
+    min-width: 0;
 }
 
 .note-label {
@@ -4532,28 +4595,39 @@ body {
     font-family: "STKaiti", "KaiTi", sans-serif;
     font-size: 11px;
     font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
-.note-field {
-    display: contents;
+.note-row {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
 }
 
 .creature-card .text-input,
 .creature-card .select-input {
-    min-height: 31px;
-    padding: 4px 8px;
-    border: 0;
-    border-bottom: 2px dashed rgba(92, 112, 83, 0.35);
-    border-radius: 6px 8px 4px 7px;
-    background: rgba(255, 246, 199, 0.28);
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px dashed rgba(92, 112, 83, 0.34);
+    border-radius: 12px 10px 13px 9px;
+    background: rgba(255, 251, 232, 0.72);
     color: #4f4a3e;
     font-size: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .creature-card p {
-    grid-column: 1 / -1;
-    padding-top: 2px;
+    margin: 2px 0 0;
+    padding: 5px 8px;
+    border-radius: 11px 13px 10px 12px;
+    background: rgba(255, 255, 255, 0.42);
     font-size: 10px;
+    line-height: 1.45;
+    text-align: left;
 }
 
 .imagine-actions {
@@ -4743,7 +4817,18 @@ body {
         right: 4px;
         bottom: 58px;
     }
-    .imagine-intro { width: calc(100% - 20px); }
+    .imagine-intro {
+        width: calc(100% - 22px);
+        padding-inline: 12px;
+    }
+
+    .imagine-intro h3 {
+        font-size: 19px;
+    }
+
+    .imagine-intro p {
+        font-size: 10px;
+    }
 }
 
 @media (max-width: 760px) {

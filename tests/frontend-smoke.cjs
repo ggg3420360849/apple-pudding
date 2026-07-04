@@ -56,7 +56,7 @@ const sources = [...fs.readFileSync("static/index.html", "utf8").matchAll(/<scri
   .filter((src) => src.startsWith("/static/src/"));
 
 for (const src of sources) {
-  const file = src.slice(1);
+  const file = src.slice(1).split("?")[0];
   vm.runInContext(fs.readFileSync(file, "utf8"), context, { filename: file });
 }
 
