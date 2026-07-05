@@ -18,35 +18,55 @@ const routes = [
     { id: "report-overview", label: "数据", icon: "📊", title: "数据概览", subtitle: "", roles: ["parent"] },
     { id: "report-analysis", label: "分析", icon: "🎯", title: "学习分析", subtitle: "", roles: ["parent"] },
     { id: "report-activity", label: "记录", icon: "📝", title: "活动记录", subtitle: "", roles: ["parent"] },
-    { id: "report-settings", label: "设置", icon: "⚙️", title: "系统设置", subtitle: "", roles: ["parent"] }
+    { id: "report-settings", label: "设置", icon: "⚙️", title: "家长设置", subtitle: "", roles: ["parent"] }
 ];
 
 const imagineAssetBase = "/static/assets/imagine/";
+const creatureHeads = [
+    { id: "dog", label: "小狗头", file: "builder/heads/dog.png" },
+    { id: "duck", label: "鸭鸭头", file: "builder/heads/duck.png" },
+    { id: "frog", label: "青蛙头", file: "builder/heads/frog.png" },
+    { id: "panda", label: "熊猫头", file: "builder/heads/panda.png" },
+    { id: "pig", label: "小猪头", file: "builder/heads/pig.png" },
+    { id: "rabbit", label: "兔兔头", file: "builder/heads/rabbit.png" },
+    { id: "cat", label: "猫咪头", file: "builder/heads/cat.png" },
+    { id: "chick", label: "小鸡头", file: "builder/heads/chick.png" }
+];
 const creatureBodies = [
-    { id: "panda", label: "墨团熊猫", file: "parts/body-panda.svg" },
-    { id: "rabbit", label: "棉花兔兔", file: "parts/body-rabbit.svg" },
-    { id: "dog", label: "焦糖小狗", file: "parts/body-dog.svg" },
-    { id: "cat", label: "月牙猫咪", file: "parts/body-cat.svg" },
-    { id: "chick", label: "太阳小鸡", file: "parts/body-chick.svg" },
-    { id: "snake", label: "草莓小蛇", file: "parts/body-snake.svg" },
-    { id: "pig", label: "桃桃小猪", file: "parts/body-pig.svg" }
+    { id: "dog", label: "小狗身体", file: "builder/bodies/dog.png" },
+    { id: "duck", label: "鸭鸭身体", file: "builder/bodies/duck.png" },
+    { id: "frog", label: "青蛙身体", file: "builder/bodies/frog.png" },
+    { id: "panda", label: "熊猫身体", file: "builder/bodies/panda.png" },
+    { id: "pig", label: "小猪身体", file: "builder/bodies/pig.png" },
+    { id: "rabbit", label: "兔兔身体", file: "builder/bodies/rabbit.png" },
+    { id: "cat", label: "猫咪身体", file: "builder/bodies/cat.png" },
+    { id: "chick", label: "小鸡身体", file: "builder/bodies/chick.png" }
+];
+const creatureHands = [
+    { id: "dog", label: "小狗手", file: "builder/hands/dog.png" },
+    { id: "duck", label: "鸭鸭手", file: "builder/hands/duck.png" },
+    { id: "frog", label: "青蛙手", file: "builder/hands/frog.png" },
+    { id: "panda", label: "熊猫手", file: "builder/hands/panda.png" },
+    { id: "pig", label: "小猪手", file: "builder/hands/pig.png" },
+    { id: "rabbit", label: "兔兔手", file: "builder/hands/rabbit.png" },
+    { id: "cat", label: "猫咪手", file: "builder/hands/cat.png" },
+    { id: "chick", label: "小鸡手", file: "builder/hands/chick.png" }
+];
+const creatureFeet = [
+    { id: "dog", label: "小狗脚", file: "builder/feet/dog.png" },
+    { id: "duck", label: "鸭鸭脚", file: "builder/feet/duck.png" },
+    { id: "frog", label: "青蛙脚", file: "builder/feet/frog.png" },
+    { id: "panda", label: "熊猫脚", file: "builder/feet/panda.png" },
+    { id: "pig", label: "小猪脚", file: "builder/feet/pig.png" },
+    { id: "rabbit", label: "兔兔脚", file: "builder/feet/rabbit.png" },
+    { id: "cat", label: "猫咪脚", file: "builder/feet/cat.png" },
+    { id: "chick", label: "小鸡脚", file: "builder/feet/chick.png" }
 ];
 const creatureWings = [
-    { id: "angel", label: "棉花云翼", file: "parts/wing-angel.svg" },
-    { id: "fairy", label: "糖果精灵翼", file: "parts/wing-fairy.svg" },
-    { id: "bat", label: "紫莓蝙蝠翼", file: "parts/wing-bat.svg" },
-    { id: "dragon", label: "叶片龙翼", file: "parts/wing-dragon.svg" },
-    { id: "cloud", label: "云朵气球翼", file: "parts/wing-cloud.svg" }
+    { id: "golden", label: "金黄翅膀", file: "builder/wings/golden.png" }
 ];
-const creatureTails = [
-    { id: "fox", label: "枫叶狐狸尾", file: "parts/tail-fox.svg" },
-    { id: "dino", label: "嫩芽恐龙尾", file: "parts/tail-dino.svg" },
-    { id: "cat", label: "星星猫尾", file: "parts/tail-cat.svg" },
-    { id: "puppy", label: "饼干小狗尾", file: "parts/tail-puppy.svg" }
-];
-const creatureSpecials = [
-    { id: "horn", label: "发光星角", file: "parts/horn-sparkles.svg" }
-];
+const creatureTails = [];
+const creatureDecorations = [];
 const animals = [
     {
         id: "panda",
@@ -273,6 +293,49 @@ const animals = [
     }
 ];
 
+const animalCareProfiles = {
+    panda: {
+        favoriteFood: "竹子",
+        edibleFoods: ["竹子", "竹笋", "苹果"],
+        unsafeFoods: ["巧克力", "辣椒", "肉骨头", "糖果"]
+    },
+    rabbit: {
+        favoriteFood: "干草",
+        edibleFoods: ["干草", "叶子", "少量胡萝卜"],
+        unsafeFoods: ["巧克力", "鱼骨头", "洋葱", "糖果"]
+    },
+    frog: {
+        favoriteFood: "小虫子",
+        edibleFoods: ["小虫子", "蚊子", "小飞虫"],
+        unsafeFoods: ["饼干", "竹子", "牛奶", "辣椒"]
+    },
+    penguin: {
+        favoriteFood: "小鱼",
+        edibleFoods: ["小鱼", "磷虾", "乌贼"],
+        unsafeFoods: ["竹子", "糖果", "热汤", "饼干"]
+    },
+    dolphin: {
+        favoriteFood: "小鱼",
+        edibleFoods: ["小鱼", "乌贼", "甲壳类"],
+        unsafeFoods: ["青草", "巧克力", "竹笋", "饼干"]
+    },
+    elephant: {
+        favoriteFood: "树叶",
+        edibleFoods: ["树叶", "草", "水果"],
+        unsafeFoods: ["巧克力", "肉骨头", "辣椒", "塑料袋"]
+    },
+    tiger: {
+        favoriteFood: "鲜肉",
+        edibleFoods: ["鲜肉", "鹿肉", "鸡肉"],
+        unsafeFoods: ["竹子", "糖果", "青草", "巧克力"]
+    },
+    camel: {
+        favoriteFood: "干草",
+        edibleFoods: ["干草", "灌木叶", "耐旱植物"],
+        unsafeFoods: ["冰淇淋", "巧克力", "鱼骨头", "糖果"]
+    }
+};
+
 const animalQuizBank = {
     panda: [
         {
@@ -412,12 +475,42 @@ const animalQuizBank = {
     ]
 };
 
+function getDateKey(time = Date.now()) {
+    const date = new Date(time);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function getAnimalCareProfile(animal) {
+    return animalCareProfiles[animal.id] || {
+        favoriteFood: animal.diet.split(/[，、。；]/).find(Boolean)?.trim() || "喜欢的食物",
+        edibleFoods: animal.diet.split(/[，、。；]/).map((item) => item.trim()).filter(Boolean).slice(0, 3),
+        unsafeFoods: ["巧克力", "糖果", "辣椒"]
+    };
+}
+
+function getDailyQuizSet(animal) {
+    const set = state.dailyQuizSets?.[animal.id];
+    if (set?.date === getDateKey() && Array.isArray(set.questions) && set.questions.length) {
+        return set;
+    }
+    return null;
+}
+
 function getAnimalQuizList(animal) {
+    const dailySet = getDailyQuizSet(animal);
+    if (dailySet) {
+        return dailySet.questions.slice(0, 4).map((quiz, index) => ({
+            ...quiz,
+            index,
+            total: Math.min(dailySet.questions.length, 4)
+        }));
+    }
+
     const extraQuestions = animalQuizBank[animal.id] || [];
-    return [animal.quiz, ...extraQuestions].filter(Boolean).map((quiz, index) => ({
+    return [animal.quiz, ...extraQuestions].filter(Boolean).slice(0, 4).map((quiz, index, list) => ({
         ...quiz,
         index,
-        total: extraQuestions.length + 1
+        total: list.length
     }));
 }
 
@@ -425,18 +518,24 @@ function getAnimalQuizCursor(animal) {
     const list = getAnimalQuizList(animal);
     const cursor = Number(state.quizCursor?.[animal.id] || 0);
     if (!Number.isFinite(cursor) || cursor < 0) return 0;
+    if (getDailyQuizSet(animal)) return Math.min(cursor, list.length);
     return cursor % list.length;
 }
 
 function getActiveAnimalQuiz(animal) {
     const list = getAnimalQuizList(animal);
+    const cursor = getAnimalQuizCursor(animal);
+    if (cursor >= list.length) return null;
     return list[getAnimalQuizCursor(animal)] || animal.quiz;
 }
 
 function moveToNextAnimalQuiz(animal) {
     const list = getAnimalQuizList(animal);
     if (!state.quizCursor) state.quizCursor = {};
-    state.quizCursor[animal.id] = (getAnimalQuizCursor(animal) + 1) % list.length;
+    const nextCursor = getAnimalQuizCursor(animal) + 1;
+    state.quizCursor[animal.id] = getDailyQuizSet(animal)
+        ? Math.min(nextCursor, list.length)
+        : nextCursor % list.length;
     state.lastQuiz = null;
 }
 
@@ -453,6 +552,14 @@ const defaultState = {
         question: '熊猫为什么爱吃竹子？',
         isGenerating: false
     },
+    quickQuestionHistory: {},
+    quickQuestionTopicCursor: {},
+    dailyQuizSets: {},
+    dailyQuizGeneration: {},
+    foodInventory: {},
+    animalIntimacy: {},
+    careEvents: {},
+    careEventRisk: {},
     model: models[0],
     storyLength: "medium",
     readSpeed: 0.9,
@@ -460,6 +567,12 @@ const defaultState = {
     dailyLimit: 0,
     autoSave: true,
     storyFilter: { animal: "", search: "", sort: "time" },
+    reportMetricDetail: null,
+    careDoctorModal: null,
+    careFeedConfirm: null,
+    syncRefreshLoading: false,
+    lastSyncRefreshAt: null,
+    lastSyncRefreshChildId: "",
     progress: {
         visits: {},
         questions: 0,
@@ -501,16 +614,23 @@ const defaultState = {
         habitat: "彩虹森林",
         mood: "好奇",
         color: "#8fc6f5",
+        head: "panda",
         body: "panda",
-        wing: "angel",
-        tail: "fox",
-        parts: ["wing", "tail"],
+        hand: "panda",
+        foot: "panda",
+        wing: "golden",
+        tail: "",
+        decoration: "",
+        parts: ["hand", "foot", "wing"],
         selectedPart: "body",
         transforms: {
-            body: { scale: 100 },
+            head: { scale: 100, rotation: 0, x: 0, y: 0 },
+            body: { scale: 100, rotation: 0, x: 0, y: 0 },
+            hand: { scale: 100, rotation: 0, x: 0, y: 0 },
+            foot: { scale: 100, rotation: 0, x: 0, y: 0 },
             wing: { scale: 100, rotation: 0, x: 0, y: 0 },
             tail: { scale: 100, rotation: 0, x: 0, y: 0 },
-            horn: { scale: 100, rotation: 0, x: 0, y: 0 }
+            decoration: { scale: 100, rotation: 0, x: 0, y: 0 }
         }
     }
 };

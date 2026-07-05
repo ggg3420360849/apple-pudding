@@ -243,6 +243,21 @@
             color: var(--green);
         }
 
+        .earned-badges-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         .progress-bar {
             width: 100%;
             height: 24px;
@@ -286,8 +301,8 @@
             border-radius: 16px;
             padding: 32px;
             max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
+            width: min(100%, 500px);
+            max-height: calc(100vh - 40px);
             overflow-y: auto;
         }
 
@@ -322,6 +337,7 @@
             gap: 12px;
             justify-content: flex-end;
             margin-top: 24px;
+            flex-wrap: wrap;
         }
 
         .toast {
@@ -335,6 +351,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 2000;
             animation: slideIn 0.3s;
+            max-width: min(400px, calc(100vw - 24px));
         }
 
         @keyframes slideIn {
@@ -398,10 +415,29 @@
             align-items: center;
             gap: 8px;
             z-index: 1000;
+            max-width: min(400px, calc(100vw - 24px));
         }
 
         .offline-indicator.active {
             display: flex;
+        }
+
+        .offline-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .offline-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .offline-actions button {
+            flex: 1 1 140px;
         }
 
         .badge {
@@ -417,8 +453,56 @@
             background: var(--coral);
             color: white;
         }
+
+        @media (max-width: 430px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .container {
+                padding: 12px;
+            }
+
+            .modal {
+                padding: 12px;
+            }
+
+            .modal-content {
+                padding: 20px;
+                max-height: calc(100vh - 24px);
+            }
+
+            .calendar-grid {
+                gap: 6px;
+            }
+
+            .calendar-day {
+                padding: 6px 4px;
+                font-size: 12px;
+            }
+
+            .toast,
+            .offline-indicator {
+                left: 12px;
+                right: 12px;
+                width: auto;
+                max-width: none;
+            }
+
+            .toast {
+                bottom: 12px;
+            }
+
+            .offline-indicator {
+                top: 12px;
+            }
+
+            .section-header-row > * {
+                width: 100%;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260629-formalign">
+    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260705-overlapfix1">
 </head>
 <body>
     <div class="offline-indicator" id="offlineIndicator">
@@ -436,7 +520,7 @@
                 <button onclick="showAddChildModal()">+ 添加孩子</button>
                 <button class="secondary" onclick="location.href='/static/voice-interaction.html'">🎤 语音交互</button>
                 <button class="secondary" onclick="showInviteQRCode(currentAccount?.id)">📱 邀请好友</button>
-                <button class="secondary" onclick="location.href='/static/index.html?v=20260629-formalign'">返回主页</button>
+                <button class="secondary" onclick="location.href='/static/index.html?v=20260705-syncfix4'">返回主页</button>
             </div>
         </header>
 
@@ -471,7 +555,7 @@
 
             <div class="card">
                 <h2 style="margin-bottom: 16px;">已获得徽章</h2>
-                <div id="earnedBadges" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                <div id="earnedBadges" class="earned-badges-row">
                     <p style="color: var(--muted);">加载中...</p>
                 </div>
             </div>
@@ -485,7 +569,7 @@
         </div>
 
         <div id="goals" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="section-header-row">
                 <h2>本周学习目标</h2>
                 <button onclick="showAddGoalModal()">+ 设置新目标</button>
             </div>
@@ -525,7 +609,7 @@
             <div class="card">
                 <h2 style="margin-bottom: 20px;">离线数据管理</h2>
 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                <div class="offline-stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">待同步活动</div>
                         <div class="stat-value" id="pendingActivities">0</div>
@@ -540,7 +624,7 @@
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                <div class="offline-actions">
                     <button onclick="syncNow()">🔄 立即同步</button>
                     <button class="secondary" onclick="clearSyncedQueue()">🗑️ 清除已同步</button>
                     <button class="secondary" onclick="clearAllCache()">⚠️ 清空缓存</button>

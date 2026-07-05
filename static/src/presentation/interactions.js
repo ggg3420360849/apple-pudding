@@ -66,9 +66,22 @@ document.addEventListener("click", async (event) => {
         return;
     }
 
+    const feedOption = event.target.closest("[data-feed-option]");
+    if (feedOption) {
+        toggleCareFeedOption(Number(feedOption.dataset.feedOption));
+        return;
+    }
+
     const quizChoice = event.target.closest("[data-quiz-choice]");
     if (quizChoice) {
         await handleQuiz(Number(quizChoice.dataset.quizChoice));
+        return;
+    }
+
+    const materialButton = event.target.closest("[data-creature-part-type]");
+    if (materialButton) {
+        updateCreatureDraft();
+        applyCreaturePart(materialButton.dataset.creaturePartType, materialButton.dataset.creaturePartId);
         return;
     }
 
@@ -114,12 +127,92 @@ document.addEventListener("click", async (event) => {
     if (!action) return;
 
     if (action === "toggle-settings") {
+        if (state.profile?.role !== "parent") return;
         state.settingsOpen = !state.settingsOpen;
         render();
         return;
     }
     if (action === "logout") {
+        if (state.profile?.role !== "parent") return;
         logoutCurrentSession();
+        return;
+    }
+    if (action === "open-report-metric") {
+        const metricKey = event.target.closest("[data-metric-key]")?.dataset.metricKey;
+        if (!metricKey) return;
+        state.reportMetricDetail = state.reportMetricDetail === metricKey ? null : metricKey;
+        saveState();
+        render();
+        return;
+    }
+    if (action === "close-report-metric") {
+        state.reportMetricDetail = null;
+        saveState();
+        render();
+        return;
+    }
+    if (action === "close-care-doctor-modal") {
+        state.careDoctorModal = null;
+        render();
+        return;
+    }
+    if (action === "close-care-feed-confirm") {
+        state.careFeedConfirm = null;
+        render();
+        return;
+    }
+    if (action === "confirm-skip-care-feed") {
+        confirmSkipCareFeed();
+        return;
+    }
+    if (action === "refresh-sync-data") {
+        await refreshSelectedChildSyncData();
+        return;
+    }
+    if (action === "copy-entry-code") {
+        const code = event.target.closest("[data-entry-code]")?.dataset.entryCode || "";
+        if (!code) {
+            showToast("当前没有可复制的进入码");
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(code);
+            showToast("进入码已复制");
+        } catch (error) {
+            console.error("复制进入码失败:", error);
+            showToast(`进入码：${code}`);
+        }
+        return;
+    }
+    if (action === "refresh-entry-code") {
+        if (!state.parentAccountId || !state.selectedChild?.id) {
+            showToast("请先选择一个孩子");
+            return;
+        }
+
+        const parentToken = window.localStorage.getItem("parentToken");
+        if (!parentToken) {
+            showToast("登录已失效，请重新登录");
+            return;
+        }
+
+        try {
+            const payload = await BlueAnimal.api.refreshChildEntryCode(state.parentAccountId, state.selectedChild.id, parentToken);
+            const child = payload.child || {};
+            state.selectedChild = child;
+            if (state.linkedChildProfile?.id === child.id) {
+                state.linkedChildProfile = {
+                    ...state.linkedChildProfile,
+                    entry_code: child.entry_code
+                };
+            }
+            saveState();
+            render();
+            showToast("进入码已更新");
+        } catch (error) {
+            console.error("修改进入码失败:", error);
+            showToast(error?.message || "修改进入码失败");
+        }
         return;
     }
     if (action === "reset-quiz") {
@@ -131,7 +224,21 @@ document.addEventListener("click", async (event) => {
     if (action === "ask-qa") await handleAskQa();
     if (action === "refresh-quick-question") await handleRefreshQuickQuestion();
     if (action === "fill-quick-question") handleFillQuickQuestion();
+    if (action === "submit-care-feed") submitCareFeedSelection();
+    if (action === "clear-care-feed-selection") clearCareFeedSelection();
+    if (action === "treat-care-event") await handleTreatCareEvent();
     if (action === "ask-doctor") await handleAskDoctor();
+    if (action === "scale-part-down" || action === "scale-part-up" || action === "rotate-part-left" || action === "rotate-part-right") {
+        const part = activeCreaturePart();
+        const transform = creatureTransform(part);
+        if (action === "scale-part-down") transform.scale = Math.max(40, transform.scale - 6);
+        if (action === "scale-part-up") transform.scale = Math.min(180, transform.scale + 6);
+        if (action === "rotate-part-left") transform.rotation = Math.max(-180, transform.rotation - 8);
+        if (action === "rotate-part-right") transform.rotation = Math.min(180, transform.rotation + 8);
+        applyCreatureTransformToStage(part);
+        saveState();
+        return;
+    }
     if (action === "reset-part-transform") resetCreaturePartTransform();
     if (action === "select-animal") {
         const animalId = event.target.closest("[data-animal-id]")?.dataset.animalId;
@@ -142,7 +249,7 @@ document.addEventListener("click", async (event) => {
             // 更新当前备用问题
             state.currentQuickQuestion = {
                 animalId: animalId,
-                question: animal.quick?.[0] || `${animal.name}有什么特别的地方？`,
+                question: getCurrentQuickQuestionForAnimal(animal),
                 isGenerating: false
             };
             state.lastQuiz = null;
@@ -191,14 +298,15 @@ document.addEventListener("click", async (event) => {
         if (input) {
             const nickname = input.value.trim();
             const animal = getAnimal();
-            if (nickname && nickname !== animal.name) {
-                state.animalNicknames[animal.id] = nickname;
-                saveState();
-                showToast(`已将${animal.name}改名为 ${nickname}`);
-            } else if (!nickname) {
+
+            if (!nickname || nickname === animal.name) {
                 delete state.animalNicknames[animal.id];
                 saveState();
                 showToast(`已恢复为 ${animal.name}`);
+            } else {
+                state.animalNicknames[animal.id] = nickname;
+                saveState();
+                showToast(`已将${animal.name}改名为 ${nickname}`);
             }
             render();
         }
@@ -213,8 +321,6 @@ document.addEventListener("click", async (event) => {
     if (action === "toggle-favorite") toggleFavorite();
     if (action === "toggle-voice-input") toggleVoiceInput(event.target.closest("button"));
     if (action === "toggle-voice-input-qa") toggleVoiceInputQa(event.target.closest("button"));
-    if (action === "export-data") exportData();
-    if (action === "print-report") window.print();
     if (action === "reset-progress") resetProgress();
 });
 
@@ -271,6 +377,13 @@ document.addEventListener("change", (event) => {
     if (["qaModel", "doctorModel", "storyModel"].includes(event.target.id)) {
         state.model = event.target.value;
         saveState();
+        return;
+    }
+
+    if (event.target.id === "dailyLimit") {
+        state.dailyLimit = Number(event.target.value) || 0;
+        saveState();
+        showToast("使用限制已保存");
     }
 });
 
@@ -306,7 +419,7 @@ document.addEventListener("pointermove", (event) => {
         return;
     }
 
-    if (!draggedCreaturePart || event.pointerId !== draggedCreaturePart.pointerId || draggedCreaturePart.part === "body") return;
+    if (!draggedCreaturePart || event.pointerId !== draggedCreaturePart.pointerId) return;
     const transform = creatureTransform(draggedCreaturePart.part);
     transform.x = Math.max(-120, Math.min(120, Math.round(draggedCreaturePart.originX + event.clientX - draggedCreaturePart.startX)));
     transform.y = Math.max(-100, Math.min(100, Math.round(draggedCreaturePart.originY + event.clientY - draggedCreaturePart.startY)));
@@ -318,13 +431,20 @@ document.addEventListener("pointerup", finishCreaturePartDrag);
 document.addEventListener("pointercancel", finishCreaturePartDrag);
 
 document.addEventListener("wheel", (event) => {
+    const materialList = event.target.closest(".material-list");
+    if (materialList) {
+        materialList.scrollLeft += event.deltaY || event.deltaX;
+        event.preventDefault();
+        return;
+    }
+
     const asset = event.target.closest("[data-edit-part]");
     if (!asset) return;
     const part = asset.dataset.editPart;
     const transform = creatureTransform(part);
     state.draftCreature.selectedPart = part;
 
-    if (event.shiftKey && part !== "body") {
+    if (event.shiftKey) {
         transform.rotation = Math.max(-180, Math.min(180, transform.rotation + (event.deltaY > 0 ? 6 : -6)));
     } else {
         transform.scale = Math.max(40, Math.min(180, transform.scale + (event.deltaY > 0 ? -5 : 5)));

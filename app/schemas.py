@@ -31,6 +31,17 @@ class CreateChildProfileRequest(BaseModel):
     age: Optional[int] = Field(default=None, ge=1, le=18)
 
 
+class ChildAccessRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
+    entry_code: str = Field(min_length=4, max_length=20)
+
+
+class ChildProgressSyncRequest(BaseModel):
+    child_id: str = Field(min_length=1, max_length=80)
+    progress: dict = Field(default_factory=dict)
+    creations_count: int = Field(default=0, ge=0, le=10_000)
+
+
 class CreateWeeklyGoalRequest(BaseModel):
     child_id: str
     goal_type: str  # "explore_animals", "answer_questions", "create_stories"
@@ -38,10 +49,12 @@ class CreateWeeklyGoalRequest(BaseModel):
 
 
 class RecordActivityRequest(BaseModel):
+    id: Optional[str] = Field(default=None, min_length=1, max_length=200)
     account_id: str
     child_id: str
     activity_type: str  # "animal_explored", "question_answered", "story_created"
     data: dict = Field(default_factory=dict)
+    timestamp: Optional[int] = Field(default=None, ge=0)
 
 
 class ShareCardRequest(BaseModel):

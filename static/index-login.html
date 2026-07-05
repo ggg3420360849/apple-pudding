@@ -222,6 +222,8 @@
         .links {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px 14px;
             margin-top: 16px;
             font-size: 13px;
             color: #6B7077;
@@ -232,6 +234,7 @@
             text-decoration: none;
             cursor: pointer;
             font-weight: 500;
+            white-space: normal;
         }
 
         .links a:hover {
@@ -323,9 +326,13 @@
             .content {
                 padding: 20px 20px 28px;
             }
+
+            .links {
+                justify-content: flex-start;
+            }
         }
     </style>
-    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260629-formalign">
+    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260705-overlapfix1">
 </head>
 <body>
     <div class="login-container">
@@ -347,27 +354,18 @@
             <div id="childMode" class="role-content active">
                 <form id="childLoginForm">
                     <div class="form-group">
-                        <label>昵称</label>
-                        <input type="text" id="childName" placeholder="小探险家" maxlength="12">
+                        <label>孩子姓名</label>
+                        <input type="text" id="childName" placeholder="请输入孩子姓名" maxlength="12" required>
                     </div>
                     <div class="form-group">
-                        <label>年龄</label>
-                        <select id="childAge">
-                            <option value="3">3 岁</option>
-                            <option value="4">4 岁</option>
-                            <option value="5">5 岁</option>
-                            <option value="6" selected>6 岁</option>
-                            <option value="7">7 岁</option>
-                            <option value="8">8 岁</option>
-                            <option value="9">9 岁</option>
-                            <option value="10">10 岁</option>
-                        </select>
+                        <label>进入码</label>
+                        <input type="text" id="childEntryCode" placeholder="请输入6位进入码" inputmode="numeric" maxlength="6" required>
                     </div>
                     <button type="submit" class="submit-btn">进入乐园</button>
                 </form>
 
                 <div class="settings-link">
-                    需要设置？<a href="/static/parent-portal.html">前往家长端</a>
+                    需要家长先创建孩子账号？<a href="/static/parent-portal.html">前往家长端</a>
                 </div>
             </div>
 
@@ -375,8 +373,8 @@
             <div id="parentMode" class="role-content">
 
                 <div class="auth-tabs">
-                    <div class="auth-tab active" onclick="switchAuthTab('login')">登录</div>
-                    <div class="auth-tab" onclick="switchAuthTab('register')">注册</div>
+                    <div class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')">登录</div>
+                    <div class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')">注册</div>
                 </div>
 
                 <!-- 家长登录 -->
@@ -449,63 +447,7 @@
             // 绑定儿童端登录表单
             const childLoginForm = document.getElementById('childLoginForm');
             if (childLoginForm) {
-                childLoginForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-
-                    const name = document.getElementById('childName').value.trim() || '小探险家';
-                    const age = Number(document.getElementById('childAge').value);
-
-                    // 创建会话ID
-                    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-                    // 创建完整的会话数据
-                    const sessionData = {
-                        sessionId: sessionId,
-                        profile: {
-                            name: name,
-                            age: age,
-                            role: 'child'  // 固定为儿童角色
-                        },
-                        progress: {
-                            visits: {},
-                            questions: 0,
-                            stories: 0,
-                            quizTotal: 0,
-                            quizCorrect: 0,
-                            activities: []
-                        },
-                        selectedAnimalId: null,
-                        creations: [],
-                        route: 'map'  // 默认进入地图页面
-                    };
-
-                    // 保存会话数据到 localStorage
-                    const storeKey = 'applePuddingAnimalSessionsV3';
-                    const activeSessionKey = 'applePuddingActiveSessionId';
-                    let sessionStore = { sessions: {}, order: [] };
-
-                    try {
-                        const saved = localStorage.getItem(storeKey);
-                        if (saved) {
-                            sessionStore = JSON.parse(saved);
-                        }
-                    } catch (e) {
-                        console.error('Failed to load sessions:', e);
-                    }
-
-                    // 添加新会话
-                    sessionStore.sessions[sessionId] = sessionData;
-                    sessionStore.order = [sessionId, ...sessionStore.order.filter(id => id !== sessionId)];
-
-                    // 保存到 localStorage
-                    localStorage.setItem(storeKey, JSON.stringify(sessionStore));
-
-                    // 设置当前活动会话
-                    sessionStorage.setItem(activeSessionKey, sessionId);
-
-                    // 跳转到儿童端主页
-                    window.location.href = '/static/index.html?v=20260629-formalign';
-                });
+                childLoginForm.addEventListener('submit', handleChildLogin);
             }
 
             // 绑定家长登录表单
@@ -537,7 +479,10 @@
         // 切换认证标签（登录/注册）
         function switchAuthTab(authType) {
             document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            const targetTab = document.querySelector(`.auth-tab[data-auth-tab="${authType}"]`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
 
             document.querySelectorAll('#parentMode .form-section').forEach(section => section.classList.remove('active'));
             document.getElementById('parent' + authType.charAt(0).toUpperCase() + authType.slice(1) + 'Form').classList.add('active');
@@ -555,6 +500,134 @@
 
         function hideMessage() {
             document.getElementById('message').className = 'message';
+        }
+
+        function buildChildProgressSnapshot(child) {
+            if (child.synced_progress && typeof child.synced_progress === 'object' && Object.keys(child.synced_progress).length) {
+                return {
+                    visits: {},
+                    questions: 0,
+                    doctorChecks: 0,
+                    feedings: 0,
+                    treatments: 0,
+                    quizCorrect: 0,
+                    quizTotal: 0,
+                    stories: 0,
+                    creations: 0,
+                    activities: [],
+                    totalChats: 0,
+                    totalQuestions: 0,
+                    totalQuizPassed: 0,
+                    totalStories: 0,
+                    storiesCompleted: 0,
+                    uniqueAnimalsInteracted: [],
+                    ...child.synced_progress,
+                    visits: { ...(child.synced_progress.visits || {}) },
+                    activities: Array.isArray(child.synced_progress.activities) ? child.synced_progress.activities : []
+                };
+            }
+
+            return {
+                visits: Object.fromEntries((child.animals_explored || []).map(animalId => [animalId, 1])),
+                questions: 0,
+                doctorChecks: 0,
+                feedings: 0,
+                treatments: 0,
+                quizCorrect: child.questions_correct || 0,
+                quizTotal: child.questions_answered || 0,
+                stories: child.stories_created || 0,
+                creations: 0,
+                activities: [],
+                totalChats: 0,
+                totalQuestions: 0,
+                totalQuizPassed: 0,
+                totalStories: 0,
+                storiesCompleted: 0,
+                uniqueAnimalsInteracted: []
+            };
+        }
+
+        async function handleChildLogin(e) {
+            e.preventDefault();
+            hideMessage();
+
+            const name = document.getElementById('childName').value.trim();
+            const entryCode = document.getElementById('childEntryCode').value.trim();
+
+            if (!name || !entryCode) {
+                showMessage('请输入孩子姓名和进入码', 'error');
+                return;
+            }
+
+            if (!/^\d{6}$/.test(entryCode)) {
+                showMessage('请输入6位进入码', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/family/child-access', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        entry_code: entryCode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const child = data.child;
+                    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    const progressSnapshot = buildChildProgressSnapshot(child);
+                    const syncedCreationsCount = Number(child.synced_creations_count || progressSnapshot.creations || 0) || 0;
+
+                    const sessionData = {
+                        sessionId: sessionId,
+                        profile: {
+                            name: child.name,
+                            age: Number(child.age) || 6,
+                            role: 'child'
+                        },
+                        progress: progressSnapshot,
+                        selectedAnimalId: null,
+                        creations: Array.from({ length: syncedCreationsCount }, (_, index) => ({
+                            id: `synced-creation-${index + 1}`,
+                            synced: true
+                        })),
+                        route: 'map',
+                        linkedAccountId: data.account_id,
+                        linkedChildId: child.id,
+                        linkedChildProfile: child,
+                        syncToken: data.sync_token,
+                        lastSyncedAt: child.last_synced_at || new Date().toISOString()
+                    };
+
+                    const storeKey = 'applePuddingAnimalSessionsV3';
+                    const activeSessionKey = 'applePuddingActiveSessionId';
+                    let sessionStore = { sessions: {}, order: [] };
+
+                    try {
+                        const saved = localStorage.getItem(storeKey);
+                        if (saved) {
+                            sessionStore = JSON.parse(saved);
+                        }
+                    } catch (loadError) {
+                        console.error('Failed to load sessions:', loadError);
+                    }
+
+                    sessionStore.sessions[sessionId] = sessionData;
+                    sessionStore.order = [sessionId, ...sessionStore.order.filter(id => id !== sessionId)];
+                    localStorage.setItem(storeKey, JSON.stringify(sessionStore));
+                    sessionStorage.setItem(activeSessionKey, sessionId);
+                    window.location.href = '/static/index.html?v=20260705-syncfix4';
+                } else {
+                    showMessage(data.detail || data.message || '进入失败，请检查姓名和进入码', 'error');
+                }
+            } catch (error) {
+                console.error('孩子进入失败:', error);
+                showMessage('进入失败，请稍后重试', 'error');
+            }
         }
 
         // 家长登录处理
@@ -650,16 +723,19 @@
                         document.getElementById('parentLoginUsername').value = phone;
                     }, 1500);
                 } else {
-                    showMessage(data.detail || data.message || '注册失败', 'error');
+                    const errorMessage = data.detail || data.message || data.error || '注册失败';
+                    showMessage(
+                        errorMessage.includes('Rate limit exceeded')
+                            ? '注册过于频繁，请 1 小时后再试'
+                            : errorMessage,
+                        'error'
+                    );
                 }
             } catch (error) {
                 console.error('注册失败:', error);
                 showMessage('注册失败，请稍后重试', 'error');
             }
         }
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>

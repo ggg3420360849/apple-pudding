@@ -705,15 +705,24 @@ function getGoalTypeLabel(type) {
     return labels[type] || type;
 }
 
+function createOfflineActivityId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return window.crypto.randomUUID();
+    }
+    return `offline-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 // 记录活动（支持离线）
 async function recordActivity(activityType, data = {}) {
     if (!currentChild || !currentAccount) return;
 
     const activity = {
+        id: createOfflineActivityId(),
         account_id: currentAccount.id,
         child_id: currentChild.id,
         activity_type: activityType,
-        data: data
+        data: data,
+        timestamp: Date.now()
     };
 
     if (navigator.onLine) {
@@ -737,7 +746,12 @@ async function recordActivity(activityType, data = {}) {
 
 // 队列离线活动
 function queueOfflineActivity(activity) {
-    offlineQueue.push(activity);
+    const queuedActivity = {
+        ...activity,
+        id: activity.id || createOfflineActivityId(),
+        timestamp: activity.timestamp || Date.now()
+    };
+    offlineQueue.push(queuedActivity);
     localStorage.setItem('offlineQueue', JSON.stringify(offlineQueue));
 }
 
@@ -766,7 +780,12 @@ async function checkNewAchievements() {
 // 从localStorage恢复离线队列
 const storedQueue = localStorage.getItem('offlineQueue');
 if (storedQueue) {
-    offlineQueue = JSON.parse(storedQueue);
+    offlineQueue = JSON.parse(storedQueue).map(activity => ({
+        ...activity,
+        id: activity.id || createOfflineActivityId(),
+        timestamp: activity.timestamp || Date.now()
+    }));
+    localStorage.setItem('offlineQueue', JSON.stringify(offlineQueue));
 }
 
 // ========== 模态框管理 ==========
@@ -986,7 +1005,7 @@ async function loadOfflineStats() {
                         <div>
                             <strong>${getActivityTypeLabel(activity.activity_type)}</strong>
                             <span style="color: var(--muted); font-size: 13px; margin-left: 8px;">
-                                ${new Date(activity.timestamp).toLocaleString()}
+                                ${activity.timestamp ? new Date(activity.timestamp).toLocaleString() : '待同步'}
                             </span>
                         </div>
                         <button class="secondary" onclick="removeFromQueue(${index})" style="padding: 4px 12px; font-size: 13px;">
