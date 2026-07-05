@@ -50,6 +50,10 @@ function render() {
         }
     }
     validateAndFixRoute();
+    // Saved/synced progress can already satisfy a requirement before this page
+    // loads. Reconcile silently so returning from parent mode does not replay
+    // an old unlock animation every time.
+    checkAndUnlockAnimals({ silent: true });
     renderShell();
     restoreMainScrollPosition(scrollPosition);
 }
@@ -83,6 +87,7 @@ function renderShell() {
     if (state.route === "doctor") state.route = "qa";
     const route = getRoute();
     const availableRoutes = getAvailableRoutes();
+    const parentChildReportView = state.profile.role === "parent" && state.selectedChild;
     app.innerHTML = `
         <div class="shell">
             <aside class="sidebar">
@@ -117,19 +122,88 @@ function renderShell() {
                         <h2>${route.title}</h2>
                         <p>${route.subtitle}</p>
                     </div>
-                    <div class="action-row no-print">
-                        <button class="settings-button" type="button" data-action="toggle-settings" aria-label="设置" title="设置">⚙️</button>
-                    </div>
-                    ${state.settingsOpen ? settingsMenu() : ""}
+                    ${parentChildReportView ? `
+                        <div class="action-row parent-return-row no-print">
+                            <button class="secondary-button" type="button" onclick="backToParentPortal()" title="返回选择孩子页面">返回选孩子</button>
+                        </div>
+                    ` : state.profile.role === "parent" ? `
+                        <div class="action-row no-print">
+                            <button class="settings-button" type="button" data-action="toggle-settings" aria-label="设置" title="设置">⚙️</button>
+                        </div>
+                        ${state.settingsOpen ? settingsMenu() : ""}
+                    ` : ""}
                 </div>
                 ${renderRoute()}
             </main>
         </div>
+        ${renderCareDoctorModal()}
+        ${renderCareFeedConfirmModal()}
         <div id="toast" class="toast hide"></div>
     `;
 }
 
+function renderCareDoctorModal() {
+    const modal = state.careDoctorModal;
+    if (!modal) return "";
+
+    const isLoading = modal.status === "loading";
+    const animal = animals.find((item) => item.id === modal.animalId);
+    const icon = animal?.icon || "🩺";
+
+    return `
+        <div class="care-doctor-overlay">
+            <div class="care-doctor-modal" role="dialog" aria-modal="true" aria-label="AI医生照护建议">
+                <div class="care-doctor-header">
+                    <div class="care-doctor-icon">${icon}</div>
+                    <div>
+                        <span class="care-doctor-kicker">AI动物医生</span>
+                        <h3>${isLoading ? "正在诊断..." : `${escapeHtml(modal.animalName || "小动物")}的照护建议`}</h3>
+                    </div>
+                </div>
+                <div class="care-doctor-body">
+                    <div class="care-doctor-section">
+                        <strong>为什么不舒服</strong>
+                        <p>${escapeHtml(modal.why || modal.cause || modal.title || "需要再观察一下状态。")}</p>
+                    </div>
+                    <div class="care-doctor-section">
+                        <strong>怎么照护</strong>
+                        <div class="care-doctor-answer ${isLoading ? "loading" : ""}">
+                            ${isLoading ? "AI医生正在看症状，马上告诉你原因和照护方法..." : escapeHtml(modal.treatment || modal.reply || modal.action || "先安静休息，继续观察。")}
+                        </div>
+                    </div>
+                    ${isLoading ? "" : `<div class="meta-line">AI医生回复不一定准确｜这只是儿童科普建议，严重情况要联系真正的兽医。</div>`}
+                </div>
+                <div class="care-doctor-actions">
+                    <button class="secondary-button" type="button" data-action="close-care-doctor-modal" ${isLoading ? "disabled" : ""}>
+                        ${isLoading ? "诊断中..." : "知道了"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderCareFeedConfirmModal() {
+    const confirm = state.careFeedConfirm;
+    if (!confirm) return "";
+
+    return `
+        <div class="care-doctor-overlay">
+            <div class="care-feed-confirm-modal" role="dialog" aria-modal="true" aria-label="确认不投喂">
+                <div class="care-feed-confirm-icon">🍽️</div>
+                <h3>确定不投喂吗？</h3>
+                <p>${escapeHtml(confirm.animalName || "小动物")}现在还饿着。如果一直不处理，它可能会因为饿太久变得不舒服。</p>
+                <div class="care-feed-confirm-actions">
+                    <button class="secondary-button" type="button" data-action="close-care-feed-confirm">继续选食物</button>
+                    <button class="primary-button" type="button" data-action="confirm-skip-care-feed">确定不投喂</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 function settingsMenu() {
+    if (state.profile?.role !== "parent") return "";
     return `
         <div class="settings-menu">
             <div class="settings-menu-header">
@@ -207,6 +281,13 @@ function mapView() {
 }
 
 function mapCanvas(clickable) {
+    const lockLabels = {
+        penguin: "❄️ 冰雪海岸",
+        tiger: "🌲 森林",
+        frog: "🪷 池塘湿地",
+        dolphin: "🌊 珊瑚海湾",
+        camel: "🏜️ 沙漠绿洲"
+    };
     const lockPositions = {
         penguin: { x: 78, y: 6, width: 108 },
         panda: { x: 43, y: 25, width: 108 },
@@ -236,19 +317,20 @@ function mapCanvas(clickable) {
                 <circle class="route-dot" cx="52" cy="44" r="1" />
                 <circle class="route-dot" cx="48" cy="67" r="1" />
             </svg>
-            <div class="map-label" style="right: 5%; top: 4%; --tilt: -2deg;">❄️ 冰雪海岸</div>
+            <div class="map-label ${!isAnimalUnlocked("penguin") ? "map-label-covered" : ""}" style="right: 5%; top: 4%; --tilt: -2deg;">❄️ 冰雪海岸</div>
             <div class="map-label" style="left: 25%; top: 23%; --tilt: -3deg;">🎋 竹林山地</div>
-            <div class="map-label" style="right: 7%; top: 31%; --tilt: 2deg;">🌲 森林</div>
-            <div class="map-label" style="left: 32%; top: 43%; --tilt: -2deg;">🌼 阳光草原</div>
-            <div class="map-label" style="left: 5%; top: 59%; --tilt: 2deg;">🪷 池塘湿地</div>
-            <div class="map-label" style="right: 3%; top: 64%; --tilt: 2deg;">🌊 珊瑚海湾</div>
-            <div class="map-label" style="left: 28%; top: 82%; --tilt: -2deg;">🏜️ 沙漠绿洲</div>
+            <div class="map-label ${!isAnimalUnlocked("tiger") ? "map-label-covered" : ""}" style="right: 7%; top: 31%; --tilt: 2deg;">🌲 森林</div>
+            <div class="map-label ${!grasslandUnlocked ? "map-label-covered" : ""}" style="left: 32%; top: 43%; --tilt: -2deg;">🌼 阳光草原</div>
+            <div class="map-label ${!isAnimalUnlocked("frog") ? "map-label-covered" : ""}" style="left: 5%; top: 59%; --tilt: 2deg;">🪷 池塘湿地</div>
+            <div class="map-label ${!isAnimalUnlocked("dolphin") ? "map-label-covered" : ""}" style="right: 3%; top: 64%; --tilt: 2deg;">🌊 珊瑚海湾</div>
+            <div class="map-label ${!isAnimalUnlocked("camel") ? "map-label-covered" : ""}" style="left: 28%; top: 82%; --tilt: -2deg;">🏜️ 沙漠绿洲</div>
             ${!grasslandUnlocked ? `
                 <button class="marker locked ${grasslandProgress?.percentage >= 80 ? 'almost-unlocked' : ''}"
                         type="button"
                         style="left:52%; top:44%; --lock-width:116px;"
                         data-locked-animal="grassland"
                         aria-label="查看兔子和大象的共同解锁方法">
+                    <span class="map-lock-text">🌼 阳光草原</span>
                     <span class="unlock-bubble">
                         <strong>🔒 发现草原上的新朋友</strong>
                         ${escapeHtml(getUnlockInstruction(grasslandAnimal))}
@@ -279,6 +361,7 @@ function mapCanvas(clickable) {
                     <span class="animal-face">${animal.icon}</span>
                     <span class="animal-name">${animalName}</span>
                     ${!unlocked ? `
+                        <span class="map-lock-text">${escapeHtml(lockLabels[animal.id] || animal.habitat)}</span>
                         <span class="unlock-bubble ${animal.x > 68 ? 'bubble-left' : animal.x < 32 ? 'bubble-right' : ''} ${animal.y < 18 ? 'bubble-bottom' : ''}">
                             <strong>🔒 发现一位神秘新朋友</strong>
                             ${escapeHtml(getUnlockInstruction(animal))}
@@ -334,8 +417,72 @@ function quizChoiceButton(quiz, option, index, currentQuiz) {
 
 function quizResultText(animal, currentQuiz, quiz) {
     if (!currentQuiz) return "";
-    if (currentQuiz.correct) return `答对了，已经给${getAnimalDisplayName(animal.id)}喂养：${currentQuiz.food}`;
-    return `答错了，正确答案是：${quiz.options[quiz.answer]}。可以请AI医生帮小动物治疗和复习。`;
+    if (currentQuiz.correct) return `答对了，获得 1 份${currentQuiz.food}。等${getAnimalDisplayName(animal.id)}饿了就能投喂。`;
+    return `答错了，正确答案是：${quiz.options[quiz.answer]}。继续完成今天的题吧。`;
+}
+
+function renderFoodInventory(animal) {
+    const profile = getAnimalCareProfile(animal);
+    const count = getFoodCount(animal.id, profile.favoriteFood);
+
+    return `
+        <div class="food-inventory">
+            <span class="food-inventory-label">食物背包</span>
+            <span class="food-pill">${escapeHtml(profile.favoriteFood)} × ${count}</span>
+        </div>
+    `;
+}
+
+function renderCareEventPanel(animal, event) {
+    if (!event || event.status === "scheduled") {
+        return "";
+    }
+
+    const doctorLoading = state.careDoctorModal?.animalId === animal.id && state.careDoctorModal?.status === "loading";
+
+    if (event.type === "hungry") {
+        const selectedIndexes = new Set(getSelectedCareFeedIndexes(event));
+        const selectedCount = selectedIndexes.size;
+
+        return `
+            <div class="care-event-card hungry">
+                <div class="care-event-header">
+                    <div>
+                        <strong>${escapeHtml(getAnimalDisplayName(animal.id))}饿了</strong>
+                        <p>可以多选食物，选好后再点击投喂。如果一直不喂，它可能会生病。</p>
+                    </div>
+                </div>
+                <div class="feeding-options">
+                    ${event.options.map((option, index) => {
+                        const selected = selectedIndexes.has(index);
+                        return `
+                        <button class="food-choice-button ${selected ? "selected" : ""}" type="button" data-feed-option="${index}" aria-pressed="${selected}">
+                            ${selected ? "✓ " : ""}${escapeHtml(option.food)}
+                        </button>
+                    `}).join("")}
+                </div>
+                <div class="feeding-action-row">
+                    <button class="secondary-button" type="button" data-action="clear-care-feed-selection" ${selectedCount ? "" : "disabled"}>清空选择</button>
+                    <button class="primary-button feed-submit-button" type="button" data-action="submit-care-feed">
+                        投喂${selectedCount ? `（${selectedCount}个）` : ""}
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="care-event-card sick">
+            <div>
+                <strong>${escapeHtml(event.title || "有点不舒服")}</strong>
+                <p>${escapeHtml(event.cause || "需要温和照护。")}</p>
+                <p>${escapeHtml(event.action || "先观察状态，保持安静。")}</p>
+            </div>
+            <button class="primary-button" type="button" data-action="treat-care-event" ${doctorLoading ? "disabled" : ""}>
+                ${doctorLoading ? "AI医生正在诊断..." : "请AI医生照护"}
+            </button>
+        </div>
+    `;
 }
 
 function qaView() {
@@ -463,23 +610,47 @@ function renderDemonstration(animal) {
 }
 
 function renderAnimalCare(animal) {
+    scheduleDailyQuizGeneration(animal);
+    const careEvent = ensureCareEvent(animal);
     const lastAnswer = state.answers[0];
+    const qaRequest = state.qaRequest;
+    const isQaLoading = Boolean(qaRequest?.isLoading);
     const lastDoctorLog = state.doctorLogs.find((item) => item.animalId === animal.id);
     const lastFeeding = state.feedingLogs.find((item) => item.animalId === animal.id);
     const activeQuiz = getActiveAnimalQuiz(animal);
     const quizList = getAnimalQuizList(animal);
     const quizCursor = getAnimalQuizCursor(animal);
+    const dailySet = getDailyQuizSet(animal);
+    const savedQuizAnswer = activeQuiz && dailySet?.answers?.[activeQuiz.index]
+        ? dailySet.answers[activeQuiz.index]
+        : null;
     const currentQuiz = state.lastQuiz
         && state.lastQuiz.animalId === animal.id
+        && activeQuiz
         && state.lastQuiz.quizIndex === activeQuiz.index
         ? state.lastQuiz
-        : null;
+        : (savedQuizAnswer ? {
+            animalId: animal.id,
+            quizIndex: activeQuiz.index,
+            question: activeQuiz.question,
+            options: activeQuiz.options,
+            answer: activeQuiz.answer,
+            choice: savedQuizAnswer.choice,
+            correct: savedQuizAnswer.correct,
+            food: getAnimalCareProfile(animal).favoriteFood,
+            time: savedQuizAnswer.time
+        } : null);
     const animalFeedings = state.feedingLogs.filter((item) => item.animalId === animal.id).length;
     const animalTreatments = state.doctorLogs.filter((item) => item.animalId === animal.id).length;
-    const animalLevel = Math.floor(animalFeedings / 3) + 1; // Level up every 3 feedings
+    const animalIntimacy = getAnimalIntimacy(animal.id);
+    const animalLevel = Math.floor(animalIntimacy / 3) + 1; // Level up every 3 intimacy points
+    const intimacyProgress = animalIntimacy % 3;
+    const intimacyPercent = (intimacyProgress / 3) * 100;
+    const dailyProgress = getDailyQuizProgress(animal);
 
     // 获取当前动物状态
-    const currentState = state.animalStates?.[animal.id] || getRandomAnimalState(animal.id);
+    const eventState = careEventToAnimalState(careEvent);
+    const currentState = eventState || state.animalStates?.[animal.id] || getRandomAnimalState(animal.id);
 
     return `
         <section class="view animal-care-view">
@@ -514,8 +685,14 @@ function renderAnimalCare(animal) {
                     </div>
                     <div class="animal-level">
                         <span class="level-badge">Lv.${animalLevel}</span>
-                        <div class="level-progress">
-                            <div class="level-progress-fill" style="width: ${(animalFeedings % 3) * 33.33}%;"></div>
+                        <div class="level-info">
+                            <div class="level-info-header">
+                                <span class="level-label">亲密度</span>
+                                <span class="level-progress-text">${intimacyProgress}/3</span>
+                            </div>
+                            <div class="level-progress">
+                                <div class="level-progress-fill" style="width: ${intimacyPercent}%;"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="care-stats-grid">
@@ -533,18 +710,20 @@ function renderAnimalCare(animal) {
                             `最近喂食：${escapeHtml(lastFeeding.food)}` :
                             `喜欢吃：${animal.diet}`}
                     </div>
+                    ${renderFoodInventory(animal)}
                 </div>
             </div>
 
             <div class="knowledge-qa-section">
-                <div class="panel">
+                ${renderCareEventPanel(animal, careEvent)}
+                <div class="panel qa-panel">
                     <div class="panel-title">
                         <h3>知识提问</h3>
                     </div>
                     <div class="field">
                         <div style="position: relative;">
-                            <textarea class="textarea-input" id="qaQuestion" placeholder="想问什么问题呢？试试点击话筒说出来..."></textarea>
-                            <button class="voice-input-btn" type="button" data-action="toggle-voice-input-qa" id="voiceInputBtnQa" title="语音输入（建议使用 Chrome 浏览器）">
+                            <textarea class="textarea-input" id="qaQuestion" placeholder="想问什么问题呢？试试点击话筒说出来..." ${isQaLoading ? 'disabled' : ''}>${isQaLoading ? escapeHtml(qaRequest.question) : ''}</textarea>
+                            <button class="voice-input-btn" type="button" data-action="toggle-voice-input-qa" id="voiceInputBtnQa" title="语音输入（建议使用 Chrome 浏览器）" ${isQaLoading ? 'disabled' : ''}>
                                 <span id="voiceIconQa">🎤</span>
                             </button>
                         </div>
@@ -564,60 +743,72 @@ function renderAnimalCare(animal) {
                             class="quick-question-text ${state.currentQuickQuestion.isGenerating ? 'generating' : ''}"
                             type="button"
                             data-action="fill-quick-question"
-                            ${state.currentQuickQuestion.isGenerating ? 'disabled' : ''}>
+                            ${state.currentQuickQuestion.isGenerating || isQaLoading ? 'disabled' : ''}>
                             ${escapeHtml(state.currentQuickQuestion.question)}
                         </button>
                         <button
                             class="refresh-question-btn ${state.currentQuickQuestion.isGenerating ? 'loading' : ''}"
                             type="button"
                             data-action="refresh-quick-question"
-                            ${state.currentQuickQuestion.isGenerating ? 'disabled' : ''}
+                            ${state.currentQuickQuestion.isGenerating || isQaLoading ? 'disabled' : ''}
                             title="换一个问题"
                             aria-label="换一个问题">
                             ${state.currentQuickQuestion.isGenerating ? '⏳' : '🔄'}
                         </button>
                     </div>
                     <div class="action-row" style="margin-top: 14px;">
-                        <button class="primary-button" type="button" data-action="ask-qa">问问AI</button>
+                        <button
+                            class="primary-button"
+                            type="button"
+                            data-action="ask-qa"
+                            ${isQaLoading ? 'disabled' : ''}>
+                            ${isQaLoading ? `正在回答你的问题（${qaRequest.elapsedSeconds}秒）` : '问问动物大师'}
+                        </button>
                     </div>
-                    ${lastAnswer ? `
+                    ${(isQaLoading || lastAnswer) ? `
                         <div class="qa-answer-box" style="margin-top: 20px;">
-                            <div class="answer-label">回答
+                            <div class="answer-label">回答${isQaLoading ? '' : `
                                 <button
                                     class="read-answer-icon"
                                     type="button"
                                     data-action="read-qa-answer"
                                     id="readQaBtn"
-                                    title="朗读回答"
-                                    style="display: inline-block; background: none; border: none; cursor: pointer; font-size: 18px; padding: 0; margin-left: 6px; line-height: 1; opacity: 0.6; transition: opacity 0.2s, transform 0.2s; vertical-align: middle; width: 18px; height: 18px;"
-                                    onmouseover="this.style.opacity='1'; this.style.transform='scale(1.15)'"
-                                    onmouseout="this.style.opacity='0.6'; this.style.transform='scale(1)'">
-                                    <span id="readQaIcon" style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center;">🔊</span>
+                                    title="朗读回答">
+                                    <span id="readQaIcon" class="read-answer-icon-symbol">🔊</span>
                                 </button>
+                            `}</div>
+                            <div id="qaAnswer" class="answer-panel ${isQaLoading ? 'loading' : ''}">
+                                ${isQaLoading ? '正在回答你的问题，请稍等...' : escapeHtml(lastAnswer.reply)}
                             </div>
-                            <div id="qaAnswer" class="answer-panel">${escapeHtml(lastAnswer.reply)}</div>
-                            <div id="qaMeta" class="meta-line">${formatTime(lastAnswer.time)} | ${escapeHtml(getAnimalDisplayName(lastAnswer.animalId))}</div>
+                            <div id="qaMeta" class="meta-line">${isQaLoading ? `已等待 ${qaRequest.elapsedSeconds} 秒` : ''}</div>
                         </div>
                     ` : ''}
                 </div>
 
                 <div class="panel">
                     <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="font-size: 24px; margin: 0;">答题喂养</h3>
-                        <span>第 ${quizCursor + 1}/${quizList.length} 题 · 正确 ${state.progress.quizCorrect}/${state.progress.quizTotal}</span>
+                        <h3 style="font-size: 24px; margin: 0;">每日答题</h3>
+                        <span>今日 ${dailyProgress.answered}/${dailyProgress.total} 题 · 正确 ${dailyProgress.correct}</span>
                     </div>
                     <div class="quiz-box">
-                        <p class="quiz-question">${activeQuiz.question}</p>
-                        <div class="choice-list">
-                            ${activeQuiz.options.map((option, index) => quizChoiceButton(activeQuiz, option, index, currentQuiz)).join("")}
-                        </div>
-                        <div id="quizResult" class="meta-line">${escapeHtml(quizResultText(animal, currentQuiz, activeQuiz))}</div>
-                        ${currentQuiz ? `
-                            <div class="quiz-followup-actions">
-                                ${!currentQuiz.correct ? `<button class="primary-button quiz-doctor-button" type="button" data-action="open-doctor">医生治疗</button>` : ""}
-                                <button class="secondary-button" type="button" data-action="reset-quiz">下一题</button>
+                        ${dailyProgress.isGenerating && !getDailyQuizSet(animal) ? `
+                            <p class="quiz-question">正在生成今天的4道题...</p>
+                            <div class="meta-line">模型会尽量生成不同题型，稍等一下。</div>
+                        ` : activeQuiz ? `
+                            <p class="quiz-question">${activeQuiz.question}</p>
+                            <div class="choice-list">
+                                ${activeQuiz.options.map((option, index) => quizChoiceButton(activeQuiz, option, index, currentQuiz)).join("")}
                             </div>
-                        ` : ""}
+                            <div id="quizResult" class="meta-line">${escapeHtml(quizResultText(animal, currentQuiz, activeQuiz))}</div>
+                            ${currentQuiz ? `
+                                <div class="quiz-followup-actions">
+                                    <button class="secondary-button" type="button" data-action="reset-quiz">${quizCursor + 1 >= quizList.length ? "完成今日题目" : "下一题"}</button>
+                                </div>
+                            ` : ""}
+                        ` : `
+                            <p class="quiz-question">今天的4道题已经完成啦。</p>
+                            <div class="meta-line">答对获得的食物会留在背包里，等随机饥饿事件出现时投喂。</div>
+                        `}
                     </div>
                 </div>
             </div>
@@ -732,11 +923,15 @@ function doctorView() {
 function imagineView() {
     const draft = state.draftCreature;
     const parts = Array.isArray(draft.parts) ? draft.parts : [];
+    const head = normalizeCreatureHead(draft.head || "panda");
     const body = normalizeCreatureBody(draft.body || "panda");
-    const wing = parts.includes("wing") ? normalizeCreatureWing(draft.wing || "angel") : "";
-    const tail = parts.includes("tail") ? normalizeCreatureTail(draft.tail || "fox") : "";
-    const hasHorn = parts.includes("horn");
+    const hand = parts.includes("hand") ? normalizeCreatureHand(draft.hand || creatureHands[0].id) : "";
+    const foot = parts.includes("foot") ? normalizeCreatureFoot(draft.foot || creatureFeet[0].id) : "";
+    const wing = parts.includes("wing") ? normalizeCreatureWing(draft.wing || creatureWings[0].id) : "";
+    const tail = parts.includes("tail") && creatureTails.length ? normalizeCreatureTail(draft.tail || creatureTails[0].id) : "";
+    const decoration = parts.includes("decoration") && creatureDecorations.length ? normalizeCreatureDecoration(draft.decoration || creatureDecorations[0].id) : "";
     const selectedPart = activeCreaturePart(draft);
+    const draftStory = creatureStoryLine(draft);
     return `
         <section class="imagine-screen">
             <header class="imagine-intro">
@@ -747,15 +942,27 @@ function imagineView() {
             <div class="creator-board">
                 <div class="material-rail">
                     <div class="material-group">
-                        <p class="material-title"><span>①</span> 身体</p>
+                        <p class="material-title"><span>①</span> 头</p>
+                        <div class="material-list asset-list" data-asset-list="head">
+                            ${creatureHeads.map((item) => creatureMaterialButton("head", item, head === item.id)).join("")}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>②</span> 身体</p>
                         <div class="material-list asset-list" data-asset-list="body">
                             ${creatureBodies.map((item) => creatureMaterialButton("body", item, body === item.id)).join("")}
                         </div>
                     </div>
                     <div class="material-group">
-                        <p class="material-title"><span>②</span> 尾巴</p>
-                        <div class="material-list asset-list" data-asset-list="tail">
-                            ${creatureTails.map((item) => creatureMaterialButton("tail", item, tail === item.id)).join("")}
+                        <p class="material-title"><span>③</span> 手</p>
+                        <div class="material-list asset-list" data-asset-list="hand">
+                            ${creatureHands.map((item) => creatureMaterialButton("hand", item, hand === item.id)).join("")}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>④</span> 脚</p>
+                        <div class="material-list asset-list" data-asset-list="foot">
+                            ${creatureFeet.map((item) => creatureMaterialButton("foot", item, foot === item.id)).join("")}
                         </div>
                     </div>
                 </div>
@@ -767,27 +974,37 @@ function imagineView() {
                 </div>
                 <div class="material-rail">
                     <div class="material-group">
-                        <p class="material-title"><span>③</span> 翅膀</p>
+                        <p class="material-title"><span>⑤</span> 尾巴</p>
+                        <div class="material-list asset-list" data-asset-list="tail">
+                            ${creatureMaterialList("tail", creatureTails, tail)}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>⑥</span> 翅膀</p>
                         <div class="material-list asset-list" data-asset-list="wing">
                             ${creatureWings.map((item) => creatureMaterialButton("wing", item, wing === item.id)).join("")}
                         </div>
                     </div>
                     <div class="material-group">
-                        <p class="material-title"><span>④</span> 星角</p>
-                        <div class="material-list">
-                            ${creatureSpecials.map((item) => creatureMaterialButton("horn", item, hasHorn)).join("")}
+                        <p class="material-title"><span>⑦</span> 装饰</p>
+                        <div class="material-list asset-list" data-asset-list="decoration">
+                            ${creatureMaterialList("decoration", creatureDecorations, decoration)}
                         </div>
                     </div>
                 </div>
             </div>
+            ${creatureTransformControls(selectedPart)}
             <div class="compose-hint">
                 <span class="hint-icon">✎</span>
-                <strong>${selectedPart === "body"
-                    ? "选中身体后，用滚轮或双指调整大小"
-                    : "拖一拖换位置，双指可以缩放和旋转"}</strong>
+                <strong>点一下画布上的元素，再用下面按钮旋转、放大或缩小</strong>
+            </div>
+            <div class="creature-live-note">
+                <span>它正在变成...</span>
+                <strong>${escapeHtml(draft.name || "新朋友")}</strong>
+                <p>${escapeHtml(draftStory)}</p>
             </div>
             <div class="creature-card">
-                <div class="creature-thumb" style="background: linear-gradient(180deg, ${draft.color || "#8fc6f5"}55, #d6edb9);"><img src="${creatureAssetUrl("body", body)}" alt=""></div>
+                <div class="creature-thumb" style="background: linear-gradient(180deg, ${draft.color || "#8fc6f5"}55, #d6edb9);">${creatureSnapshotMarkup(draft, "thumb")}</div>
                 <div class="creature-notes">
                     <div class="note-row">
                         <label class="note-label" for="creatureName">我的新朋友叫</label>
@@ -803,7 +1020,7 @@ function imagineView() {
                             ${["好奇", "勇敢", "温柔", "爱唱歌", "慢悠悠"].map((mood) => `<option ${draft.mood === mood ? "selected" : ""}>${mood}</option>`).join("")}
                         </select>
                     </div>
-                    <p class="creature-summary">${escapeHtml(draft.mood)}，住在${escapeHtml(draft.habitat)}。已经选择 ${[wing && "翅膀", tail && "尾巴", hasHorn && "星角"].filter(Boolean).join("、") || "身体"}。</p>
+                <p class="creature-summary">${escapeHtml(draft.mood)}，住在${escapeHtml(draft.habitat)}。已经选择 ${["头", "身体", hand && "手", foot && "脚", wing && "翅膀", tail && "尾巴", decoration && "装饰"].filter(Boolean).join("、")}。</p>
                 </div>
             </div>
             <div class="imagine-actions">
@@ -815,9 +1032,16 @@ function imagineView() {
                 <div class="collection-grid">
                     <h3 class="scrapbook-title">我的奇妙动物册</h3>
                     ${state.creations.slice(0, 3).map((item) => `
-                        <article class="collection-item">
-                            <h4>${escapeHtml(item.name)}</h4>
-                            <p>${escapeHtml(item.mood)}，住在${escapeHtml(item.habitat)}。能力：${escapeHtml(item.parts.join("、") || "慢慢观察")}</p>
+                        <article class="collection-item creature-album-card">
+                            <div class="album-thumb" style="background: linear-gradient(180deg, ${(item.color || "#8fc6f5")}55, #fff1b6);">
+                                ${creatureSnapshotMarkup(item, "album")}
+                            </div>
+                            <div class="album-copy">
+                                <span class="album-kicker">${escapeHtml(item.mood || "好奇")} · ${escapeHtml(item.habitat || "秘密花园")}</span>
+                                <h4>${escapeHtml(item.name)}</h4>
+                                <p>${escapeHtml(item.story || creatureStoryLine(item))}</p>
+                                <small>${escapeHtml((item.parts || []).join("、") || item.ability || "慢慢观察")}</small>
+                            </div>
                         </article>
                     `).join("")}
                 </div>
@@ -827,29 +1051,87 @@ function imagineView() {
 }
 
 function creatureAssetUrl(type, id) {
-    const list = type === "body" ? creatureBodies : type === "wing" ? creatureWings : type === "horn" ? creatureSpecials : creatureTails;
+    const lists = {
+        head: creatureHeads,
+        body: creatureBodies,
+        hand: creatureHands,
+        foot: creatureFeet,
+        wing: creatureWings,
+        tail: creatureTails,
+        decoration: creatureDecorations
+    };
+    const list = lists[type] || creatureBodies;
     const fallback = list[0];
+    if (!fallback) return "";
     const item = list.find((asset) => asset.id === id) || fallback;
     return `${imagineAssetBase}${item.file}`;
+}
+
+function normalizeCreatureHead(id) {
+    return creatureHeads.some((item) => item.id === id) ? id : "panda";
 }
 
 function normalizeCreatureBody(id) {
     return { puppy: "dog", bunny: "rabbit" }[id] || (creatureBodies.some((item) => item.id === id) ? id : "panda");
 }
 
+function normalizeCreatureHand(id) {
+    if (!id) return "";
+    return creatureHands.some((item) => item.id === id) ? id : creatureHands[0].id;
+}
+
+function normalizeCreatureFoot(id) {
+    if (!id) return "";
+    return creatureFeet.some((item) => item.id === id) ? id : creatureFeet[0].id;
+}
+
 function normalizeCreatureWing(id) {
     if (!id) return "";
-    return { butterfly: "fairy" }[id] || (creatureWings.some((item) => item.id === id) ? id : "angel");
+    return creatureWings.some((item) => item.id === id) ? id : creatureWings[0].id;
 }
 
 function normalizeCreatureTail(id) {
     if (!id) return "";
-    return { leaf: "dino" }[id] || (creatureTails.some((item) => item.id === id) ? id : "fox");
+    return creatureTails.some((item) => item.id === id) ? id : creatureTails[0]?.id || "";
+}
+
+function normalizeCreatureDecoration(id) {
+    if (!id) return "";
+    return creatureDecorations.some((item) => item.id === id) ? id : creatureDecorations[0]?.id || "";
+}
+
+function creatureMaterialList(type, items, activeId) {
+    if (!items.length) return `<span class="material-empty">素材待添加</span>`;
+    return items.map((item) => creatureMaterialButton(type, item, activeId === item.id)).join("");
 }
 
 function creatureMaterialButton(type, item, active) {
-    const partToggle = type === "horn" ? ` data-creature-part="${item.id}"` : "";
-    return `<button class="material-button ${active ? "active" : ""}" type="button" draggable="true" data-creature-part-type="${type}" data-creature-part-id="${item.id}" data-creature-${type}="${item.id}"${partToggle} aria-label="${item.label}" title="${item.label}"><img class="material-img" src="${imagineAssetBase}${item.file}" alt=""></button>`;
+    return `<button class="material-button ${active ? "active" : ""}" type="button" draggable="true" data-creature-part-type="${type}" data-creature-part-id="${item.id}" data-creature-${type}="${item.id}" aria-label="${item.label}" title="${item.label}"><img class="material-img" src="${imagineAssetBase}${item.file}" alt=""></button>`;
+}
+
+function selectedCreaturePartLabel(part) {
+    return {
+        head: "头",
+        body: "身体",
+        hand: "手",
+        foot: "脚",
+        tail: "尾巴",
+        wing: "翅膀",
+        decoration: "装饰"
+    }[part] || "元素";
+}
+
+function creatureTransformControls(selectedPart) {
+    return `
+        <div class="transform-toolbar" aria-label="画布元素调整">
+            <span class="transform-label">当前选中：${selectedCreaturePartLabel(selectedPart)}</span>
+            <button class="transform-button" type="button" data-action="scale-part-down" aria-label="缩小" title="缩小">-</button>
+            <button class="transform-button" type="button" data-action="scale-part-up" aria-label="放大" title="放大">+</button>
+            <button class="transform-button" type="button" data-action="rotate-part-left" aria-label="左转" title="左转">⟲</button>
+            <button class="transform-button" type="button" data-action="rotate-part-right" aria-label="右转" title="右转">⟳</button>
+            <button class="transform-button transform-button-reset" type="button" data-action="reset-part-transform" aria-label="恢复默认" title="恢复默认">重置</button>
+        </div>
+    `;
 }
 
 function creatureThumbEmoji(body) {
@@ -863,9 +1145,7 @@ function creaturePartButton(part, label) {
 }
 
 function defaultCreatureTransform(part) {
-    return part === "body"
-        ? { scale: 100 }
-        : { scale: 100, rotation: 0, x: 0, y: 0 };
+    return { scale: 100, rotation: 0, x: 0, y: 0 };
 }
 
 function creatureTransform(part) {
@@ -880,26 +1160,52 @@ function creatureTransform(part) {
 function activeCreaturePart(draft = state.draftCreature) {
     const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
     const selected = draft.selectedPart || "body";
-    return selected === "body" || parts.has(selected) ? selected : "body";
+    const alwaysVisible = new Set(["head", "body"]);
+    const optional = new Set(["hand", "foot", "wing", "tail", "decoration"]);
+    return alwaysVisible.has(selected) || (optional.has(selected) && parts.has(selected)) ? selected : "body";
 }
 
 function creatureTransformStyle(part) {
     const transform = creatureTransform(part);
-    const values = [`--part-scale:${transform.scale / 100}`];
-    if (part !== "body") {
-        values.push(`--part-rotation:${transform.rotation}deg`);
-        values.push(`--part-x:${transform.x}px`);
-        values.push(`--part-y:${transform.y}px`);
-    }
+    const values = [
+        `--part-scale:${transform.scale / 100}`,
+        `--part-rotation:${transform.rotation}deg`,
+        `--part-x:${transform.x}px`,
+        `--part-y:${transform.y}px`
+    ];
     return values.join(";");
+}
+
+function creatureSnapshotMarkup(draft, variant) {
+    const head = normalizeCreatureHead(draft.head || "panda");
+    const body = normalizeCreatureBody(draft.body || "panda");
+    const hand = draft.hand ? normalizeCreatureHand(draft.hand) : "";
+    const foot = draft.foot ? normalizeCreatureFoot(draft.foot) : "";
+    const wing = draft.wing ? normalizeCreatureWing(draft.wing) : "";
+    const tail = draft.tail && creatureTails.length ? normalizeCreatureTail(draft.tail) : "";
+    const decoration = draft.decoration && creatureDecorations.length ? normalizeCreatureDecoration(draft.decoration) : "";
+    return `
+        <div class="creature-snapshot creature-snapshot-${variant}">
+            ${tail ? `<img class="creature-snapshot-asset snapshot-tail" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
+            ${wing ? `<img class="creature-snapshot-asset snapshot-wing" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
+            <img class="creature-snapshot-asset snapshot-body" src="${creatureAssetUrl("body", body)}" alt="">
+            <img class="creature-snapshot-asset snapshot-head" src="${creatureAssetUrl("head", head)}" alt="">
+            ${hand ? `<img class="creature-snapshot-asset snapshot-hand" src="${creatureAssetUrl("hand", hand)}" alt="">` : ""}
+            ${foot ? `<img class="creature-snapshot-asset snapshot-foot" src="${creatureAssetUrl("foot", foot)}" alt="">` : ""}
+            ${decoration ? `<img class="creature-snapshot-asset snapshot-decoration" src="${creatureAssetUrl("decoration", decoration)}" alt="">` : ""}
+        </div>
+    `;
 }
 
 function creaturePreview(draft) {
     const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
+    const head = normalizeCreatureHead(draft.head || "panda");
     const body = normalizeCreatureBody(draft.body || "panda");
-    const wing = parts.has("wing") ? normalizeCreatureWing(draft.wing || "angel") : "";
-    const tail = parts.has("tail") ? normalizeCreatureTail(draft.tail || "fox") : "";
-    const hasHorn = parts.has("horn");
+    const hand = parts.has("hand") ? normalizeCreatureHand(draft.hand || creatureHands[0].id) : "";
+    const foot = parts.has("foot") ? normalizeCreatureFoot(draft.foot || creatureFeet[0].id) : "";
+    const wing = parts.has("wing") ? normalizeCreatureWing(draft.wing || creatureWings[0].id) : "";
+    const tail = parts.has("tail") && creatureTails.length ? normalizeCreatureTail(draft.tail || creatureTails[0].id) : "";
+    const decoration = parts.has("decoration") && creatureDecorations.length ? normalizeCreatureDecoration(draft.decoration || creatureDecorations[0].id) : "";
     return `
         <div class="imagine-stage" data-creature-drop-zone="true">
             <div class="creature-preview raster-creature" style="--creature-color: ${draft.color || "#8fc6f5"};">
@@ -907,7 +1213,10 @@ function creaturePreview(draft) {
                 ${tail ? `<img class="creature-asset asset-tail ${activeCreaturePart(draft) === "tail" ? "selected-part" : ""}" data-edit-part="tail" data-tail="${tail}" style="${creatureTransformStyle("tail")}" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
                 ${wing ? `<img class="creature-asset asset-wing ${activeCreaturePart(draft) === "wing" ? "selected-part" : ""}" data-edit-part="wing" data-wing="${wing}" style="${creatureTransformStyle("wing")}" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
                 <img class="creature-asset asset-body ${activeCreaturePart(draft) === "body" ? "selected-part" : ""}" data-edit-part="body" data-body="${body}" style="${creatureTransformStyle("body")}" src="${creatureAssetUrl("body", body)}" alt="">
-                ${hasHorn ? `<img class="creature-asset asset-horn ${activeCreaturePart(draft) === "horn" ? "selected-part" : ""}" data-edit-part="horn" data-horn="horn" style="${creatureTransformStyle("horn")}" src="${creatureAssetUrl("horn", "horn")}" alt="">` : ""}
+                <img class="creature-asset asset-head ${activeCreaturePart(draft) === "head" ? "selected-part" : ""}" data-edit-part="head" data-head="${head}" style="${creatureTransformStyle("head")}" src="${creatureAssetUrl("head", head)}" alt="">
+                ${hand ? `<img class="creature-asset asset-hand ${activeCreaturePart(draft) === "hand" ? "selected-part" : ""}" data-edit-part="hand" data-hand="${hand}" style="${creatureTransformStyle("hand")}" src="${creatureAssetUrl("hand", hand)}" alt="">` : ""}
+                ${foot ? `<img class="creature-asset asset-foot ${activeCreaturePart(draft) === "foot" ? "selected-part" : ""}" data-edit-part="foot" data-foot="${foot}" style="${creatureTransformStyle("foot")}" src="${creatureAssetUrl("foot", foot)}" alt="">` : ""}
+                ${decoration ? `<img class="creature-asset asset-decoration ${activeCreaturePart(draft) === "decoration" ? "selected-part" : ""}" data-edit-part="decoration" data-decoration="${decoration}" style="${creatureTransformStyle("decoration")}" src="${creatureAssetUrl("decoration", decoration)}" alt="">` : ""}
             </div>
         </div>
     `;
@@ -1075,6 +1384,198 @@ function reportSettingsView() {
     return `<section class="view">${reportSettingsTab()}</section>`;
 }
 
+function formatSyncTimeText(value) {
+    if (!value) return "尚未同步";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "尚未同步";
+
+    return `上次同步：${date.toLocaleString("zh-CN", {
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+    })}`;
+}
+
+function formatParentSyncStatusText(selectedChild = {}) {
+    const selectedChildId = selectedChild.id || "";
+    const refreshedAt = state.lastSyncRefreshAt;
+    const refreshedChildId = state.lastSyncRefreshChildId || "";
+
+    if (refreshedAt && selectedChildId && refreshedChildId === selectedChildId) {
+        const refreshDate = new Date(refreshedAt);
+        if (!Number.isNaN(refreshDate.getTime())) {
+            return `刷新完成：${refreshDate.toLocaleString("zh-CN", {
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            })}`;
+        }
+    }
+
+    return formatSyncTimeText(
+        selectedChild.last_synced_at
+        || state.linkedChildProfile?.last_synced_at
+        || state.lastSyncedAt
+    );
+}
+
+function renderReportMetricCard(key, value, label) {
+    const active = state.reportMetricDetail === key;
+    return `
+        <div class="metric-stack ${active ? "active" : ""}">
+            <button
+                class="metric metric-button ${active ? "active" : ""}"
+                type="button"
+                data-action="open-report-metric"
+                data-metric-key="${key}"
+                aria-expanded="${active ? "true" : "false"}"
+            >
+                <strong>${value}</strong>
+                <span>${label}</span>
+            </button>
+            ${active ? renderReportMetricDetailPanel(key) : ""}
+        </div>
+    `;
+}
+
+function reportMetricActivities(filterFn) {
+    const activities = Array.isArray(state.progress.activities) ? state.progress.activities : [];
+    return activities.filter((item) => item && (!filterFn || filterFn(item)));
+}
+
+function renderReportMetricActivityList(items, emptyText) {
+    if (!items.length) {
+        return `<div class="empty-state">${emptyText}</div>`;
+    }
+
+    return `
+        <div class="activity-list">
+            ${items.slice(0, 20).map((item) => `
+                <article class="activity-item">
+                    <p class="activity-main"><strong>${escapeHtml(item.type)}</strong> ${escapeHtml(item.label)}</p>
+                    <time class="activity-time">${formatTime(item.time)}</time>
+                </article>
+            `).join("")}
+        </div>
+    `;
+}
+
+function renderReportMetricDetailPanel(key) {
+    const allActivities = reportMetricActivities();
+    const exploredAnimals = animals
+        .map((animal) => ({
+            ...animal,
+            count: state.progress.visits?.[animal.id] || 0
+        }))
+        .filter((animal) => animal.count > 0)
+        .sort((a, b) => b.count - a.count);
+    const maxCount = Math.max(1, ...exploredAnimals.map((animal) => animal.count), 1);
+
+    let title = "";
+    let summary = "";
+    let body = "";
+
+    if (key === "explored") {
+        const exploreActivities = reportMetricActivities((item) => item.type === "探索");
+        const totalExploreCount = exploredAnimals.reduce((sum, animal) => sum + animal.count, 0);
+        title = "已探索动物详情";
+        summary = `
+            <div class="detail-list">
+                <p><strong>已探索种类：</strong>${exploredAnimals.length} 种</p>
+                <p><strong>累计探索次数：</strong>${totalExploreCount} 次</p>
+            </div>
+        `;
+        body = exploredAnimals.length ? `
+            <div class="panel-title">
+                <h3>动物分布</h3>
+                <span>${exploredAnimals.length} 项</span>
+            </div>
+            ${exploredAnimals.map((animal) => `
+                <div class="bar-row">
+                    <span>${animal.icon} ${animal.name}</span>
+                    <span class="bar-track"><span class="bar-fill" style="width: ${(animal.count / maxCount) * 100}%;"></span></span>
+                    <span>${animal.count}</span>
+                </div>
+            `).join("")}
+            <div class="panel-title" style="margin-top: 12px;">
+                <h3>最近探索记录</h3>
+                <span>${Math.min(exploreActivities.length, 20)} 条</span>
+            </div>
+            ${renderReportMetricActivityList(exploreActivities, "还没有探索记录。")}
+        ` : `<div class="empty-state">还没有探索动物的记录。</div>`;
+    } else if (key === "questions") {
+        const questionActivities = reportMetricActivities((item) => item.type === "问答");
+        title = "AI知识提问详情";
+        summary = `
+            <div class="detail-list">
+                <p><strong>提问次数：</strong>${state.progress.questions || 0} 次</p>
+                <p><strong>可查看内容：</strong>最近提问的动物和问题标题</p>
+            </div>
+        `;
+        body = renderReportMetricActivityList(questionActivities, "还没有 AI 提问记录。");
+    } else if (key === "feedings") {
+        const feedingActivities = reportMetricActivities((item) => item.type === "喂养");
+        title = "投喂详情";
+        summary = `
+            <div class="detail-list">
+                <p><strong>投喂次数：</strong>${state.progress.feedings || 0} 次</p>
+                <p><strong>说明：</strong>随机饥饿事件中选择合适食物后计入这里</p>
+            </div>
+        `;
+        body = renderReportMetricActivityList(feedingActivities, "还没有投喂记录。");
+    } else if (key === "treatments") {
+        const treatmentActivities = reportMetricActivities((item) => item.type === "治疗");
+        title = "AI医生治疗详情";
+        summary = `
+            <div class="detail-list">
+                <p><strong>治疗次数：</strong>${state.progress.treatments || 0} 次</p>
+                <p><strong>可查看内容：</strong>最近触发治疗的动物与场景</p>
+            </div>
+        `;
+        body = renderReportMetricActivityList(treatmentActivities, "还没有 AI 医生治疗记录。");
+    } else if (key === "quiz-rate") {
+        const quizActivities = reportMetricActivities((item) => item.type === "测验");
+        const quizTotal = state.progress.quizTotal || 0;
+        const quizCorrect = state.progress.quizCorrect || 0;
+        title = "小测验正确率详情";
+        summary = `
+            <div class="detail-list">
+                <p><strong>正确率：</strong>${quizTotal ? Math.round((quizCorrect / quizTotal) * 100) : 0}%</p>
+                <p><strong>答对 / 总题数：</strong>${quizCorrect} / ${quizTotal}</p>
+            </div>
+        `;
+        body = renderReportMetricActivityList(quizActivities, "还没有小测验记录。");
+    } else if (key === "activities") {
+        const activityTypes = ["探索", "问答", "测验", "治疗", "故事", "创作"];
+        title = "总活动数详情";
+        summary = `
+            <div class="detail-list">
+                <p><strong>活动总数：</strong>${allActivities.length} 条</p>
+                ${activityTypes.map((type) => {
+                    const count = allActivities.filter((item) => item.type === type).length;
+                    return count ? `<p><strong>${type}：</strong>${count} 条</p>` : "";
+                }).join("")}
+            </div>
+        `;
+        body = renderReportMetricActivityList(allActivities, "还没有学习活动记录。");
+    }
+
+    if (!title) return "";
+
+    return `
+        <div class="panel metric-detail-panel">
+            <div class="panel-title">
+                <h3>${title}</h3>
+            </div>
+            ${summary}
+            ${body}
+        </div>
+    `;
+}
+
 function reportOverviewTab() {
     const totals = reportTotals();
     const favoriteAnimals = animals
@@ -1085,16 +1586,31 @@ function reportOverviewTab() {
 
     const trendData = window.ParentReportEnhanced?.getLast7DaysActivity(state.progress.activities) || [];
     const maxTrendCount = Math.max(1, ...trendData.map(d => d.count));
+    const syncTimeText = formatParentSyncStatusText(state.selectedChild || {});
 
     return `
         <div class="grid-3">
-            <div class="metric"><strong>${totals.explored}</strong><span>已探索动物</span></div>
-            <div class="metric"><strong>${state.progress.questions}</strong><span>AI知识提问</span></div>
-            <div class="metric"><strong>${state.progress.feedings || 0}</strong><span>答对喂养</span></div>
-            <div class="metric"><strong>${state.progress.treatments || 0}</strong><span>AI医生治疗</span></div>
-            <div class="metric"><strong>${Math.round(totals.quizRate)}%</strong><span>小测验正确率</span></div>
-            <div class="metric"><strong>${state.progress.activities.length}</strong><span>总活动数</span></div>
+            ${renderReportMetricCard("explored", totals.explored, "已探索动物")}
+            ${renderReportMetricCard("questions", state.progress.questions, "AI知识提问")}
+            ${renderReportMetricCard("feedings", state.progress.feedings || 0, "投喂次数")}
+            ${renderReportMetricCard("treatments", state.progress.treatments || 0, "AI医生治疗")}
+            ${renderReportMetricCard("quiz-rate", `${Math.round(totals.quizRate)}%`, "小测验正确率")}
+            ${renderReportMetricCard("activities", state.progress.activities.length, "总活动数")}
         </div>
+
+        ${state.profile.role === "parent" ? `
+        <div class="panel">
+            <div class="sync-data-card">
+                <div>
+                    <h3>同步数据</h3>
+                    <span>${syncTimeText}</span>
+                </div>
+                <button class="secondary-button" type="button" data-action="refresh-sync-data" ${state.syncRefreshLoading ? "disabled" : ""}>
+                    ${state.syncRefreshLoading ? "同步中..." : "刷新同步数据"}
+                </button>
+            </div>
+        </div>
+        ` : ""}
 
         <div class="panel">
             <div class="panel-title">
@@ -1210,7 +1726,7 @@ function reportAnalysisTab() {
                         <span class="period-icon">${period.icon}</span>
                         <div>
                             <div class="period-label">${period.label}</div>
-                            <div class="period-count">${period.count} 次</div>
+                            <div class="period-count">${period.activityLevel || "不活跃"}</div>
                         </div>
                     </div>
                 `).join("")}
@@ -1248,57 +1764,67 @@ function reportActivityTab() {
             <div class="activity-list">
                 ${state.progress.activities.length ? state.progress.activities.slice(0, 20).map((item) => `
                     <article class="activity-item">
-                        <p><strong>${escapeHtml(item.type)}</strong> ${escapeHtml(item.label)}</p>
-                        <p>${formatTime(item.time)}</p>
+                        <p class="activity-main"><strong>${escapeHtml(item.type)}</strong> ${escapeHtml(item.label)}</p>
+                        <time class="activity-time">${formatTime(item.time)}</time>
                     </article>
                 `).join("") : `<div class="empty-state">还没有学习记录。</div>`}
             </div>
         </div>
         <div class="action-row no-print">
-            <button class="secondary-button" type="button" data-action="export-data">导出数据</button>
-            <button class="secondary-button" type="button" data-action="print-report">打印报告</button>
             <button class="danger-button" type="button" data-action="reset-progress">清空记录</button>
         </div>
     `;
 }
 
 function reportSettingsTab() {
+    const selectedChild = state.selectedChild || {};
+    const entryCode = selectedChild.entry_code || "";
+    const syncIntervalHours = typeof getChildSyncIntervalHours === "function" ? getChildSyncIntervalHours() : 6;
+    const syncTimeText = formatParentSyncStatusText(selectedChild);
+
     return `
         <div class="panel">
             <div class="panel-title">
-                <h3>⚙️ 系统设置</h3>
+                <h3>⚙️ 家长设置</h3>
             </div>
-            <div class="grid-2">
-                <div class="field">
-                    <label for="parentModelSelect">AI模型选择</label>
-                    ${modelSelect("parentModelSelect")}
-                </div>
-                <div class="field">
-                    <label for="contentFilter">内容过滤级别</label>
-                    <select class="select-input" id="contentFilter">
-                        <option value="strict" ${(state.contentFilter || "moderate") === "strict" ? "selected" : ""}>严格（推荐3-6岁）</option>
-                        <option value="moderate" ${(state.contentFilter || "moderate") === "moderate" ? "selected" : ""}>适中（推荐7-10岁）</option>
-                        <option value="relaxed" ${(state.contentFilter || "moderate") === "relaxed" ? "selected" : ""}>宽松（10岁以上）</option>
-                    </select>
-                </div>
+            <div class="field">
+                <label for="dailyLimit">每日使用时长限制</label>
+                <select class="select-input" id="dailyLimit">
+                    <option value="0" ${(state.dailyLimit || 0) == 0 ? "selected" : ""}>不限制</option>
+                    <option value="30" ${(state.dailyLimit || 0) == 30 ? "selected" : ""}>30分钟</option>
+                    <option value="60" ${(state.dailyLimit || 0) == 60 ? "selected" : ""}>1小时</option>
+                    <option value="90" ${(state.dailyLimit || 0) == 90 ? "selected" : ""}>1.5小时</option>
+                    <option value="120" ${(state.dailyLimit || 0) == 120 ? "selected" : ""}>2小时</option>
+                </select>
+                <p style="margin: 8px 2px 0; color: var(--muted); font-size: 14px;">家长可按孩子当天状态，安排合适的使用时长。</p>
             </div>
-            <div class="grid-2">
-                <div class="field">
-                    <label for="dailyLimit">每日使用时长限制</label>
-                    <select class="select-input" id="dailyLimit">
-                        <option value="0" ${(state.dailyLimit || 0) == 0 ? "selected" : ""}>不限制</option>
-                        <option value="30" ${(state.dailyLimit || 0) == 30 ? "selected" : ""}>30分钟</option>
-                        <option value="60" ${(state.dailyLimit || 0) == 60 ? "selected" : ""}>1小时</option>
-                        <option value="90" ${(state.dailyLimit || 0) == 90 ? "selected" : ""}>1.5小时</option>
-                        <option value="120" ${(state.dailyLimit || 0) == 120 ? "selected" : ""}>2小时</option>
-                    </select>
+
+            <div class="animal-info-card">
+                <div class="info-card-header">
+                    <h3>进入码</h3>
+                    <span>🔐</span>
                 </div>
-                <div class="field">
-                    <label for="autoSave">自动保存进度</label>
-                    <select class="select-input" id="autoSave">
-                        <option value="true" ${(state.autoSave !== false) ? "selected" : ""}>开启</option>
-                        <option value="false" ${(state.autoSave === false) ? "selected" : ""}>关闭</option>
-                    </select>
+                <p style="margin: 0 0 6px; font-size: 28px; font-weight: 700; letter-spacing: 4px; color: #243746;">${escapeHtml(entryCode || "------")}</p>
+                <p style="margin: 0; color: var(--muted);">孩子端输入孩子姓名和进入码即可进入。</p>
+                ${entryCode ? `
+                    <div class="action-row" style="margin-top: 12px;">
+                        <button class="secondary-button" type="button" data-action="copy-entry-code" data-entry-code="${escapeHtml(entryCode)}">复制进入码</button>
+                        <button class="secondary-button" type="button" data-action="refresh-entry-code">修改进入码</button>
+                    </div>
+                ` : ""}
+            </div>
+
+            <div class="animal-info-card" style="margin-top: 10px;">
+                <div class="info-card-header">
+                    <h3>学习数据同步</h3>
+                    <span>🔄</span>
+                </div>
+                <p style="margin: 0 0 6px; font-weight: 700; color: #243746;">${escapeHtml(syncTimeText)}</p>
+                <p style="margin: 0; color: var(--muted);">系统会每 ${syncIntervalHours} 小时自动同步一次，家长也可以主动刷新。</p>
+                <div class="action-row" style="margin-top: 12px; justify-content: flex-end;">
+                    <button class="secondary-button" type="button" data-action="refresh-sync-data" ${state.syncRefreshLoading ? "disabled" : ""}>
+                        ${state.syncRefreshLoading ? "同步中..." : "立即同步数据"}
+                    </button>
                 </div>
             </div>
         </div>

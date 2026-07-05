@@ -152,7 +152,8 @@ textarea {
     font-weight: 800;
     line-height: 1.1;
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
     box-shadow: none;
 }
 
@@ -176,6 +177,11 @@ textarea {
     font-size: 19px;
 }
 
+.report-nav-label {
+    white-space: normal;
+    word-break: break-word;
+}
+
 .topbar,
 .header,
 header {
@@ -197,6 +203,18 @@ header {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+}
+
+.parent-return-row {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.parent-return-row .secondary-button {
+    width: auto;
+    min-width: 160px;
 }
 
 .topbar .action-row {
@@ -352,6 +370,10 @@ h3 {
     z-index: 1;
 }
 
+.activity-item::after {
+    display: none;
+}
+
 .panel:nth-of-type(2n),
 .card:nth-of-type(2n),
 .collection-item:nth-of-type(2n),
@@ -434,6 +456,10 @@ h3 {
     opacity: 0.68;
 }
 
+.quiz-box .quiz-question {
+    padding-right: 58px;
+}
+
 .choice-button {
     background:
         radial-gradient(circle at 12px 50%, rgba(255,255,255,0.65) 0 5px, transparent 6px),
@@ -495,6 +521,10 @@ h3 {
     padding-top: 14px;
 }
 
+.qa-panel::after {
+    display: none;
+}
+
 .qa-answer-box::before {
     left: 4px;
     top: 2px;
@@ -505,6 +535,24 @@ h3 {
     background: url("/static/assets/stickers/star-doodle.svg") center / contain no-repeat;
     transform: rotate(-2deg);
     opacity: 0.45;
+}
+
+.qa-answer-box .answer-label {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 34px;
+}
+
+.qa-answer-box .read-answer-icon {
+    margin-left: 0;
+}
+
+/* Keep long answers clear of the top-right star and bottom-left leaf. */
+.qa-answer-box #qaAnswer {
+    padding: 22px 66px 56px 24px;
 }
 
 .panel-title {
@@ -653,7 +701,7 @@ button:active,
 
 .map-label {
     border: 2px solid rgba(91, 72, 56, 0.22);
-    border-radius: 999px 999px 999px 8px;
+    border-radius: 999px;
     background: rgba(255, 249, 220, 0.88);
     box-shadow: 0 3px 0 rgba(91, 72, 56, 0.12);
 }
@@ -764,10 +812,13 @@ button:active,
 .container > header,
 .container > .header {
     margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .container .tabs {
     margin-bottom: 14px;
+    flex-wrap: wrap;
 }
 
 .container .card {
@@ -789,6 +840,9 @@ button:active,
 
 .tab {
     flex: 1 1 120px;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .tabs,
@@ -867,6 +921,43 @@ button:active,
     padding: 15px;
 }
 
+/* Give the school animal choices a wider tap target and reserve the flower's
+   corner so longer animal names never sit underneath it. */
+.route-qa .animal-selection-view {
+    width: 100%;
+    padding-inline: 20px;
+}
+
+.route-qa .selection-container {
+    width: min(100%, 390px);
+    margin-inline: auto;
+}
+
+.route-qa .animal-selection-item {
+    width: 100%;
+    min-height: 92px;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px 68px 14px 18px;
+}
+
+.route-qa .animal-selection-item::before {
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%) rotate(7deg);
+}
+
+.route-qa .animal-selection-item .selection-icon {
+    justify-self: center;
+}
+
+.route-qa .animal-selection-item .selection-name {
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
+}
+
 .selection-icon {
     font-size: 42px;
 }
@@ -878,6 +969,36 @@ button:active,
 .animal-display {
     min-height: 178px;
     padding: 14px;
+}
+
+/* Action emojis are floating stickers, not controls or cards. This applies to
+   every animal's loading and answer demonstration animation. */
+.animal-action-indicator {
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    filter: drop-shadow(0 3px 3px rgba(80, 69, 48, 0.16));
+}
+
+.animal-action-indicator::before,
+.animal-action-indicator::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Keep the animal switch control out of the flower sticker's top-right slot. */
+.animal-info-card .info-card-header {
+    padding-right: 58px;
+}
+
+.animal-info-card .animal-status-text {
+    padding: 4px 34px 18px 68px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 .animal-large {
@@ -901,6 +1022,35 @@ button:active,
     overflow: hidden;
 }
 
+.metric-stack {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    min-width: 0;
+}
+
+.metric-button {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.metric-button.active {
+    box-shadow: 0 0 0 2px rgba(79, 143, 92, 0.16), 0 6px 0 rgba(91, 72, 56, 0.07), 0 14px 24px rgba(66, 79, 62, 0.09);
+}
+
+.metric-detail-panel {
+    min-width: 0;
+}
+
 .stat-item::after,
 .metric::after {
     content: "";
@@ -914,6 +1064,12 @@ button:active,
         radial-gradient(ellipse at 70% 42%, rgba(94,157,104,0.24) 0 30%, transparent 32%);
     transform: rotate(10deg);
     pointer-events: none;
+}
+
+.metric-hint {
+    color: rgba(91, 80, 63, 0.82);
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .doctor-help-button,
@@ -1013,11 +1169,11 @@ button:active,
     display: grid;
     grid-template-columns: 1fr;
     justify-items: center;
-    width: min(100% - 28px, 376px);
+    width: min(100% - 20px, 392px);
     margin-inline: auto;
     text-align: center;
-    gap: 14px;
-    padding: 18px 14px;
+    gap: 16px;
+    padding: 24px 14px 18px;
     background:
         radial-gradient(circle at 22px 18px, rgba(242, 191, 75, 0.18) 0 6px, transparent 7px),
         radial-gradient(circle at calc(100% - 24px) 20px, rgba(92, 159, 201, 0.16) 0 6px, transparent 7px),
@@ -1026,14 +1182,21 @@ button:active,
 
 .route-imagine .creature-thumb {
     justify-self: center;
-    width: 72px;
-    height: 72px;
+    width: 78px;
+    height: 78px;
+    margin-top: 2px;
+}
+
+.route-imagine .creature-thumb .creature-snapshot-thumb {
+    width: 90%;
+    height: 90%;
+    transform: translateY(4px);
+    transform-origin: center;
 }
 
 .route-imagine .creature-notes {
-    --creature-form-width: min(100%, 300px);
-    --creature-label-width: 112px;
-    --creature-field-width: calc(var(--creature-form-width) - var(--creature-label-width) - 8px);
+    --creature-form-width: min(100%, 336px);
+    --creature-label-width: 104px;
     width: var(--creature-form-width);
     display: grid;
     margin-inline: auto;
@@ -1042,9 +1205,8 @@ button:active,
 }
 
 .route-imagine .note-row {
-    width: var(--creature-form-width);
     display: grid;
-    grid-template-columns: var(--creature-label-width) var(--creature-field-width);
+    grid-template-columns: var(--creature-label-width) minmax(0, 1fr);
     gap: 8px;
     align-items: center;
     justify-content: center;
@@ -1055,34 +1217,192 @@ button:active,
 }
 
 .route-imagine .note-label {
-    width: var(--creature-label-width);
+    width: 100%;
     text-align: right;
     justify-self: end;
     padding-right: 2px;
     white-space: nowrap;
+    font-size: 13px;
 }
 
 .route-imagine .creature-card .text-input,
 .route-imagine .creature-card .select-input {
-    width: var(--creature-field-width);
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
-    min-height: 56px;
-    height: 56px;
+    min-height: 48px;
+    height: 48px;
     padding-inline: 12px;
     text-align: center;
+    font-size: 16px;
+    line-height: 1.2;
 }
 
 .route-imagine .creature-summary {
-    width: var(--creature-form-width);
+    width: 100%;
     margin-top: 2px;
     margin-inline: auto;
     color: var(--kid-muted);
     text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 .route-imagine .imagine-actions {
     width: min(100% - 28px, 376px);
     margin-inline: auto;
+}
+
+.route-imagine .creature-live-note {
+    width: min(100% - 28px, 376px);
+    margin-inline: auto;
+    border: 1px dashed rgba(105, 121, 85, 0.25);
+    background:
+        radial-gradient(circle at 18px 18px, rgba(242, 191, 75, 0.18) 0 6px, transparent 7px),
+        linear-gradient(180deg, rgba(255, 248, 218, 0.78), rgba(235, 248, 224, 0.62));
+    border-radius: 18px 22px 17px 20px;
+    box-shadow: 0 10px 18px rgba(78, 75, 52, 0.06);
+}
+
+.route-imagine .mission-badge,
+.route-imagine .album-kicker,
+.route-imagine .creature-live-note span,
+.creature-save-celebration .celebration-kicker {
+    color: #d06f58;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.route-imagine .creature-live-note {
+    padding: 13px 14px 12px;
+    text-align: center;
+}
+
+.route-imagine .creature-live-note strong {
+    display: block;
+    margin-top: 2px;
+    color: #456f4c;
+    font-family: "STKaiti", "KaiTi", sans-serif;
+    font-size: 24px;
+    line-height: 1.15;
+}
+
+.route-imagine .creature-live-note p {
+    margin: 7px auto 0;
+    color: #6d604b;
+    font-size: 16px;
+    line-height: 1.45;
+}
+
+.route-imagine .creature-album-card {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border: 1px dashed rgba(111, 130, 88, 0.28);
+    background:
+        radial-gradient(circle at 18px 16px, rgba(255, 255, 255, 0.5) 0 8px, transparent 9px),
+        linear-gradient(180deg, rgba(255, 238, 174, 0.32), rgba(215, 233, 178, 0.2));
+    text-align: left;
+}
+
+.route-imagine .album-thumb {
+    width: 76px;
+    height: 76px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed rgba(88, 118, 82, 0.24);
+    border-radius: 44% 56% 48% 52%;
+    transform: rotate(-2deg);
+}
+
+.route-imagine .album-thumb img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 4px rgba(66, 70, 54, 0.18));
+}
+
+.route-imagine .album-copy {
+    min-width: 0;
+}
+
+.route-imagine .album-copy h4 {
+    margin: 2px 0 4px;
+    color: #456f4c;
+    font-family: "STKaiti", "KaiTi", sans-serif;
+    font-size: 23px;
+    line-height: 1.15;
+}
+
+.route-imagine .album-copy p {
+    margin: 0;
+    color: #5f5847;
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+.route-imagine .album-copy small {
+    display: block;
+    margin-top: 6px;
+    color: #9b7253;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.creature-save-celebration {
+    position: absolute;
+    z-index: 80;
+    left: 50%;
+    top: 88px;
+    width: min(340px, calc(100% - 36px));
+    padding: 14px 16px;
+    color: #5f513f;
+    text-align: center;
+    border: 1px dashed rgba(105, 121, 85, 0.32);
+    border-radius: 20px 17px 22px 18px;
+    background: rgba(255, 250, 226, 0.96);
+    box-shadow: 0 18px 30px rgba(77, 72, 45, 0.16);
+    transform: translateX(-50%);
+    animation: creature-card-pop 2200ms ease forwards;
+    pointer-events: none;
+}
+
+.creature-save-celebration strong {
+    display: block;
+    margin: 2px 0 5px;
+    color: #456f4c;
+    font-family: "STKaiti", "KaiTi", sans-serif;
+    font-size: 24px;
+    line-height: 1.15;
+}
+
+.creature-save-celebration small {
+    display: block;
+    color: #6d604b;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+@keyframes creature-card-pop {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(8px) scale(0.94) rotate(-1deg);
+    }
+    12% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1.02) rotate(0.5deg);
+    }
+    82% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px) scale(0.98) rotate(0deg);
+    }
 }
 
 @media (max-width: 380px) {
@@ -1262,6 +1582,11 @@ textarea {
 .subtitle,
 .muted,
 .meta-line,
+.level-label,
+.level-progress-text,
+.food-inventory-label,
+.food-pill,
+.care-event-card p,
 .animal-status-text,
 .loading-subtext {
     font-size: 19px;
@@ -1271,6 +1596,7 @@ textarea {
 .panel-title h3,
 .quiz-question,
 .answer-label,
+.care-event-card strong,
 .story-title,
 .selection-title {
     font-size: 26px;
@@ -1377,7 +1703,7 @@ textarea {
 .login-container,
 .mobile-container,
 .container {
-    font-size: 20px;
+    font-size: clamp(15px, 4vw, 18px);
 }
 
 .login-container .header p,
@@ -1392,7 +1718,7 @@ textarea {
 .container .achievement-description,
 .container .activity-time,
 .container .empty-state {
-    font-size: 19px;
+    font-size: clamp(13px, 3.7vw, 16px);
     line-height: 1.45;
 }
 
@@ -1412,14 +1738,14 @@ textarea {
 .container .tab,
 .container .form-group input,
 .container .form-group select {
-    font-size: 20px;
-    min-height: 58px;
+    font-size: clamp(14px, 3.9vw, 17px);
+    min-height: 48px;
 }
 
 .login-container .header h1,
 .mobile-container .header-title h1,
 .mobile-container .welcome-section h2 {
-    font-size: 31px;
+    font-size: clamp(23px, 6vw, 29px);
 }
 
 .login-container p,
@@ -1448,7 +1774,7 @@ textarea {
 .container .tab,
 .container .card,
 .container .achievement {
-    font-size: 20px;
+    font-size: clamp(14px, 3.9vw, 17px);
     line-height: 1.45;
 }
 
@@ -1458,5 +1784,568 @@ textarea {
 .container .stat-label,
 .container .calendar-date,
 .container .activity-time {
-    font-size: 19px;
+    font-size: clamp(13px, 3.7vw, 16px);
+}
+
+.login-container .role-tabs,
+.login-container .auth-tabs,
+.login-container .form-actions,
+.mobile-container .form-actions,
+.container .tabs,
+.container .goal-header,
+.container .leaderboard-item,
+.container .settings-row {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.mobile-container .header-top,
+.mobile-container .child-title-row,
+.mobile-container .form-actions,
+.container .goal-header,
+.container .leaderboard-item,
+.container .settings-row {
+    gap: 10px;
+}
+
+.container button,
+.container input,
+.container select,
+.container textarea,
+.login-container input,
+.login-container select,
+.login-container textarea,
+.mobile-container input,
+.mobile-container select,
+.mobile-container textarea {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.mobile-container .child-stats,
+.mobile-container .manage-child-stats,
+.mobile-container .settings-summary-grid,
+.mobile-container .avatar-grid,
+.container .stats-grid,
+.container .achievements-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+}
+
+@media (max-width: 430px) {
+    .login-container .role-tabs,
+    .login-container .auth-tabs,
+    .container .tabs {
+        gap: 8px;
+    }
+
+    .login-container > .header,
+    .mobile-container > .header {
+        padding: 20px 16px 14px;
+    }
+
+    .login-container > .content,
+    .mobile-container > .content,
+    .container {
+        padding: 14px;
+    }
+
+    .mobile-container .child-card-main {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mobile-container .child-avatar {
+        margin-inline: auto;
+    }
+
+    .mobile-container .child-stats,
+    .mobile-container .manage-child-stats,
+    .mobile-container .avatar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .container .settings-row label {
+        min-width: 0;
+        width: 100%;
+    }
+}
+/* Fix child imagination page clipping and alignment. */
+.main.route-imagine {
+    padding-top: 14px;
+    padding-inline: 14px;
+    padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+    scrollbar-gutter: stable;
+}
+
+.route-imagine .topbar,
+.route-imagine .imagine-screen {
+    width: 100%;
+    max-width: 420px;
+    margin-inline: auto;
+}
+
+.route-imagine .topbar {
+    padding-inline: 4px;
+    margin-bottom: 12px;
+}
+
+.route-imagine .imagine-screen {
+    padding-inline: 0;
+    overflow-x: clip;
+}
+
+.route-imagine .imagine-intro {
+    width: 100%;
+    max-width: 392px;
+}
+
+.route-imagine .imagine-intro p {
+    white-space: normal;
+}
+
+.route-imagine .creator-board,
+.route-imagine .creature-card,
+.route-imagine .compose-hint,
+.route-imagine .imagine-actions,
+.route-imagine .collection-grid {
+    width: 100%;
+    min-width: 0;
+}
+
+.route-imagine .stage-card,
+.route-imagine .material-rail,
+.route-imagine .material-group,
+.route-imagine .creator-board .material-list {
+    min-width: 0;
+}
+
+.route-imagine .imagine-stage {
+    overflow: hidden;
+}
+
+.route-imagine .creature-preview {
+    max-width: min(340px, 100%);
+}
+
+.route-imagine .raster-creature {
+    height: 360px;
+}
+
+.route-imagine .asset-body,
+.route-imagine .asset-body[data-body="snake"],
+.route-imagine .asset-body[data-body="chick"],
+.route-imagine .asset-body[data-body="pig"],
+.route-imagine .asset-body[data-body="panda"],
+.route-imagine .asset-body[data-body="rabbit"],
+.route-imagine .asset-body[data-body="dog"],
+.route-imagine .asset-body[data-body="cat"] {
+    width: 210px;
+}
+
+.route-imagine .asset-wing,
+.route-imagine .asset-wing[data-wing="bat"],
+.route-imagine .asset-wing[data-wing="dragon"],
+.route-imagine .asset-wing[data-wing="cloud"],
+.route-imagine .asset-wing[data-wing="angel"],
+.route-imagine .asset-wing[data-wing="fairy"] {
+    width: 250px;
+}
+
+.route-imagine .asset-tail {
+    right: 6px;
+    width: 132px;
+}
+
+.route-imagine .asset-tail[data-tail="dino"],
+.route-imagine .asset-tail[data-tail="cat"] {
+    right: 2px;
+    width: 142px;
+}
+
+.route-imagine .asset-tail[data-tail="puppy"] {
+    right: 14px;
+    width: 122px;
+}
+
+.route-imagine .material-button {
+    flex: 0 0 68px;
+    min-height: 68px;
+}
+
+.route-imagine .material-img {
+    width: 70px;
+    height: 60px;
+}
+
+/* Keep all four imagination material groups fully visible on narrow screens. */
+.route-imagine .creator-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+        "stage stage"
+        "left left"
+        "right right";
+    gap: 8px;
+}
+
+.route-imagine .material-rail {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.route-imagine .material-group {
+    width: 100%;
+}
+
+.route-imagine .creator-board .material-list {
+    width: 100%;
+}
+
+.route-imagine .imagine-stage {
+    min-height: 350px;
+}
+
+.route-imagine .raster-creature {
+    height: 340px;
+}
+
+@media (max-width: 390px) {
+    .main.route-imagine {
+        padding-inline: 10px;
+    }
+
+    .route-imagine .creator-board {
+        gap: 7px;
+    }
+
+    .route-imagine .material-rail {
+        gap: 6px;
+    }
+
+    .route-imagine .raster-creature {
+        height: 310px;
+    }
+
+    .route-imagine .asset-body,
+    .route-imagine .asset-body[data-body="snake"],
+    .route-imagine .asset-body[data-body="chick"],
+    .route-imagine .asset-body[data-body="pig"],
+    .route-imagine .asset-body[data-body="panda"],
+    .route-imagine .asset-body[data-body="rabbit"],
+    .route-imagine .asset-body[data-body="dog"],
+    .route-imagine .asset-body[data-body="cat"] {
+        width: 178px;
+    }
+
+    .route-imagine .asset-wing,
+    .route-imagine .asset-wing[data-wing="bat"],
+    .route-imagine .asset-wing[data-wing="dragon"],
+    .route-imagine .asset-wing[data-wing="cloud"],
+    .route-imagine .asset-wing[data-wing="angel"],
+    .route-imagine .asset-wing[data-wing="fairy"] {
+        width: 218px;
+    }
+
+    .route-imagine .asset-tail {
+        right: 8px;
+        width: 112px;
+    }
+
+    .route-imagine .material-button {
+        flex-basis: 58px;
+        min-height: 62px;
+    }
+
+    .route-imagine .material-img {
+        width: 58px;
+        height: 50px;
+    }
+
+    .route-imagine .imagine-stage {
+        min-height: 315px;
+    }
+}
+
+/* Builder parts: use the supplied image folders directly and keep the canvas white. */
+.route-imagine .creator-board {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+        "stage"
+        "left"
+        "right";
+}
+
+.route-imagine .material-rail {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.route-imagine .material-group {
+    min-width: 0;
+    background: #fffdf3;
+}
+
+.route-imagine .creator-board .material-list {
+    min-height: 82px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+}
+
+.route-imagine .creator-board .material-list::-webkit-scrollbar {
+    display: none;
+}
+
+.route-imagine .material-empty {
+    display: grid;
+    place-items: center;
+    min-width: 88px;
+    min-height: 70px;
+    color: #8d806f;
+    font-size: 12px;
+    white-space: nowrap;
+    background: #fff;
+    border-radius: 18px;
+}
+
+.route-imagine .stage-card,
+.route-imagine .imagine-stage {
+    background: #fff;
+}
+
+.route-imagine .creature-color-glow {
+    display: none;
+}
+
+.route-imagine .raster-creature {
+    height: 390px;
+}
+
+.route-imagine .asset-head {
+    z-index: 4;
+    left: 50%;
+    top: 64px;
+    width: 158px;
+    max-height: 148px;
+    transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+    cursor: grab;
+}
+
+.route-imagine .asset-body,
+.route-imagine .asset-body[data-body="chick"],
+.route-imagine .asset-body[data-body="pig"],
+.route-imagine .asset-body[data-body="panda"],
+.route-imagine .asset-body[data-body="rabbit"],
+.route-imagine .asset-body[data-body="dog"],
+.route-imagine .asset-body[data-body="cat"] {
+    z-index: 3;
+    left: 50%;
+    bottom: 78px;
+    width: 214px;
+    max-height: 286px;
+    transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+    cursor: grab;
+}
+
+.route-imagine .asset-wing,
+.route-imagine .asset-wing[data-wing="golden"] {
+    z-index: 1;
+    left: 50%;
+    top: 118px;
+    width: 284px;
+    max-height: 154px;
+    transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+}
+
+.route-imagine .asset-tail {
+    z-index: 2;
+    right: 42px;
+    bottom: 118px;
+    width: 130px;
+    max-height: 160px;
+    transform: translate(var(--part-x, 0px), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+}
+
+.route-imagine .asset-hand {
+    z-index: 5;
+    left: 50%;
+    bottom: 86px;
+    width: 210px;
+    max-height: 160px;
+    transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+    cursor: grab;
+}
+
+.route-imagine .asset-foot {
+    z-index: 6;
+    left: 50%;
+    bottom: 24px;
+    width: 186px;
+    max-height: 138px;
+    transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+    cursor: grab;
+}
+
+.route-imagine .asset-decoration {
+    z-index: 7;
+    left: 50%;
+    top: 32px;
+    width: 88px;
+    max-height: 100px;
+    transform: translate(calc(-50% + var(--part-x, 0px)), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+    cursor: grab;
+}
+
+.route-imagine .creature-asset.selected-part {
+    filter:
+        drop-shadow(0 0 7px rgba(255, 255, 255, 0.95))
+        drop-shadow(0 0 8px rgba(255, 180, 60, 0.75));
+}
+
+.route-imagine .transform-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border: 1px dashed rgba(105, 121, 85, 0.25);
+    border-radius: 16px;
+    background: rgba(255, 251, 236, 0.92);
+}
+
+.route-imagine .transform-label {
+    color: #655744;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.route-imagine .transform-button {
+    min-width: 42px;
+    min-height: 38px;
+    padding: 0 10px;
+    border: 1px solid rgba(122, 106, 78, 0.22);
+    border-radius: 12px;
+    background: #fff;
+    color: #5f513f;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.route-imagine .transform-button-reset {
+    font-size: 13px;
+}
+
+.route-imagine .creature-snapshot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.route-imagine .creature-snapshot-asset {
+    position: absolute;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.route-imagine .creature-snapshot-thumb {
+    width: 100%;
+    height: 100%;
+}
+
+.route-imagine .creature-snapshot-album {
+    width: 100%;
+    height: 100%;
+}
+
+.route-imagine .snapshot-wing {
+    left: 50%;
+    top: 16%;
+    width: 94%;
+    transform: translateX(-50%);
+}
+
+.route-imagine .snapshot-tail {
+    right: 8%;
+    bottom: 28%;
+    width: 32%;
+}
+
+.route-imagine .snapshot-body {
+    left: 50%;
+    bottom: 18%;
+    width: 72%;
+    transform: translateX(-50%);
+}
+
+.route-imagine .snapshot-head {
+    left: 50%;
+    top: 12%;
+    width: 50%;
+    transform: translateX(-50%);
+}
+
+.route-imagine .snapshot-hand {
+    left: 50%;
+    bottom: 22%;
+    width: 72%;
+    transform: translateX(-50%);
+}
+
+.route-imagine .snapshot-foot {
+    left: 50%;
+    bottom: 2%;
+    width: 62%;
+    transform: translateX(-50%);
+}
+
+.route-imagine .snapshot-decoration {
+    left: 50%;
+    top: 0;
+    width: 20%;
+    transform: translateX(-50%);
+}
+
+@media (max-width: 430px) {
+    .route-imagine .material-rail {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .route-imagine .raster-creature {
+        height: 334px;
+    }
+
+    .route-imagine .asset-head {
+        width: 130px;
+        top: 60px;
+    }
+
+    .route-imagine .asset-body,
+    .route-imagine .asset-body[data-body="chick"],
+    .route-imagine .asset-body[data-body="pig"],
+    .route-imagine .asset-body[data-body="panda"],
+    .route-imagine .asset-body[data-body="rabbit"],
+    .route-imagine .asset-body[data-body="dog"],
+    .route-imagine .asset-body[data-body="cat"] {
+        width: 178px;
+        bottom: 74px;
+    }
+
+    .route-imagine .asset-wing,
+    .route-imagine .asset-wing[data-wing="golden"] {
+        width: 230px;
+        top: 108px;
+    }
+
+    .route-imagine .asset-hand {
+        width: 172px;
+        bottom: 82px;
+    }
+
+    .route-imagine .asset-foot {
+        width: 154px;
+        bottom: 24px;
+    }
 }

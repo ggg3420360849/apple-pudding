@@ -319,6 +319,22 @@
             background: #1a5694;
         }
 
+        .share-action-row,
+        .modal-action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .share-action-row {
+            margin-bottom: 20px;
+        }
+
+        .share-action-row .btn,
+        .modal-action-row .btn {
+            flex: 1 1 160px;
+        }
+
         .share-preview {
             max-width: 400px;
             margin: 20px auto;
@@ -341,6 +357,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
         .modal.active {
@@ -352,8 +369,8 @@
             border-radius: 16px;
             padding: 30px;
             max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
+            width: min(100%, 500px);
+            max-height: calc(100vh - 40px);
             overflow-y: auto;
         }
 
@@ -367,6 +384,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
             z-index: 2000;
             animation: slideIn 0.3s ease;
+            max-width: min(400px, calc(100vw - 24px));
         }
 
         @keyframes slideIn {
@@ -414,6 +432,7 @@
             padding: 10px 20px;
             border-radius: 10px;
             display: none;
+            max-width: min(400px, calc(100vw - 24px));
         }
 
         .offline-indicator.active {
@@ -438,8 +457,52 @@
                 overflow-x: auto;
             }
         }
+
+        @media (max-width: 430px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .container {
+                padding: 12px;
+            }
+
+            .calendar {
+                gap: 6px;
+            }
+
+            .calendar-day {
+                padding: 6px 4px;
+                font-size: 12px;
+            }
+
+            .leaderboard-item {
+                align-items: flex-start;
+            }
+
+            .notification,
+            .offline-indicator {
+                left: 12px;
+                right: 12px;
+                width: auto;
+                max-width: none;
+            }
+
+            .notification {
+                top: 12px;
+            }
+
+            .offline-indicator {
+                bottom: 12px;
+            }
+
+            .share-action-row .btn,
+            .modal-action-row .btn {
+                width: 100%;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="/static/styles/handdrawn.css">
+    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260705-overlapfix1">
 </head>
 <body>
     <div class="container">
@@ -548,12 +611,14 @@
                 <h2>📤 分享作品</h2>
                 <p style="margin-bottom: 20px; color: #61707d;">生成精美卡片分享到社交媒体</p>
 
-                <button class="btn btn-primary" style="margin-right: 10px;" onclick="generateAnimalCard()">
-                    🎨 生成想象动物卡片
-                </button>
-                <button class="btn btn-secondary" onclick="generateStoryCard()">
-                    📚 生成故事卡片
-                </button>
+                <div class="share-action-row">
+                    <button class="btn btn-primary" onclick="generateAnimalCard()">
+                        🎨 生成想象动物卡片
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateStoryCard()">
+                        📚 生成故事卡片
+                    </button>
+                </div>
 
                 <div class="share-preview" id="sharePreview"></div>
             </div>
@@ -612,7 +677,7 @@
                     <option value="🐸">🐸 青蛙</option>
                 </select>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <div class="modal-action-row">
                 <button class="btn btn-primary" onclick="addChild()" style="flex: 1;">确定</button>
                 <button class="btn" onclick="closeModal()" style="flex: 1; background: #e0e0e0;">取消</button>
             </div>

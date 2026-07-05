@@ -6,6 +6,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.routers import api, pages, family, sharing, offline, achievements, speech
 from app.logger import setup_logging, get_logger
+from app.paths import STATIC_DIR
 
 # 配置日志系统
 setup_logging()
@@ -32,7 +33,7 @@ def create_app() -> FastAPI:
     app.include_router(speech.router)
 
     # 最后挂载静态文件（作为兜底）
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
     logger.info("Application started", version="1.0.0")
     return app

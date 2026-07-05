@@ -60,7 +60,26 @@ function getTimeDistribution(activities) {
         else periods.night.count++;
     });
 
-    return Object.values(periods);
+    const values = Object.values(periods);
+    const totalCount = values.reduce((sum, period) => sum + period.count, 0);
+    const maxCount = Math.max(...values.map(period => period.count), 0);
+
+    return values.map(period => {
+        let activityLevel = "不活跃";
+
+        if (period.count > 0) {
+            if (totalCount >= 3 && period.count === maxCount) {
+                activityLevel = "活跃";
+            } else {
+                activityLevel = "适中";
+            }
+        }
+
+        return {
+            ...period,
+            activityLevel
+        };
+    });
 }
 
 /**
@@ -200,6 +219,9 @@ function getLearningStyle(progress, stories, creations) {
 
 function getPreferredTime(activities) {
     const distribution = getTimeDistribution(activities);
+    if (!distribution.length || distribution.every(period => period.count === 0)) {
+        return null;
+    }
     return distribution.reduce((max, p) =>
         p.count > max.count ? p : max, distribution[0]);
 }

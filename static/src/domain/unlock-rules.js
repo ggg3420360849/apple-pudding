@@ -206,7 +206,7 @@ function getUnlockInstruction(animal) {
 /**
  * 检查并触发解锁
  */
-function checkAndUnlockAnimals() {
+function checkAndUnlockAnimals({ silent = false } = {}) {
     const newUnlocks = [];
     const grasslandAnimals = animals.filter((animal) => ["rabbit", "elephant"].includes(animal.id));
     const grasslandLocked = grasslandAnimals.some((animal) => !isAnimalUnlocked(animal.id));
@@ -244,6 +244,10 @@ function checkAndUnlockAnimals() {
 
     if (newUnlocks.length > 0) {
         saveState();
+        if (silent) {
+            return newUnlocks;
+        }
+
         // 触发解锁动画
         const grasslandUnlocks = newUnlocks.filter((animal) => ["rabbit", "elephant"].includes(animal.id));
         newUnlocks

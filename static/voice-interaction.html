@@ -152,12 +152,16 @@
             margin-top: 4px;
         }
 
-        select, button {
+        input,
+        select,
+        button {
             padding: 10px 16px;
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 15px;
             cursor: pointer;
+            max-width: 100%;
+            min-width: 0;
         }
 
         button {
@@ -182,11 +186,44 @@
             gap: 12px;
             align-items: center;
             margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
         .settings-row label {
             min-width: 100px;
             font-weight: 500;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .settings-row {
+                align-items: stretch;
+            }
+
+            .settings-row label {
+                min-width: 0;
+            }
+
+            .voice-button {
+                width: 96px;
+                height: 96px;
+                font-size: 40px;
+            }
+
+            .score-display {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>

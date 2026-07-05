@@ -1,4 +1,11 @@
 .env
 .venv/
+.codex_pydeps/
+.vscode/
 __pycache__/
 *.pyc
+logs/
+server-*.log
+tmp-audit-dom*.txt
+data/*.json
+data/offline_queue/

@@ -522,6 +522,18 @@ button {
     margin-bottom: 18px;
 }
 
+.parent-return-row {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.parent-return-row .secondary-button {
+    width: auto;
+    min-width: 160px;
+}
+
 .settings-button {
     width: 40px;
     height: 40px;
@@ -701,6 +713,7 @@ button {
     font-size: 13px;
     min-width: 0;
     overflow-wrap: anywhere;
+    padding-right: 42px;
 }
 
 .map-canvas {
@@ -764,7 +777,7 @@ button {
     position: absolute;
     z-index: 3;
     padding: 6px 11px;
-    border-radius: 999px 999px 999px 5px;
+    border-radius: 999px;
     background: rgba(255, 252, 230, 0.78);
     border: 1px solid rgba(72, 112, 80, 0.45);
     color: #31593f;
@@ -774,6 +787,10 @@ button {
     box-shadow: 0 3px 0 rgba(68, 105, 70, 0.18);
     transform: rotate(var(--tilt, -2deg));
     backdrop-filter: blur(2px);
+}
+
+.map-label-covered {
+    visibility: hidden;
 }
 
 .map-route {
@@ -836,7 +853,15 @@ button {
 .marker.locked {
     width: var(--lock-width, 102px);
     min-height: 38px;
-    background: transparent;
+    height: 38px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 252, 230, 0.78);
+    color: #31593f;
+    box-shadow:
+        inset 0 0 0 1px rgba(72, 112, 80, 0.45),
+        0 3px 0 rgba(68, 105, 70, 0.18);
     cursor: pointer;
     opacity: 1;
 }
@@ -847,15 +872,16 @@ button {
 
 .marker.locked::before {
     content: "🔒";
-    position: relative;
+    position: absolute;
+    inset: 0;
     z-index: 2;
     display: grid;
     place-items: center;
     width: 100%;
-    height: 38px;
+    height: 100%;
     box-sizing: border-box;
     border: 1.5px solid rgba(255, 255, 255, 0.78);
-    border-radius: 999px 999px 999px 7px;
+    border-radius: inherit;
     background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(213, 236, 244, 0.26));
     box-shadow:
@@ -866,6 +892,33 @@ button {
     backdrop-filter: blur(7px) saturate(1.2);
     -webkit-backdrop-filter: blur(7px) saturate(1.2);
     transform-origin: 50% 15%;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.marker.locked .map-lock-text {
+    position: relative;
+    z-index: 1;
+    padding: 0 9px;
+    overflow: hidden;
+    color: #31593f;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 36px;
+    white-space: nowrap;
+    opacity: 0.18;
+    transition: opacity 0.2s ease;
+}
+
+.marker.locked:hover .map-lock-text,
+.marker.locked:focus-visible .map-lock-text {
+    opacity: 1;
+}
+
+.marker.locked:hover::before,
+.marker.locked:focus-visible::before {
+    opacity: 0.52;
 }
 
 .marker.locked.is-shaking::before {
@@ -2307,6 +2360,14 @@ button {
     box-shadow: none;
 }
 
+.activity-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    gap: 10px;
+    align-items: start;
+    padding-right: 64px;
+}
+
 .story-item.favorite {
     background: linear-gradient(135deg, #fff8e3 0%, #f2faec 100%);
     border-left: 4px solid var(--green);
@@ -2323,6 +2384,31 @@ button {
     margin: 0;
     color: var(--muted);
     line-height: 1.55;
+}
+
+.activity-main {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.activity-time {
+    justify-self: end;
+    white-space: nowrap;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.sync-data-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 150px;
+}
+
+.sync-data-card .secondary-button {
+    margin-top: auto;
+    align-self: flex-end;
 }
 
 .story-meta {
@@ -2345,6 +2431,35 @@ button {
     box-shadow: none;
 }
 
+.metric-stack {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    min-width: 0;
+}
+
+.metric-button {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.metric-button.active {
+    box-shadow: 0 0 0 2px rgba(63, 154, 104, 0.16);
+}
+
+.metric-detail-panel {
+    min-width: 0;
+}
+
 .metric strong {
     display: block;
     font-size: 28px;
@@ -2355,6 +2470,13 @@ button {
 .metric span {
     color: var(--muted);
     line-height: 1.5;
+}
+
+.metric-hint {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+    opacity: 0.9;
 }
 
 .bar-row {
@@ -2816,6 +2938,7 @@ body {
     font-size: 12px;
     flex: 0 1 auto;
     text-align: right;
+    padding-right: 42px;
 }
 
 .select-input {
@@ -3143,6 +3266,13 @@ body {
 .period-icon {
     font-size: 28px;
     flex-shrink: 0;
+}
+
+.profile-item > div:last-child,
+.time-period-card > div:last-child {
+    margin-top: 3px;
+    padding-right: 34px;
+    padding-bottom: 10px;
 }
 
 .period-label {
@@ -3703,6 +3833,16 @@ body {
     75% { transform: scale(1.05) translateY(-3px); }
 }
 
+.animal-large.state-tired {
+    animation: tired 2.4s ease-in-out infinite;
+    filter: saturate(0.82);
+}
+
+@keyframes tired {
+    0%, 100% { transform: translateY(0) rotate(-2deg); opacity: 0.92; }
+    50% { transform: translateY(4px) rotate(2deg); opacity: 1; }
+}
+
 .animal-large.state-climbing {
     animation: climbing 2s ease-in-out infinite;
 }
@@ -3964,8 +4104,8 @@ body {
 
 .animal-level {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 10px;
     margin-bottom: 10px;
 }
 
@@ -3979,6 +4119,32 @@ body {
     font-weight: 600;
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+.level-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.level-info-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.level-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.level-progress-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green-dark);
+    white-space: nowrap;
 }
 
 .level-progress {
@@ -4040,6 +4206,35 @@ body {
     text-overflow: ellipsis;
 }
 
+.food-inventory {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px 10px;
+    border: 1px solid #d7e6de;
+    border-radius: 8px;
+    background: #f8fbf8;
+}
+
+.food-inventory-label {
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.food-pill {
+    min-width: 0;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fff6df;
+    color: #72520e;
+    font-size: 12px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
 .knowledge-qa-section {
     display: flex;
     flex-direction: column;
@@ -4052,6 +4247,340 @@ body {
     overflow: hidden;
 }
 
+.care-event-card {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #d7e6de;
+    background: #f8fbf8;
+    box-shadow: 0 8px 18px rgba(36, 55, 69, 0.08);
+}
+
+.care-event-card strong {
+    display: block;
+    color: var(--ink);
+    font-size: 17px;
+    margin-bottom: 4px;
+}
+
+.care-event-card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+.care-event-card.hungry {
+    border-color: #ead58f;
+    background: #fff8db;
+}
+
+.care-event-card.sick {
+    border-color: #efc6b6;
+    background: #fff4ef;
+}
+
+.care-doctor-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    display: grid;
+    place-items: center;
+    padding: 22px;
+    background: rgba(42, 55, 49, 0.28);
+    backdrop-filter: blur(3px);
+}
+
+.care-doctor-modal {
+    width: min(520px, 100%);
+    max-height: min(78vh, 620px);
+    overflow: auto;
+    padding: 22px;
+    border: 2px solid #efc6b6;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(255, 238, 198, 0.9), transparent 30%),
+        linear-gradient(180deg, #fffaf2 0%, #fff4ef 100%);
+    box-shadow: 0 26px 70px rgba(76, 50, 38, 0.25);
+    animation: careDoctorPop 220ms ease-out;
+}
+
+.care-doctor-header {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.care-doctor-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: inset 0 -4px 0 rgba(239, 198, 182, 0.42);
+    font-size: 34px;
+}
+
+.care-doctor-kicker {
+    display: inline-block;
+    color: #9c5b45;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.care-doctor-header h3 {
+    margin: 3px 0 0;
+    color: var(--ink);
+    font-size: 24px;
+}
+
+.care-doctor-body {
+    display: grid;
+    gap: 12px;
+}
+
+.care-doctor-section {
+    padding: 14px;
+    border: 1px solid rgba(239, 198, 182, 0.82);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.care-doctor-section strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #7b4a35;
+    font-size: 16px;
+}
+
+.care-doctor-section p {
+    margin: 0;
+    color: var(--ink);
+    line-height: 1.7;
+}
+
+.care-doctor-answer {
+    color: var(--ink);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.care-doctor-answer.loading {
+    color: var(--blue);
+}
+
+.care-doctor-actions {
+    display: grid;
+    margin-top: 16px;
+}
+
+.care-doctor-actions .secondary-button {
+    justify-content: center;
+    width: 100%;
+}
+
+.care-feed-confirm-modal {
+    width: min(430px, 100%);
+    padding: 24px;
+    border: 2px solid #ead58f;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.82), transparent 32%),
+        linear-gradient(180deg, #fff8db 0%, #fff3c7 100%);
+    box-shadow: 0 24px 64px rgba(99, 76, 27, 0.24);
+    text-align: center;
+    animation: careDoctorPop 220ms ease-out;
+}
+
+.care-feed-confirm-icon {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 12px;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: inset 0 -4px 0 rgba(234, 213, 143, 0.5);
+    font-size: 34px;
+}
+
+.care-feed-confirm-modal h3 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-size: 24px;
+}
+
+.care-feed-confirm-modal p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.care-feed-confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.care-feed-confirm-actions button {
+    justify-content: center;
+}
+
+@keyframes careDoctorPop {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.feeding-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.food-choice-button {
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid #d7e6de;
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--ink);
+    font-weight: 700;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.food-choice-button:hover {
+    border-color: var(--green);
+    background: #eff8f2;
+}
+
+.food-choice-button.selected {
+    border-color: var(--green);
+    background: #e6f5ee;
+    color: #285f3f;
+    box-shadow: inset 0 -3px 0 rgba(94, 157, 104, 0.22);
+}
+
+.feeding-action-row {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 10px;
+}
+
+.feeding-action-row button,
+.feed-submit-button {
+    width: 100%;
+    justify-content: center;
+}
+
+@media (max-width: 520px) {
+    .care-feed-confirm-actions,
+    .feeding-action-row {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-item {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-time {
+        justify-self: end;
+    }
+}
+
+@media (max-width: 430px) {
+    .animal-greeting {
+        width: calc(100vw - 24px);
+        padding: 14px;
+    }
+
+    .animal-greeting .greeting-face {
+        font-size: 48px;
+    }
+
+    .animal-greeting strong {
+        font-size: 16px;
+    }
+
+    .animal-greeting p {
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    .report-bottom-nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 10px;
+    }
+
+    .report-nav-item {
+        min-height: 54px;
+        padding: 10px 6px;
+    }
+
+    .report-nav-icon {
+        font-size: 24px;
+    }
+
+    .report-nav-label {
+        font-size: 12px;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .trend-chart {
+        gap: 4px;
+        height: 160px;
+    }
+
+    .bar-value,
+    .bar-label {
+        font-size: 10px;
+    }
+
+    .time-distribution,
+    .achievement-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-item > div:last-child,
+    .time-period-card > div:last-child {
+        padding-right: 0;
+    }
+
+    .care-doctor-overlay {
+        padding: 12px;
+    }
+
+    .care-doctor-modal,
+    .care-feed-confirm-modal {
+        max-height: calc(100dvh - 24px);
+        padding: 18px;
+    }
+
+    .care-doctor-header {
+        align-items: flex-start;
+    }
+
+    .care-doctor-header h3 {
+        font-size: 20px;
+    }
+
+    .feeding-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .qa-answer-box {
     padding-top: 16px;
     border-top: 1px solid var(--line);
@@ -4062,6 +4591,36 @@ body {
     font-weight: 600;
     color: var(--ink);
     margin-bottom: 8px;
+}
+
+.read-answer-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin-left: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s, transform 0.2s;
+    vertical-align: middle;
+}
+
+.read-answer-icon:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.read-answer-icon-symbol {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
 }
 
 /* Doctor Consultation View */
@@ -4142,6 +4701,11 @@ body {
     .level-badge {
         font-size: 11px;
         padding: 2px 6px;
+    }
+
+    .level-label,
+    .level-progress-text {
+        font-size: 11px;
     }
 
     .stat-label {

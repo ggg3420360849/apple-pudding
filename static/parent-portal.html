@@ -71,22 +71,35 @@
         }
 
         .logo {
-            font-size: 28px;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
 
         .logout-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: linear-gradient(180deg, rgba(255, 248, 216, 0.96), rgba(249, 232, 172, 0.92));
+            color: #5b503f;
             padding: 6px 14px;
             border-radius: 16px;
             font-size: 13px;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(91, 72, 56, 0.16);
             transition: all 0.2s;
         }
 
         .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: linear-gradient(180deg, #fff6cf, #f5e49f);
+            color: #4f4637;
         }
 
         .header-title h1 {
@@ -148,6 +161,12 @@
             gap: 14px;
         }
 
+        .child-card:not(.add-child) {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+        }
+
         .child-card:hover {
             border-color: var(--accent);
             transform: translateY(-1px);
@@ -164,27 +183,56 @@
         .child-avatar {
             font-size: 48px;
             flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .child-card-main {
+            display: grid;
+            grid-template-columns: 64px minmax(0, 1fr);
+            align-items: start;
+            gap: 14px;
         }
 
         .child-info-left {
-            flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .child-title-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px 10px;
+            flex-wrap: wrap;
+            width: 100%;
         }
 
         .child-name {
             font-size: 17px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 0;
         }
 
         .child-age {
             color: var(--muted);
-            font-size: 13px;
+            font-size: 14px;
+        }
+
+        .child-entry-code {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 0;
+            letter-spacing: 0.04em;
         }
 
         .child-stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 12px;
+            width: 100%;
         }
 
         .stat-item {
@@ -255,6 +303,336 @@
             text-align: left;
         }
 
+        .portal-view[hidden] {
+            display: none !important;
+        }
+
+        .management-header {
+            background: linear-gradient(135deg, #fff8d8 0%, #eaf6ef 100%);
+            border: 1px solid rgba(227, 210, 153, 0.7);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .back-portal-btn {
+            border: none;
+            background: rgba(60, 90, 120, 0.1);
+            color: var(--accent);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .management-header h2 {
+            color: var(--accent);
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .management-header p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .settings-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .summary-value {
+            display: block;
+            color: var(--accent);
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .summary-label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .summary-card.sync-setting-card {
+            grid-column: span 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .sync-setting-trigger {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 12px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: inherit;
+            font-family: inherit;
+        }
+
+        .sync-setting-trigger:hover {
+            background: #f8fbff;
+        }
+
+        .sync-setting-text {
+            min-width: 0;
+        }
+
+        .sync-chevron {
+            color: var(--accent);
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .sync-setting-card.open .sync-chevron {
+            transform: rotate(180deg);
+        }
+
+        .sync-interval-options {
+            display: none;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+            padding: 0 12px 12px;
+        }
+
+        .sync-setting-card.open .sync-interval-options {
+            display: grid;
+        }
+
+        .sync-interval-option {
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--accent);
+            border-radius: 999px;
+            padding: 6px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sync-interval-option:hover {
+            border-color: var(--accent);
+            background: #eef8ff;
+        }
+
+        .sync-interval-option.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(60, 90, 120, 0.22);
+        }
+
+        .manage-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            margin-bottom: 14px;
+        }
+
+        .management-toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .management-toolbar h3 {
+            color: var(--ink);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .management-toolbar p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .manage-children-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .manage-child-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 13px;
+            background: linear-gradient(135deg, #fbfbfa 0%, #ffffff 100%);
+        }
+
+        .manage-child-top {
+            display: grid;
+            grid-template-columns: 52px minmax(0, 1fr);
+            gap: 12px;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .manage-child-avatar {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            border-radius: 16px;
+            background: #f0f7ff;
+        }
+
+        .manage-child-name-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .manage-child-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .manage-child-age {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .manage-child-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent);
+            background: rgba(60, 90, 120, 0.08);
+            border-radius: 999px;
+            padding: 5px 9px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .manage-child-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .manage-stat {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 8px 6px;
+            text-align: center;
+        }
+
+        .manage-stat strong {
+            display: block;
+            color: var(--accent);
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .manage-stat span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .manage-child-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+            gap: 8px;
+        }
+
+        .mini-action-btn {
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: var(--accent);
+            border-radius: 10px;
+            padding: 9px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mini-action-btn:hover {
+            border-color: var(--accent);
+            background: #e4f4ff;
+        }
+
+        .mini-action-btn.add {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .mini-action-btn.danger {
+            color: #b84a36;
+            border-color: rgba(239, 125, 97, 0.42);
+            background: #fff7f4;
+        }
+
+        .mini-action-btn.danger:hover {
+            background: #ffece5;
+            border-color: var(--coral);
+        }
+
+        .empty-manage-state {
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            color: var(--muted);
+            background: rgba(255,255,255,0.65);
+        }
+
+        .empty-manage-state .empty-icon {
+            font-size: 34px;
+            margin-bottom: 6px;
+        }
+
+        .settings-note {
+            background: rgba(63, 154, 104, 0.09);
+            border: 1px solid rgba(63, 154, 104, 0.16);
+            border-radius: 14px;
+            color: #3c7154;
+            padding: 12px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .delete-confirm-message {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
         /* 模态框 */
         .modal {
             display: none;
@@ -280,9 +658,22 @@
             padding: 24px;
             max-width: 380px;
             width: 100%;
-            max-height: 85vh;
+            max-height: calc(100dvh - 40px);
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logout-modal-content {
+            background: linear-gradient(180deg, #fff8d8 0%, #f5f8e9 100%);
+            border: 2px solid rgba(227, 210, 153, 0.92);
+            box-shadow: 0 20px 60px rgba(91, 72, 56, 0.22);
+        }
+
+        .logout-confirm-message {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.6;
+            text-align: center;
         }
 
         .modal-header {
@@ -314,7 +705,7 @@
 
         .avatar-selector {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
             gap: 10px;
         }
 
@@ -342,6 +733,7 @@
             gap: 10px;
             justify-content: stretch;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .form-actions button {
@@ -362,6 +754,14 @@
 
         button.primary:hover {
             background: var(--accent-hover);
+        }
+
+        button.primary.danger {
+            background: var(--coral);
+        }
+
+        button.primary.danger:hover {
+            background: #d7634c;
         }
 
         button.secondary {
@@ -417,15 +817,45 @@
         .content::-webkit-scrollbar-thumb:hover {
             background: rgba(0,0,0,0.3);
         }
+
+        @media (max-width: 430px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .modal {
+                padding: 12px;
+            }
+
+            .modal-content {
+                padding: 18px;
+                max-height: calc(100dvh - 24px);
+            }
+
+            .manage-child-actions {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .avatar-selector {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .toast {
+                bottom: 12px;
+                width: min(calc(100vw - 24px), 380px);
+            }
+        }
     </style>
-    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260629-formalign">
+    <link rel="stylesheet" href="/static/styles/handdrawn.css?v=20260705-overlapfix1">
 </head>
 <body>
     <div class="mobile-container">
         <div class="header">
             <div class="header-top">
-                <div class="logo">🍎</div>
-                <button class="logout-btn" onclick="logout()">退出</button>
+                <div class="logo">
+                    <img src="/static/assets/brand/apple-pudding-logo-transparent.png?v=20260704-parent-logo2" alt="苹果布丁">
+                </div>
+                <button class="logout-btn" onclick="showLogoutModal()">退出</button>
             </div>
             <div class="header-title">
                 <h1>家长门户</h1>
@@ -434,34 +864,81 @@
         </div>
 
         <div class="content">
-            <div class="welcome-section">
-                <h2>选择孩子账号</h2>
-                <p>点击头像进入孩子的学习空间</p>
-            </div>
+            <section class="portal-view" id="portalHomeView">
+                <div class="welcome-section">
+                    <h2>选择孩子账号</h2>
+                    <p>点击头像进入孩子的学习空间</p>
+                </div>
 
-            <div class="children-grid" id="childrenGrid">
-                <div class="child-card add-child" onclick="showAddChildModal()">
-                    <div class="child-avatar">➕</div>
-                    <div class="child-info-left">
-                        <div class="child-name">添加孩子</div>
-                        <p class="child-age">创建新账号</p>
+                <div class="children-grid" id="childrenGrid">
+                    <div class="child-card add-child" onclick="showAddChildModal()">
+                        <div class="child-avatar">➕</div>
+                        <div class="child-info-left">
+                            <div class="child-name">添加孩子</div>
+                            <p class="child-age">创建新账号</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="quick-actions">
-                <h3>快捷功能</h3>
-                <div class="action-buttons">
-                    <div class="action-btn" onclick="goToReport()">
-                        <div class="action-icon">📊</div>
-                        <div class="action-text">学习报告</div>
-                    </div>
-                    <div class="action-btn" onclick="goToSettings()">
-                        <div class="action-icon">⚙️</div>
-                        <div class="action-text">系统设置</div>
+                <div class="quick-actions">
+                    <h3>快捷功能</h3>
+                    <div class="action-buttons">
+                        <div class="action-btn" onclick="goToReport()">
+                            <div class="action-icon">📊</div>
+                            <div class="action-text">学习报告</div>
+                        </div>
+                        <div class="action-btn" onclick="goToSettings()">
+                            <div class="action-icon">⚙️</div>
+                            <div class="action-text">系统设置</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <section class="portal-view parent-management-view" id="parentSettingsView" hidden>
+                <div class="management-header">
+                    <button type="button" class="back-portal-btn" onclick="backToPortalHome()">← 返回家长门户</button>
+                    <h2>孩子管理</h2>
+                    <p>这里专门管理孩子档案。孩子端需要输入“孩子姓名 + 进入码”才能进入，对应数据会同步到家长端。</p>
+                </div>
+
+                <div class="settings-summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-value" id="settingsChildCount">0</div>
+                        <div class="summary-label">孩子档案</div>
+                    </div>
+                    <div class="summary-card sync-setting-card">
+                        <button type="button" class="sync-setting-trigger" id="syncIntervalTrigger" onclick="toggleSyncIntervalDropdown()" aria-expanded="false" aria-controls="syncIntervalOptions">
+                            <span class="sync-setting-text">
+                                <span class="summary-value" id="settingsSyncIntervalValue">6小时</span>
+                                <span class="summary-label">自动同步一次</span>
+                            </span>
+                            <span class="sync-chevron">⌄</span>
+                        </button>
+                        <div class="sync-interval-options" id="syncIntervalOptions" aria-label="自动同步频率">
+                            <button type="button" class="sync-interval-option" data-hours="3">3小时</button>
+                            <button type="button" class="sync-interval-option" data-hours="6">6小时</button>
+                            <button type="button" class="sync-interval-option" data-hours="9">9小时</button>
+                            <button type="button" class="sync-interval-option" data-hours="12">12小时</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="manage-section">
+                    <div class="management-toolbar">
+                        <div>
+                            <h3>孩子档案</h3>
+                            <p>可以新增孩子、复制/修改进入码，或删除不再使用的档案。</p>
+                        </div>
+                        <button type="button" class="mini-action-btn add" onclick="showAddChildModal()">＋ 添加</button>
+                    </div>
+                    <div class="manage-children-list" id="settingsChildrenList"></div>
+                </div>
+
+                <div class="settings-note">
+                    小提示：如果孩子的进入码泄露或输错人了，直接点“修改进入码”即可；同步频率会影响孩子端自动上传学习数据的间隔。
+                </div>
+            </section>
         </div>
     </div>
 
@@ -499,10 +976,37 @@
         </div>
     </div>
 
+    <div class="modal" id="logoutConfirmModal">
+        <div class="modal-content logout-modal-content">
+            <div class="modal-header">退出登录</div>
+            <p class="logout-confirm-message">确定要退出当前家长账号吗？</p>
+            <div class="form-actions">
+                <button type="button" class="secondary" onclick="closeModal('logoutConfirmModal')">取消</button>
+                <button type="button" class="primary" onclick="logout()">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteChildModal">
+        <div class="modal-content logout-modal-content">
+            <div class="modal-header">删除孩子档案</div>
+            <p class="delete-confirm-message" id="deleteChildMessage">确定要删除这个孩子档案吗？</p>
+            <div class="form-actions">
+                <button type="button" class="secondary" onclick="closeModal('deleteChildModal')">取消</button>
+                <button type="button" class="primary danger" onclick="deleteSelectedChild()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/static/auth-fetch.js"></script>
     <script>
         let currentAccount = null;
         let selectedAvatar = '👦';
+        let loadedChildren = [];
+        let deleteChildCandidate = null;
+        const SYNC_INTERVAL_STORAGE_KEY = 'applePuddingChildSyncIntervalHours';
+        const SYNC_INTERVAL_OPTIONS = [3, 6, 9, 12];
+        let syncIntervalDropdownOpen = false;
 
         // 页面加载时检查登录状态
         window.addEventListener('DOMContentLoaded', async () => {
@@ -519,6 +1023,7 @@
             }
 
             await loadChildren();
+            renderSyncIntervalSetting();
         });
 
         // 加载孩子列表
@@ -530,11 +1035,60 @@
                 if (response.ok) {
                     const data = await response.json();
                     const children = data.account.children || [];
+                    currentAccount = data.account;
+                    localStorage.setItem('parentAccount', JSON.stringify(data.account));
+                    loadedChildren = children;
                     renderChildren(children);
+                    renderManagementChildren(children);
                 }
             } catch (error) {
                 console.error('加载孩子列表失败:', error);
             }
+        }
+
+        function buildChildProgressSnapshot(child) {
+            if (child.synced_progress && typeof child.synced_progress === 'object' && Object.keys(child.synced_progress).length) {
+                return {
+                    visits: {},
+                    questions: 0,
+                    doctorChecks: 0,
+                    feedings: 0,
+                    treatments: 0,
+                    quizCorrect: 0,
+                    quizTotal: 0,
+                    stories: 0,
+                    creations: 0,
+                    activities: [],
+                    totalChats: 0,
+                    totalQuestions: 0,
+                    totalQuizPassed: 0,
+                    totalStories: 0,
+                    storiesCompleted: 0,
+                    uniqueAnimalsInteracted: [],
+                    ...child.synced_progress,
+                    visits: { ...(child.synced_progress.visits || {}) },
+                    activities: Array.isArray(child.synced_progress.activities) ? child.synced_progress.activities : []
+                };
+            }
+
+            return {
+                visits: Object.fromEntries((child.animals_explored || []).map(animalId => [animalId, 1])),
+                questions: 0,
+                doctorChecks: 0,
+                feedings: 0,
+                treatments: 0,
+                quizCorrect: child.questions_correct || 0,
+                quizTotal: child.questions_answered || 0,
+                stories: child.stories_created || 0,
+                creations: 0,
+                activities: [],
+                totalChats: 0,
+                totalQuestions: 0,
+                totalQuizPassed: 0,
+                totalStories: 0,
+                storiesCompleted: 0,
+                uniqueAnimalsInteracted: []
+            };
         }
 
         // 渲染孩子卡片
@@ -556,10 +1110,15 @@
                     : 0;
 
                 card.innerHTML = `
-                    <div class="child-avatar">${child.avatar || '👤'}</div>
-                    <div class="child-info-left">
-                        <div class="child-name">${child.name}</div>
-                        <div class="child-age">${child.age}岁</div>
+                    <div class="child-card-main">
+                        <div class="child-avatar">${child.avatar || '👤'}</div>
+                        <div class="child-info-left">
+                            <div class="child-title-row">
+                                <div class="child-name">${child.name}</div>
+                                <div class="child-age">${child.age}岁</div>
+                            </div>
+                            <div class="child-entry-code">进入码：${child.entry_code || '待生成'}</div>
+                        </div>
                     </div>
                     <div class="child-stats">
                         <div class="stat-item">
@@ -581,9 +1140,152 @@
             });
         }
 
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[char]));
+        }
+
+        function getChildAccuracy(child) {
+            return child.questions_answered > 0
+                ? Math.round((child.questions_correct / child.questions_answered) * 100)
+                : 0;
+        }
+
+        function formatLastSync(child) {
+            if (!child.last_synced_at) return '未同步';
+            const date = new Date(child.last_synced_at);
+            if (Number.isNaN(date.getTime())) return '未同步';
+            return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function renderManagementChildren(children = loadedChildren) {
+            const countNode = document.getElementById('settingsChildCount');
+            const list = document.getElementById('settingsChildrenList');
+            if (!list) return;
+
+            if (countNode) {
+                countNode.textContent = children.length;
+            }
+
+            if (!children.length) {
+                list.innerHTML = `
+                    <div class="empty-manage-state">
+                        <div class="empty-icon">🌱</div>
+                        <div>还没有孩子档案，先添加一个孩子吧。</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = children.map(child => {
+                const accuracy = getChildAccuracy(child);
+                const animalsCount = child.animals_explored?.length || 0;
+                const entryCode = child.entry_code || '待生成';
+
+                return `
+                    <div class="manage-child-card">
+                        <div class="manage-child-top">
+                            <div class="manage-child-avatar">${escapeHtml(child.avatar || '👤')}</div>
+                            <div>
+                                <div class="manage-child-name-row">
+                                    <div class="manage-child-name">${escapeHtml(child.name)}</div>
+                                    <div class="manage-child-age">${escapeHtml(child.age || '-')}岁</div>
+                                </div>
+                                <div class="manage-child-code">进入码：${escapeHtml(entryCode)}</div>
+                            </div>
+                        </div>
+                        <div class="manage-child-stats">
+                            <div class="manage-stat">
+                                <strong>${animalsCount}</strong>
+                                <span>已看动物</span>
+                            </div>
+                            <div class="manage-stat">
+                                <strong>${accuracy}%</strong>
+                                <span>答题正确率</span>
+                            </div>
+                            <div class="manage-stat">
+                                <strong>${escapeHtml(formatLastSync(child))}</strong>
+                                <span>最近同步</span>
+                            </div>
+                        </div>
+                        <div class="manage-child-actions">
+                            <button type="button" class="mini-action-btn" onclick="copyEntryCode('${child.id}')">复制进入码</button>
+                            <button type="button" class="mini-action-btn" onclick="refreshEntryCodeFromPortal('${child.id}')">修改进入码</button>
+                            <button type="button" class="mini-action-btn danger" onclick="showDeleteChildModal('${child.id}')">删除孩子</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getSyncIntervalHours() {
+            const saved = Number(localStorage.getItem(SYNC_INTERVAL_STORAGE_KEY));
+            return SYNC_INTERVAL_OPTIONS.includes(saved) ? saved : 6;
+        }
+
+        function setSyncIntervalDropdownOpen(isOpen) {
+            syncIntervalDropdownOpen = Boolean(isOpen);
+            const card = document.querySelector('.sync-setting-card');
+            const trigger = document.getElementById('syncIntervalTrigger');
+            if (card) {
+                card.classList.toggle('open', syncIntervalDropdownOpen);
+            }
+            if (trigger) {
+                trigger.setAttribute('aria-expanded', syncIntervalDropdownOpen ? 'true' : 'false');
+            }
+        }
+
+        function toggleSyncIntervalDropdown() {
+            setSyncIntervalDropdownOpen(!syncIntervalDropdownOpen);
+        }
+
+        function setSyncIntervalHours(hours) {
+            const parsedHours = Number(hours);
+            const nextHours = SYNC_INTERVAL_OPTIONS.includes(parsedHours) ? parsedHours : 6;
+            localStorage.setItem(SYNC_INTERVAL_STORAGE_KEY, String(nextHours));
+            setSyncIntervalDropdownOpen(false);
+            renderSyncIntervalSetting();
+            showToast(`已设置为每 ${nextHours} 小时自动同步一次`, 'success');
+        }
+
+        function renderSyncIntervalSetting() {
+            const selectedHours = getSyncIntervalHours();
+            const valueNode = document.getElementById('settingsSyncIntervalValue');
+            if (valueNode) {
+                valueNode.textContent = `${selectedHours}小时`;
+            }
+
+            document.querySelectorAll('.sync-interval-option').forEach(button => {
+                const isActive = Number(button.dataset.hours) === selectedHours;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+        }
+
+        function updateSavedCurrentChild(updatedChild) {
+            const savedChild = localStorage.getItem('currentChild');
+            if (!savedChild) return;
+
+            try {
+                const parsedChild = JSON.parse(savedChild);
+                if (parsedChild.id === updatedChild.id) {
+                    localStorage.setItem('currentChild', JSON.stringify(updatedChild));
+                }
+            } catch (error) {
+                console.error('更新当前孩子缓存失败:', error);
+            }
+        }
+
         // 进入孩子的学习报告界面
-        function enterChildSpace(child) {
+        function enterChildSpace(child, initialRoute = 'report-overview') {
             const parentAccount = JSON.parse(localStorage.getItem('parentAccount') || '{}');
+            const progressSnapshot = buildChildProgressSnapshot(child);
+            const syncedCreationsCount = Number(child.synced_creations_count || progressSnapshot.creations || 0) || 0;
 
             // 创建家长角色的会话ID
             const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -596,20 +1298,17 @@
                     age: null,
                     role: 'parent'  // 家长角色
                 },
-                progress: {
-                    visits: {},
-                    questions: 0,
-                    stories: 0,
-                    quizTotal: 0,
-                    quizCorrect: 0,
-                    activities: []
-                },
+                progress: progressSnapshot,
                 selectedAnimalId: null,
-                creations: [],
-                route: 'report-overview',  // 默认进入数据概览页面
+                creations: Array.from({ length: syncedCreationsCount }, (_, index) => ({
+                    id: `synced-creation-${index + 1}`,
+                    synced: true
+                })),
+                route: initialRoute,
                 // 保存孩子信息供报告页面使用
                 selectedChild: child,
-                parentAccountId: parentAccount.account_id || parentAccount.id
+                parentAccountId: parentAccount.account_id || parentAccount.id,
+                lastSyncedAt: child.last_synced_at || null
             };
 
             // 保存会话数据到 localStorage（使用 index.html 的存储键）
@@ -632,12 +1331,13 @@
 
             // 保存到 localStorage
             localStorage.setItem(storeKey, JSON.stringify(sessionStore));
+            localStorage.setItem('currentChild', JSON.stringify(child));
 
             // 设置当前活动会话
             sessionStorage.setItem(activeSessionKey, sessionId);
 
             // 跳转到主应用（家长端界面）
-            window.location.href = '/static/index.html?v=20260629-formalign';
+            window.location.href = '/static/index.html?v=20260705-syncfix4';
         }
 
         // 显示添加孩子模态框
@@ -645,9 +1345,139 @@
             document.getElementById('addChildModal').classList.add('active');
         }
 
+        function showLogoutModal() {
+            document.getElementById('logoutConfirmModal').classList.add('active');
+        }
+
         // 关闭模态框
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'deleteChildModal') {
+                deleteChildCandidate = null;
+            }
+        }
+
+        function showParentSettingsView() {
+            document.getElementById('portalHomeView').hidden = true;
+            document.getElementById('parentSettingsView').hidden = false;
+            renderManagementChildren(loadedChildren);
+            setSyncIntervalDropdownOpen(false);
+            renderSyncIntervalSetting();
+            document.querySelector('.content').scrollTop = 0;
+        }
+
+        function backToPortalHome() {
+            document.getElementById('parentSettingsView').hidden = true;
+            document.getElementById('portalHomeView').hidden = false;
+            setSyncIntervalDropdownOpen(false);
+            document.querySelector('.content').scrollTop = 0;
+        }
+
+        async function copyEntryCode(childId) {
+            const child = loadedChildren.find(item => item.id === childId);
+            if (!child || !child.entry_code) {
+                showToast('这个孩子还没有进入码', 'error');
+                return;
+            }
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(child.entry_code);
+                } else {
+                    const input = document.createElement('textarea');
+                    input.value = child.entry_code;
+                    input.setAttribute('readonly', '');
+                    input.style.position = 'fixed';
+                    input.style.opacity = '0';
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    input.remove();
+                }
+                showToast('进入码已复制', 'success');
+            } catch (error) {
+                console.error('复制进入码失败:', error);
+                showToast(`进入码：${child.entry_code}`, 'info');
+            }
+        }
+
+        async function refreshEntryCodeFromPortal(childId) {
+            if (!currentAccount) return;
+
+            try {
+                const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children/${childId}/entry-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    loadedChildren = loadedChildren.map(child => child.id === childId ? data.child : child);
+                    updateSavedCurrentChild(data.child);
+                    renderChildren(loadedChildren);
+                    renderManagementChildren(loadedChildren);
+                    showToast(`新进入码：${data.child.entry_code}`, 'success');
+                } else {
+                    showToast(data.detail || '修改进入码失败', 'error');
+                }
+            } catch (error) {
+                console.error('修改进入码失败:', error);
+                showToast('修改进入码失败，请稍后再试', 'error');
+            }
+        }
+
+        function showDeleteChildModal(childId) {
+            const child = loadedChildren.find(item => item.id === childId);
+            if (!child) {
+                showToast('没有找到这个孩子档案', 'error');
+                return;
+            }
+
+            deleteChildCandidate = child;
+            document.getElementById('deleteChildMessage').textContent =
+                `确定要删除「${child.name}」的孩子档案吗？删除后，这个孩子原来的进入码将不能再使用。`;
+            document.getElementById('deleteChildModal').classList.add('active');
+        }
+
+        async function deleteSelectedChild() {
+            if (!currentAccount || !deleteChildCandidate) return;
+            const childToDelete = deleteChildCandidate;
+
+            try {
+                const response = await authFetch(`/api/family/accounts/${currentAccount.id}/children/${childToDelete.id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    closeModal('deleteChildModal');
+                    currentAccount = data.account || currentAccount;
+                    localStorage.setItem('parentAccount', JSON.stringify(currentAccount));
+                    loadedChildren = currentAccount.children || loadedChildren.filter(child => child.id !== childToDelete.id);
+
+                    const savedChild = localStorage.getItem('currentChild');
+                    if (savedChild) {
+                        try {
+                            const parsedChild = JSON.parse(savedChild);
+                            if (parsedChild.id === childToDelete.id) {
+                                localStorage.removeItem('currentChild');
+                            }
+                        } catch (error) {
+                            localStorage.removeItem('currentChild');
+                        }
+                    }
+
+                    renderChildren(loadedChildren);
+                    renderManagementChildren(loadedChildren);
+                    showToast('孩子档案已删除', 'success');
+                } else {
+                    showToast(data.detail || '删除失败，请重试', 'error');
+                }
+            } catch (error) {
+                console.error('删除孩子失败:', error);
+                showToast('删除失败，请稍后再试', 'error');
+            }
         }
 
         // 头像选择
@@ -664,6 +1494,16 @@
             if (avatarOptions.length > 0) {
                 avatarOptions[0].classList.add('selected');
             }
+
+            document.querySelectorAll('.sync-interval-option').forEach(button => {
+                button.addEventListener('click', () => setSyncIntervalHours(button.dataset.hours));
+            });
+
+            document.addEventListener('click', (event) => {
+                if (syncIntervalDropdownOpen && !event.target.closest('.sync-setting-card')) {
+                    setSyncIntervalDropdownOpen(false);
+                }
+            });
         });
 
         // 添加孩子表单提交
@@ -692,8 +1532,10 @@
                             })
                         });
 
-                        if (response.ok) {
-                            showToast('添加成功！', 'success');
+                        const data = await response.json();
+
+                        if (response.ok && data.success) {
+                            showToast(`添加成功！进入码：${data.child.entry_code}`, 'success');
                             closeModal('addChildModal');
                             form.reset();
                             await loadChildren();
@@ -710,12 +1552,11 @@
 
         // 退出登录
         function logout() {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('parentToken');
-                localStorage.removeItem('parentAccount');
-                localStorage.removeItem('currentChild');
-                window.location.href = '/static/index-login.html?role=parent';
-            }
+            closeModal('logoutConfirmModal');
+            localStorage.removeItem('parentToken');
+            localStorage.removeItem('parentAccount');
+            localStorage.removeItem('currentChild');
+            window.location.href = '/static/index-login.html?role=parent';
         }
 
         // 显示提示
@@ -737,28 +1578,39 @@
             }, 3000);
         }
 
-        // 跳转到学习报告
-        function goToReport() {
-            // 使用当前选中的孩子，如果有的话
-            const currentChild = localStorage.getItem('currentChild');
-            if (currentChild) {
-                // 跳转到 index.html 并设置路由到报告页面
-                window.location.href = '/static/index.html?v=20260629-formalign#report-overview';
-            } else {
-                showToast('请先选择一个孩子', 'error');
+        function resolveQuickActionChild() {
+            const savedChild = localStorage.getItem('currentChild');
+            if (savedChild) {
+                try {
+                    const parsedChild = JSON.parse(savedChild);
+                    const matchedChild = loadedChildren.find(child => child.id === parsedChild.id);
+                    if (matchedChild) return matchedChild;
+                } catch (error) {
+                    console.error('读取当前孩子失败:', error);
+                }
             }
+
+            if (loadedChildren.length === 1) {
+                return loadedChildren[0];
+            }
+
+            return null;
         }
 
-        // 跳转到系统设置
-        function goToSettings() {
-            // 使用当前选中的孩子，如果有的话
-            const currentChild = localStorage.getItem('currentChild');
-            if (currentChild) {
-                // 跳转到 index.html 并设置路由到设置页面
-                window.location.href = '/static/index.html?v=20260629-formalign#report-settings';
-            } else {
-                showToast('请先选择一个孩子', 'error');
+        // 跳转到学习报告
+        function goToReport() {
+            const child = resolveQuickActionChild();
+            if (!child) {
+                showToast(loadedChildren.length > 1 ? '请先点击要查看的孩子' : '请先创建一个孩子', 'error');
+                return;
             }
+
+            enterChildSpace(child, 'report-overview');
+        }
+
+        // 打开家长门户内的孩子管理页
+        function goToSettings() {
+            showParentSettingsView();
         }
     </script>
 </body>

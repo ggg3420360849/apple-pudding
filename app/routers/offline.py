@@ -63,7 +63,7 @@ async def sync_offline_activities(
                 if success:
                     synced_count += 1
                     # Mark as synced if it has an ID
-                    if hasattr(activity_req, 'id'):
+                    if activity_req.id:
                         queue.mark_synced(activity_req.id, principal.account_id)
                 else:
                     failed_count += 1

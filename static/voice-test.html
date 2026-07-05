@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>语音识别测试页面</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: "Microsoft YaHei", sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
+            width: min(100%, 800px);
+            min-height: 100vh;
+            margin: 0 auto;
             padding: 20px;
             background: #f5f5f5;
         }
@@ -42,6 +47,7 @@
             font-size: 16px;
             margin: 15px 0;
             font-family: inherit;
+            resize: vertical;
         }
         button {
             padding: 15px 30px;
@@ -49,7 +55,8 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 5px;
+            margin: 0;
+            max-width: 100%;
         }
         .btn-start {
             background: #4caf50;
@@ -93,6 +100,31 @@
         .log-error { color: #ef5350; }
         .log-warn { color: #ffb74d; }
         .log-info { color: #64b5f6; }
+
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 16px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .control-row button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -101,7 +133,7 @@
 
         <div id="browserCheck" class="status info">正在检查浏览器支持...</div>
 
-        <div style="margin: 20px 0;">
+        <div class="control-row">
             <button id="startBtn" class="btn-start">开始录音</button>
             <button id="stopBtn" class="btn-stop" disabled>停止录音</button>
             <button id="clearBtn" class="btn-clear">清空</button>
@@ -109,7 +141,7 @@
 
         <div>
             <label for="resultText"><strong>识别结果：</strong></label>
-            <textarea id="resultText" placeholder="点击"开始录音"后对着麦克风说话..."></textarea>
+            <textarea id="resultText" placeholder="点击“开始录音”后对着麦克风说话..."></textarea>
         </div>
 
         <div id="statusDisplay" class="status info">等待开始...</div>

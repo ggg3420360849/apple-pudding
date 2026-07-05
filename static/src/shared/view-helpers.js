@@ -222,7 +222,7 @@ function selectAnimal(id, source = "地图探索") {
     // 更新当前备用问题
     state.currentQuickQuestion = {
         animalId: id,
-        question: animal.quick?.[0] || `${animal.name}有什么特别的地方？`,
+        question: getCurrentQuickQuestionForAnimal(animal),
         isGenerating: false
     };
     addActivity("探索", `${getAnimalDisplayName(id)}：${source}`, id);

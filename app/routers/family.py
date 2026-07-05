@@ -3,13 +3,17 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 import uuid
+import time
 from datetime import datetime
+from threading import Lock
 
 from app.database import get_session_store, SessionStore, FamilyAccount, ChildProfile, WeeklyGoal
 from app.schemas import (
     CreateFamilyAccountRequest,
     LoginRequest,
     CreateChildProfileRequest,
+    ChildAccessRequest,
+    ChildProgressSyncRequest,
     CreateWeeklyGoalRequest,
     RecordActivityRequest
 )
@@ -23,10 +27,33 @@ from app.logger import get_logger
 logger = get_logger(__name__)
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/family")
+REGISTER_LIMIT_MAX_ATTEMPTS = 5
+REGISTER_LIMIT_WINDOW_SECONDS = 60 * 60
+
+
+def enforce_register_rate_limit(request: Request) -> None:
+    """Only limit real new-registration attempts, not duplicate-account lookups."""
+    state = request.app.state
+    if not hasattr(state, "register_rate_limit_store"):
+        state.register_rate_limit_store = {}
+    if not hasattr(state, "register_rate_limit_lock"):
+        state.register_rate_limit_lock = Lock()
+
+    client_ip = get_remote_address(request) or "unknown"
+    now = time.time()
+
+    with state.register_rate_limit_lock:
+        attempts = state.register_rate_limit_store.get(client_ip, [])
+        attempts = [timestamp for timestamp in attempts if now - timestamp < REGISTER_LIMIT_WINDOW_SECONDS]
+
+        if len(attempts) >= REGISTER_LIMIT_MAX_ATTEMPTS:
+            raise HTTPException(status_code=429, detail="注册过于频繁，请 1 小时后再试")
+
+        attempts.append(now)
+        state.register_rate_limit_store[client_ip] = attempts
 
 
 @router.post("/register")
-@limiter.limit("5/hour")
 def register_account(
     request: Request,
     req: CreateFamilyAccountRequest,
@@ -39,9 +66,11 @@ def register_account(
         if req.phone:
             existing = store.get_family_account_by_phone(req.phone)
             if existing:
-                raise HTTPException(status_code=400, detail="该手机号已注册")
+                raise HTTPException(status_code=400, detail="手机号已注册，请登录")
         if req.email and store.get_family_account_by_email(req.email):
-            raise HTTPException(status_code=400, detail="该邮箱已注册")
+            raise HTTPException(status_code=400, detail="该邮箱已被绑定，请更换邮箱")
+
+        enforce_register_rate_limit(request)
 
         account = FamilyAccount(
             id=str(uuid.uuid4()),
@@ -115,6 +144,76 @@ def login_account(
         raise HTTPException(status_code=500, detail="登录失败")
 
 
+@router.post("/child-access")
+def child_access(
+    req: ChildAccessRequest,
+    store: SessionStore = Depends(get_session_store),
+    settings: Settings = Depends(get_settings),
+) -> dict:
+    """Allow a child to enter with their name and entry code."""
+    try:
+        matched = store.find_child_by_name_and_entry_code(req.name.strip(), req.entry_code.strip())
+        if not matched:
+            raise HTTPException(status_code=401, detail="孩子姓名或进入码不正确")
+
+        account, child = matched
+        logger.info("Child access granted", account_id=account.id, child_id=child.id)
+
+        return {
+            "success": True,
+            "account_id": account.id,
+            "sync_token": create_access_token(account.id, settings),
+            "child": child.model_dump(mode='json', exclude={"entry_code"})
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Child access failed", error=str(e))
+        raise HTTPException(status_code=500, detail="进入失败，请稍后重试")
+
+
+@router.post("/child-progress/sync")
+def sync_child_progress(
+    req: ChildProgressSyncRequest,
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
+) -> dict:
+    """Persist the latest child learning snapshot for parent-side reports."""
+    try:
+        require_child(store, principal, req.child_id)
+        child = store.sync_child_progress(
+            principal.account_id,
+            req.child_id,
+            req.progress,
+            req.creations_count,
+        )
+        if not child:
+            raise HTTPException(status_code=404, detail="未找到孩子档案")
+
+        logger.info("Child progress synced", account_id=principal.account_id, child_id=req.child_id)
+
+        return {
+            "success": True,
+            "child": child.model_dump(mode='json', exclude={"entry_code"})
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Failed to sync child progress", error=str(e))
+        raise HTTPException(status_code=500, detail="同步学习数据失败")
+
+
+@router.get("/child-session/{child_id}")
+def validate_child_session(
+    child_id: str,
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
+) -> dict:
+    """Confirm that a previously authenticated child profile still exists."""
+    require_child(store, principal, child_id)
+    return {"active": True, "child_id": child_id}
+
+
 @router.post("/accounts")
 @limiter.limit("5/hour")
 def create_family_account(
@@ -183,7 +282,8 @@ def add_child_profile(
             id=str(uuid.uuid4()),
             name=req.name,
             avatar=req.avatar,
-            age=req.age
+            age=req.age,
+            entry_code=store.create_child_entry_code()
         )
         updated_account = store.add_child_profile(account_id, child)
 
@@ -221,6 +321,61 @@ def get_child_profile(
         "success": True,
         "child": child.model_dump(mode='json')
     }
+
+
+@router.delete("/accounts/{account_id}/children/{child_id}")
+def delete_child_profile(
+    account_id: str,
+    child_id: str,
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
+) -> dict:
+    """Delete a child profile from a family account."""
+    try:
+        require_account(principal, account_id)
+        updated_account = store.delete_child_profile(account_id, child_id)
+        if not updated_account:
+            raise HTTPException(status_code=404, detail="Child profile not found")
+
+        logger.info("Child profile deleted", account_id=account_id, child_id=child_id)
+
+        return {
+            "success": True,
+            "deleted_child_id": child_id,
+            "account": public_account(updated_account)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Failed to delete child profile", error=str(e), account_id=account_id, child_id=child_id)
+        raise HTTPException(status_code=500, detail="删除孩子失败")
+
+
+@router.post("/accounts/{account_id}/children/{child_id}/entry-code")
+def refresh_child_entry_code(
+    account_id: str,
+    child_id: str,
+    store: SessionStore = Depends(get_session_store),
+    principal: AccountPrincipal = Depends(get_current_account),
+) -> dict:
+    """Refresh a child's entry code for parent-side management."""
+    try:
+        require_account(principal, account_id)
+        child = store.refresh_child_entry_code(account_id, child_id)
+        if not child:
+            raise HTTPException(status_code=404, detail="Child profile not found")
+
+        logger.info("Child entry code refreshed", account_id=account_id, child_id=child_id)
+
+        return {
+            "success": True,
+            "child": child.model_dump(mode='json')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Failed to refresh child entry code", error=str(e), account_id=account_id, child_id=child_id)
+        raise HTTPException(status_code=500, detail="修改进入码失败")
 
 
 @router.get("/accounts/{account_id}/report")
