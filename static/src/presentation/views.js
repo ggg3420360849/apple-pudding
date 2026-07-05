@@ -923,10 +923,12 @@ function doctorView() {
 function imagineView() {
     const draft = state.draftCreature;
     const parts = Array.isArray(draft.parts) ? draft.parts : [];
-    const head = normalizeCreatureHead(draft.head || "panda");
-    const body = normalizeCreatureBody(draft.body || "panda");
-    const hand = parts.includes("hand") ? normalizeCreatureHand(draft.hand || creatureHands[0].id) : "";
-    const foot = parts.includes("foot") ? normalizeCreatureFoot(draft.foot || creatureFeet[0].id) : "";
+    const head = parts.includes("head") && draft.head ? normalizeCreatureHead(draft.head) : "";
+    const body = parts.includes("body") && draft.body ? normalizeCreatureBody(draft.body) : "";
+    const leftHand = parts.includes("leftHand") ? normalizeCreatureHand(draft.leftHand || creatureHands[0].id) : "";
+    const rightHand = parts.includes("rightHand") ? normalizeCreatureHand(draft.rightHand || creatureHands[0].id) : "";
+    const leftFoot = parts.includes("leftFoot") ? normalizeCreatureFoot(draft.leftFoot || creatureFeet[0].id) : "";
+    const rightFoot = parts.includes("rightFoot") ? normalizeCreatureFoot(draft.rightFoot || creatureFeet[0].id) : "";
     const wing = parts.includes("wing") ? normalizeCreatureWing(draft.wing || creatureWings[0].id) : "";
     const tail = parts.includes("tail") && creatureTails.length ? normalizeCreatureTail(draft.tail || creatureTails[0].id) : "";
     const decoration = parts.includes("decoration") && creatureDecorations.length ? normalizeCreatureDecoration(draft.decoration || creatureDecorations[0].id) : "";
@@ -939,7 +941,7 @@ function imagineView() {
                 <h3>今天要创造谁？</h3>
                 <p>挑一挑、拼一拼，让奇妙的新朋友从画纸里醒来！</p>
             </header>
-            <div class="creator-board">
+            <div class="creator-board unified-materials">
                 <div class="material-rail">
                     <div class="material-group">
                         <p class="material-title"><span>①</span> 头</p>
@@ -954,15 +956,45 @@ function imagineView() {
                         </div>
                     </div>
                     <div class="material-group">
-                        <p class="material-title"><span>③</span> 手</p>
-                        <div class="material-list asset-list" data-asset-list="hand">
-                            ${creatureHands.map((item) => creatureMaterialButton("hand", item, hand === item.id)).join("")}
+                        <p class="material-title"><span>③</span> 左手</p>
+                        <div class="material-list asset-list" data-asset-list="leftHand">
+                            ${creatureHands.map((item) => creatureMaterialButton("leftHand", item, leftHand === item.id)).join("")}
                         </div>
                     </div>
                     <div class="material-group">
-                        <p class="material-title"><span>④</span> 脚</p>
-                        <div class="material-list asset-list" data-asset-list="foot">
-                            ${creatureFeet.map((item) => creatureMaterialButton("foot", item, foot === item.id)).join("")}
+                        <p class="material-title"><span>④</span> 右手</p>
+                        <div class="material-list asset-list" data-asset-list="rightHand">
+                            ${creatureHands.map((item) => creatureMaterialButton("rightHand", item, rightHand === item.id)).join("")}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>⑤</span> 左脚</p>
+                        <div class="material-list asset-list" data-asset-list="leftFoot">
+                            ${creatureFeet.map((item) => creatureMaterialButton("leftFoot", item, leftFoot === item.id)).join("")}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>⑥</span> 右脚</p>
+                        <div class="material-list asset-list" data-asset-list="rightFoot">
+                            ${creatureFeet.map((item) => creatureMaterialButton("rightFoot", item, rightFoot === item.id)).join("")}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>⑦</span> 尾巴</p>
+                        <div class="material-list asset-list" data-asset-list="tail">
+                            ${creatureMaterialList("tail", creatureTails, tail)}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>⑧</span> 翅膀</p>
+                        <div class="material-list asset-list" data-asset-list="wing">
+                            ${creatureWings.map((item) => creatureMaterialButton("wing", item, wing === item.id)).join("")}
+                        </div>
+                    </div>
+                    <div class="material-group">
+                        <p class="material-title"><span>⑨</span> 装饰</p>
+                        <div class="material-list asset-list" data-asset-list="decoration">
+                            ${creatureMaterialList("decoration", creatureDecorations, decoration)}
                         </div>
                     </div>
                 </div>
@@ -972,28 +1004,8 @@ function imagineView() {
                     <span class="imagine-sticker sticker-pencil" aria-hidden="true"></span>
                     ${creaturePreview(draft)}
                 </div>
-                <div class="material-rail">
-                    <div class="material-group">
-                        <p class="material-title"><span>⑤</span> 尾巴</p>
-                        <div class="material-list asset-list" data-asset-list="tail">
-                            ${creatureMaterialList("tail", creatureTails, tail)}
-                        </div>
-                    </div>
-                    <div class="material-group">
-                        <p class="material-title"><span>⑥</span> 翅膀</p>
-                        <div class="material-list asset-list" data-asset-list="wing">
-                            ${creatureWings.map((item) => creatureMaterialButton("wing", item, wing === item.id)).join("")}
-                        </div>
-                    </div>
-                    <div class="material-group">
-                        <p class="material-title"><span>⑦</span> 装饰</p>
-                        <div class="material-list asset-list" data-asset-list="decoration">
-                            ${creatureMaterialList("decoration", creatureDecorations, decoration)}
-                        </div>
-                    </div>
-                </div>
             </div>
-            ${creatureTransformControls(selectedPart)}
+            ${selectedPart ? creatureTransformControls(selectedPart) : ""}
             <div class="compose-hint">
                 <span class="hint-icon">✎</span>
                 <strong>点一下画布上的元素，再用下面按钮旋转、放大或缩小</strong>
@@ -1020,7 +1032,7 @@ function imagineView() {
                             ${["好奇", "勇敢", "温柔", "爱唱歌", "慢悠悠"].map((mood) => `<option ${draft.mood === mood ? "selected" : ""}>${mood}</option>`).join("")}
                         </select>
                     </div>
-                <p class="creature-summary">${escapeHtml(draft.mood)}，住在${escapeHtml(draft.habitat)}。已经选择 ${["头", "身体", hand && "手", foot && "脚", wing && "翅膀", tail && "尾巴", decoration && "装饰"].filter(Boolean).join("、")}。</p>
+                <p class="creature-summary">${escapeHtml(draft.mood)}，住在${escapeHtml(draft.habitat)}。已经选择 ${[head && "头", body && "身体", leftHand && "左手", rightHand && "右手", leftFoot && "左脚", rightFoot && "右脚", wing && "翅膀", tail && "尾巴", decoration && "装饰"].filter(Boolean).join("、") || "还没有选择素材"}。</p>
                 </div>
             </div>
             <div class="imagine-actions">
@@ -1055,7 +1067,11 @@ function creatureAssetUrl(type, id) {
         head: creatureHeads,
         body: creatureBodies,
         hand: creatureHands,
+        leftHand: creatureHands,
+        rightHand: creatureHands,
         foot: creatureFeet,
+        leftFoot: creatureFeet,
+        rightFoot: creatureFeet,
         wing: creatureWings,
         tail: creatureTails,
         decoration: creatureDecorations
@@ -1106,15 +1122,22 @@ function creatureMaterialList(type, items, activeId) {
 }
 
 function creatureMaterialButton(type, item, active) {
-    return `<button class="material-button ${active ? "active" : ""}" type="button" draggable="true" data-creature-part-type="${type}" data-creature-part-id="${item.id}" data-creature-${type}="${item.id}" aria-label="${item.label}" title="${item.label}"><img class="material-img" src="${imagineAssetBase}${item.file}" alt=""></button>`;
+    const splitSide = type.startsWith("left") ? "left" : (type.startsWith("right") ? "right" : "");
+    const sideLabel = splitSide === "left" ? "左" : (splitSide === "right" ? "右" : "");
+    const image = splitSide
+        ? `<span class="material-part-crop split-${splitSide}"><img class="material-img" src="${imagineAssetBase}${item.file}" alt=""></span>`
+        : `<img class="material-img" src="${imagineAssetBase}${item.file}" alt="">`;
+    return `<button class="material-button ${active ? "active" : ""}" type="button" draggable="true" data-creature-part-type="${type}" data-creature-part-id="${item.id}" data-creature-${type}="${item.id}" aria-label="${sideLabel}${item.label}" title="${sideLabel}${item.label}">${image}</button>`;
 }
 
 function selectedCreaturePartLabel(part) {
     return {
         head: "头",
         body: "身体",
-        hand: "手",
-        foot: "脚",
+        leftHand: "左手",
+        rightHand: "右手",
+        leftFoot: "左脚",
+        rightFoot: "右脚",
         tail: "尾巴",
         wing: "翅膀",
         decoration: "装饰"
@@ -1159,14 +1182,17 @@ function creatureTransform(part) {
 
 function activeCreaturePart(draft = state.draftCreature) {
     const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
-    const selected = draft.selectedPart || "body";
-    const alwaysVisible = new Set(["head", "body"]);
-    const optional = new Set(["hand", "foot", "wing", "tail", "decoration"]);
-    return alwaysVisible.has(selected) || (optional.has(selected) && parts.has(selected)) ? selected : "body";
+    const selected = draft.selectedPart || "";
+    const supported = new Set(["head", "body", "leftHand", "rightHand", "leftFoot", "rightFoot", "wing", "tail", "decoration"]);
+    if (supported.has(selected) && parts.has(selected)) return selected;
+    return ["body", "head", "leftHand", "rightHand", "leftFoot", "rightFoot", "wing", "tail", "decoration"].find((part) => parts.has(part)) || "";
 }
 
-function creatureTransformStyle(part) {
-    const transform = creatureTransform(part);
+function creatureTransformStyle(part, draft = state.draftCreature) {
+    const transform = {
+        ...defaultCreatureTransform(part),
+        ...((draft.transforms || {})[part] || {})
+    };
     const values = [
         `--part-scale:${transform.scale / 100}`,
         `--part-rotation:${transform.rotation}deg`,
@@ -1176,48 +1202,68 @@ function creatureTransformStyle(part) {
     return values.join(";");
 }
 
+function splitCreaturePartMarkup(part, id, variant, selected = false, draft = state.draftCreature) {
+    if (!id) return "";
+    const isHand = part === "leftHand" || part === "rightHand";
+    const kind = isHand ? "hand" : "foot";
+    const side = part.startsWith("left") ? "left" : "right";
+    const kebabPart = `${side}-${kind}`;
+    if (variant === "stage") {
+        return `<span class="creature-asset split-creature-asset asset-${kebabPart} ${selected ? "selected-part" : ""}" data-composition-part="${part}" data-edit-part="${part}" data-${kebabPart}="${id}" style="${creatureTransformStyle(part, draft)}"><img src="${creatureAssetUrl(kind, id)}" alt=""></span>`;
+    }
+    return `<span class="creature-asset split-creature-asset asset-${kebabPart}" data-composition-part="${part}" style="${creatureTransformStyle(part, draft)}"><img src="${creatureAssetUrl(kind, id)}" alt=""></span>`;
+}
+
+function creatureCompositionMarkup(draft, interactive = false) {
+    const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
+    const keyedParts = [...parts].some((part) => ["head", "body", "leftHand", "rightHand", "leftFoot", "rightFoot", "wing", "tail", "decoration"].includes(part));
+    const included = (part, value) => Boolean(value) && (keyedParts ? parts.has(part) : true);
+    const head = included("head", draft.head) ? normalizeCreatureHead(draft.head) : "";
+    const body = included("body", draft.body) ? normalizeCreatureBody(draft.body) : "";
+    const leftHand = included("leftHand", draft.leftHand) ? normalizeCreatureHand(draft.leftHand) : "";
+    const rightHand = included("rightHand", draft.rightHand) ? normalizeCreatureHand(draft.rightHand) : "";
+    const leftFoot = included("leftFoot", draft.leftFoot) ? normalizeCreatureFoot(draft.leftFoot) : "";
+    const rightFoot = included("rightFoot", draft.rightFoot) ? normalizeCreatureFoot(draft.rightFoot) : "";
+    const legacyHand = draft.hand ? normalizeCreatureHand(draft.hand) : "";
+    const legacyFoot = draft.foot ? normalizeCreatureFoot(draft.foot) : "";
+    const wing = included("wing", draft.wing) ? normalizeCreatureWing(draft.wing) : "";
+    const tail = included("tail", draft.tail) && creatureTails.length ? normalizeCreatureTail(draft.tail) : "";
+    const decoration = included("decoration", draft.decoration) && creatureDecorations.length ? normalizeCreatureDecoration(draft.decoration) : "";
+    const selectedPart = interactive ? activeCreaturePart(draft) : "";
+    const edit = (part, attribute, id) => interactive ? `data-edit-part="${part}" data-${attribute}="${id}"` : "";
+    return `
+        <div class="creature-preview raster-creature ${interactive ? "" : "snapshot-composition"}" style="--creature-color: ${draft.color || "#8fc6f5"};">
+            <span class="creature-color-glow" aria-hidden="true"></span>
+            ${tail ? `<img class="creature-asset asset-tail ${selectedPart === "tail" ? "selected-part" : ""}" data-composition-part="tail" ${edit("tail", "tail", tail)} style="${creatureTransformStyle("tail", draft)}" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
+            ${wing ? `<img class="creature-asset asset-wing ${selectedPart === "wing" ? "selected-part" : ""}" data-composition-part="wing" ${edit("wing", "wing", wing)} style="${creatureTransformStyle("wing", draft)}" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
+            ${body ? `<img class="creature-asset asset-body ${selectedPart === "body" ? "selected-part" : ""}" data-composition-part="body" ${edit("body", "body", body)} style="${creatureTransformStyle("body", draft)}" src="${creatureAssetUrl("body", body)}" alt="">` : ""}
+            ${head ? `<img class="creature-asset asset-head ${selectedPart === "head" ? "selected-part" : ""}" data-composition-part="head" ${edit("head", "head", head)} style="${creatureTransformStyle("head", draft)}" src="${creatureAssetUrl("head", head)}" alt="">` : ""}
+            ${splitCreaturePartMarkup("leftHand", leftHand, interactive ? "stage" : "snapshot", selectedPart === "leftHand", draft)}
+            ${splitCreaturePartMarkup("rightHand", rightHand, interactive ? "stage" : "snapshot", selectedPart === "rightHand", draft)}
+            ${splitCreaturePartMarkup("leftFoot", leftFoot, interactive ? "stage" : "snapshot", selectedPart === "leftFoot", draft)}
+            ${splitCreaturePartMarkup("rightFoot", rightFoot, interactive ? "stage" : "snapshot", selectedPart === "rightFoot", draft)}
+            ${legacyHand ? `<img class="creature-asset asset-hand" data-composition-part="hand" style="${creatureTransformStyle("hand", draft)}" src="${creatureAssetUrl("hand", legacyHand)}" alt="">` : ""}
+            ${legacyFoot ? `<img class="creature-asset asset-foot" data-composition-part="foot" style="${creatureTransformStyle("foot", draft)}" src="${creatureAssetUrl("foot", legacyFoot)}" alt="">` : ""}
+            ${decoration ? `<img class="creature-asset asset-decoration ${selectedPart === "decoration" ? "selected-part" : ""}" data-composition-part="decoration" ${edit("decoration", "decoration", decoration)} style="${creatureTransformStyle("decoration", draft)}" src="${creatureAssetUrl("decoration", decoration)}" alt="">` : ""}
+        </div>
+    `;
+}
+
 function creatureSnapshotMarkup(draft, variant) {
-    const head = normalizeCreatureHead(draft.head || "panda");
-    const body = normalizeCreatureBody(draft.body || "panda");
-    const hand = draft.hand ? normalizeCreatureHand(draft.hand) : "";
-    const foot = draft.foot ? normalizeCreatureFoot(draft.foot) : "";
-    const wing = draft.wing ? normalizeCreatureWing(draft.wing) : "";
-    const tail = draft.tail && creatureTails.length ? normalizeCreatureTail(draft.tail) : "";
-    const decoration = draft.decoration && creatureDecorations.length ? normalizeCreatureDecoration(draft.decoration) : "";
+    const snapshot = typeof draft.snapshot === "string" ? draft.snapshot : "";
     return `
         <div class="creature-snapshot creature-snapshot-${variant}">
-            ${tail ? `<img class="creature-snapshot-asset snapshot-tail" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
-            ${wing ? `<img class="creature-snapshot-asset snapshot-wing" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
-            <img class="creature-snapshot-asset snapshot-body" src="${creatureAssetUrl("body", body)}" alt="">
-            <img class="creature-snapshot-asset snapshot-head" src="${creatureAssetUrl("head", head)}" alt="">
-            ${hand ? `<img class="creature-snapshot-asset snapshot-hand" src="${creatureAssetUrl("hand", hand)}" alt="">` : ""}
-            ${foot ? `<img class="creature-snapshot-asset snapshot-foot" src="${creatureAssetUrl("foot", foot)}" alt="">` : ""}
-            ${decoration ? `<img class="creature-snapshot-asset snapshot-decoration" src="${creatureAssetUrl("decoration", decoration)}" alt="">` : ""}
+            ${snapshot
+                ? `<img class="saved-creature-snapshot" src="${snapshot}" alt="${escapeHtml(draft.name || "我的奇妙动物")}">`
+                : `<span class="creature-snapshot-placeholder">收藏后生成</span>`}
         </div>
     `;
 }
 
 function creaturePreview(draft) {
-    const parts = new Set(Array.isArray(draft.parts) ? draft.parts : []);
-    const head = normalizeCreatureHead(draft.head || "panda");
-    const body = normalizeCreatureBody(draft.body || "panda");
-    const hand = parts.has("hand") ? normalizeCreatureHand(draft.hand || creatureHands[0].id) : "";
-    const foot = parts.has("foot") ? normalizeCreatureFoot(draft.foot || creatureFeet[0].id) : "";
-    const wing = parts.has("wing") ? normalizeCreatureWing(draft.wing || creatureWings[0].id) : "";
-    const tail = parts.has("tail") && creatureTails.length ? normalizeCreatureTail(draft.tail || creatureTails[0].id) : "";
-    const decoration = parts.has("decoration") && creatureDecorations.length ? normalizeCreatureDecoration(draft.decoration || creatureDecorations[0].id) : "";
     return `
         <div class="imagine-stage" data-creature-drop-zone="true">
-            <div class="creature-preview raster-creature" style="--creature-color: ${draft.color || "#8fc6f5"};">
-                <span class="creature-color-glow" aria-hidden="true"></span>
-                ${tail ? `<img class="creature-asset asset-tail ${activeCreaturePart(draft) === "tail" ? "selected-part" : ""}" data-edit-part="tail" data-tail="${tail}" style="${creatureTransformStyle("tail")}" src="${creatureAssetUrl("tail", tail)}" alt="">` : ""}
-                ${wing ? `<img class="creature-asset asset-wing ${activeCreaturePart(draft) === "wing" ? "selected-part" : ""}" data-edit-part="wing" data-wing="${wing}" style="${creatureTransformStyle("wing")}" src="${creatureAssetUrl("wing", wing)}" alt="">` : ""}
-                <img class="creature-asset asset-body ${activeCreaturePart(draft) === "body" ? "selected-part" : ""}" data-edit-part="body" data-body="${body}" style="${creatureTransformStyle("body")}" src="${creatureAssetUrl("body", body)}" alt="">
-                <img class="creature-asset asset-head ${activeCreaturePart(draft) === "head" ? "selected-part" : ""}" data-edit-part="head" data-head="${head}" style="${creatureTransformStyle("head")}" src="${creatureAssetUrl("head", head)}" alt="">
-                ${hand ? `<img class="creature-asset asset-hand ${activeCreaturePart(draft) === "hand" ? "selected-part" : ""}" data-edit-part="hand" data-hand="${hand}" style="${creatureTransformStyle("hand")}" src="${creatureAssetUrl("hand", hand)}" alt="">` : ""}
-                ${foot ? `<img class="creature-asset asset-foot ${activeCreaturePart(draft) === "foot" ? "selected-part" : ""}" data-edit-part="foot" data-foot="${foot}" style="${creatureTransformStyle("foot")}" src="${creatureAssetUrl("foot", foot)}" alt="">` : ""}
-                ${decoration ? `<img class="creature-asset asset-decoration ${activeCreaturePart(draft) === "decoration" ? "selected-part" : ""}" data-edit-part="decoration" data-decoration="${decoration}" style="${creatureTransformStyle("decoration")}" src="${creatureAssetUrl("decoration", decoration)}" alt="">` : ""}
-            </div>
+            ${creatureCompositionMarkup(draft, true)}
         </div>
     `;
 }
