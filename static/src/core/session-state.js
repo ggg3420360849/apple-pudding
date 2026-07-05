@@ -105,10 +105,19 @@ function mergeState(base, saved) {
     merged.progress.activities = Array.isArray((saved.progress || {}).activities)
         ? (saved.progress || {}).activities
         : [...(base.progress?.activities || [])];
-    merged.draftCreature = { ...base.draftCreature, ...(saved.draftCreature || {}) };
+    const savedDraftCreature = saved.draftCreature || {};
+    // Canvas versions migrate incompatible part layouts (v1 made it blank;
+    // v2 split paired hands and feet into four independently movable parts).
+    // Drafts saved by the old UI are cleared once so returning children also
+    // start with an empty sheet instead of inheriting the former demo animal.
+    merged.draftCreature = savedDraftCreature.canvasVersion === base.draftCreature.canvasVersion
+        ? { ...base.draftCreature, ...savedDraftCreature }
+        : { ...base.draftCreature };
     merged.draftCreature.transforms = {
         ...base.draftCreature.transforms,
-        ...((saved.draftCreature || {}).transforms || {})
+        ...(savedDraftCreature.canvasVersion === base.draftCreature.canvasVersion
+            ? (savedDraftCreature.transforms || {})
+            : {})
     };
     merged.animalUnlocks = { ...base.animalUnlocks, ...(saved.animalUnlocks || {}) };
     return merged;

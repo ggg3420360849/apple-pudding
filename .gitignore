@@ -6,6 +6,7 @@ __pycache__/
 *.pyc
 logs/
 server-*.log
+.codex_server_*.log
 tmp-audit-dom*.txt
 data/*.json
 data/offline_queue/
