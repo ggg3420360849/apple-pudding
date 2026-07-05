@@ -67,6 +67,7 @@ textarea {
 }
 
 .app-root {
+    container-type: inline-size;
     height: min(100dvh, 932px);
     min-height: min(100dvh, 720px);
 }
@@ -924,38 +925,111 @@ button:active,
 /* Give the school animal choices a wider tap target and reserve the flower's
    corner so longer animal names never sit underneath it. */
 .route-qa .animal-selection-view {
-    width: 100%;
-    padding-inline: 20px;
+    width: calc(100% + 28px);
+    margin-inline: -14px;
+    padding: 12px 0 14px;
 }
 
 .route-qa .selection-container {
-    width: min(100%, 390px);
+    width: 100%;
+    max-width: none;
     margin-inline: auto;
+    display: grid;
+    justify-items: center;
+}
+
+.route-qa .selection-title {
+    margin-bottom: 0;
+}
+
+.route-qa .selection-container > p {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+}
+
+.route-qa .animal-selection-list {
+    width: min(80vw, calc(var(--kid-phone-width) * 0.8));
+    width: 80cqw;
+    max-width: calc(100vw - 28px);
+    gap: 10px;
+    justify-items: stretch;
+    transform: translateX(18px);
 }
 
 .route-qa .animal-selection-item {
     width: 100%;
-    min-height: 92px;
+    min-height: 68px;
     display: grid;
-    grid-template-columns: 72px minmax(0, 1fr);
-    gap: 12px;
-    padding: 14px 68px 14px 18px;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px 56px 10px 16px;
+    position: relative;
+    cursor: pointer;
+    align-items: center;
 }
 
 .route-qa .animal-selection-item::before {
-    right: 14px;
+    right: 12px;
     top: 50%;
-    transform: translateY(-50%) rotate(7deg);
+    transform: translateY(-50%) rotate(6deg);
 }
 
 .route-qa .animal-selection-item .selection-icon {
     justify-self: center;
+    font-size: 38px;
+    line-height: 1;
 }
 
 .route-qa .animal-selection-item .selection-name {
     min-width: 0;
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.route-qa .animal-selection-item.locked {
+    cursor: not-allowed;
+    opacity: 0.56;
+    padding-bottom: 14px;
+}
+
+.route-qa .selection-lock {
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.route-qa .selection-progress {
+    position: absolute;
+    left: 16px;
+    right: 56px;
+    bottom: 6px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px;
+}
+
+.route-qa .selection-progress-track {
+    height: 3px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(96, 112, 100, 0.18);
+}
+
+.route-qa .selection-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--green);
+}
+
+.route-qa .selection-progress-text {
+    color: var(--kid-muted);
+    font-size: 10px;
+    line-height: 1;
 }
 
 .selection-icon {
@@ -1493,6 +1567,11 @@ button:active,
         background: #ffffff;
     }
 
+    .route-qa .animal-selection-view {
+        width: calc(100% + 24px);
+        margin-inline: -12px;
+    }
+
     .topbar {
         margin: 0 0 10px;
     }
@@ -1820,6 +1899,12 @@ textarea {
 .mobile-container textarea {
     min-width: 0;
     max-width: 100%;
+}
+
+.login-container .form-group label {
+    min-height: 0;
+    margin-bottom: 4px;
+    line-height: 1.25;
 }
 
 .mobile-container .child-stats,

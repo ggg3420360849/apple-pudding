@@ -533,16 +533,16 @@ function renderAnimalSelection() {
                     ${lockedAnimals.map((animal) => {
                         const progress = calculateUnlockProgress(animal);
                         return `
-                        <div class="animal-selection-item locked" style="position: relative; cursor: not-allowed; opacity: 0.5;">
+                        <div class="animal-selection-item locked">
                             <span class="selection-icon" style="filter: grayscale(100%); opacity: 0.4;">${animal.icon}</span>
                             <span class="selection-name" style="color: #888;">???</span>
-                            <div style="position: absolute; top: 8px; right: 8px; font-size: 16px;">🔒</div>
+                            <div class="selection-lock">🔒</div>
                             ${progress ? `
-                                <div style="position: absolute; bottom: 4px; left: 8px; right: 8px;">
-                                    <div style="height: 4px; background: rgba(200,200,200,0.3); border-radius: 2px; overflow: hidden;">
-                                        <div style="height: 100%; background: var(--green); width: ${progress.percentage}%;"></div>
+                                <div class="selection-progress">
+                                    <div class="selection-progress-track">
+                                        <div class="selection-progress-fill" style="width: ${progress.percentage}%;"></div>
                                     </div>
-                                    <div style="font-size: 11px; color: #666; margin-top: 2px; text-align: center;">${progress.percentage}%</div>
+                                    <div class="selection-progress-text">${progress.percentage}%</div>
                                 </div>
                             ` : ''}
                         </div>
