@@ -1,8 +1,8 @@
 from app.clients.xuanji import XuanjiClient
 from app.config import Settings
 from app.schemas import ChatRequest
-from app.services.prompts import build_system_prompt
-from app.services.reply_parser import parse_reply
+from app.services.ai_scenes import get_scene
+from app.services.reply_parser import parse_reply_payload
 from app.services.speech_recognition import create_speech_service
 from app.logger import get_logger
 
@@ -47,33 +47,38 @@ class AnimalChatService:
                 "allowed_models": self.settings.allowed_models,
             }
 
-        system_prompt = build_system_prompt(req.mode)
+        mode = req.mode or "qa"
+        scene = get_scene(mode)
+        system_prompt = scene.system_prompt
         user_question = req.message
 
-        # 对于故事模式，保持原始消息结构，因为前端已经构建好了完整提示词
-        # 对于其他模式，添加动物信息前缀
-        if req.animal and req.mode != "story":
+        if req.animal and scene.include_animal_context:
             user_question = f"当前动物是：{req.animal}。孩子的问题是：{req.message}"
 
         try:
             result = self.client.chat(selected_model, system_prompt, user_question)
         except Exception as e:
-            logger.error("Upstream chat request failed", error=str(e), exc_info=True)
             return {
                 "success": False,
-                "error": "AI服务请求失败",
+                "error": str(e),
             }
 
         if not result.get("success"):
             return result
 
+        parsed = parse_reply_payload(result["data"], contract=scene.contract, formatter=scene.formatter)
+        scene_result = scene.apply_safety(parsed["structured"], parsed["reply"], req.message)
+
         return {
             "success": True,
             "model": selected_model,
-            "mode": req.mode or "qa",
+            "mode": scene.name,
             "animal": req.animal,
             "message": req.message,
-            "reply": parse_reply(result["data"]),
+            "reply": scene_result.reply,
+            "structured": scene_result.structured,
+            "structured_errors": parsed["structured_errors"],
+            "safety_warnings": scene_result.safety_warnings,
         }
 
     def transcribe_audio(self, audio_path: str) -> str:

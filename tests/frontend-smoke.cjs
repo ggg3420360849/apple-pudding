@@ -44,6 +44,8 @@ const context = {
   },
   addEventListener: () => {},
   removeEventListener: () => {},
+  scrollTo: () => {},
+  requestAnimationFrame: (callback) => callback(),
   fetch: () => { throw new Error("fetch should not run during bootstrap"); },
   setTimeout,
   clearTimeout,
@@ -74,17 +76,47 @@ if (appRoot.innerHTML.includes('data-action="toggle-settings"') || appRoot.inner
 }
 
 vm.runInContext('state.route = "imagine"; render()', context);
+if (appRoot.innerHTML.includes('data-edit-part="')) {
+  throw new Error("Imagine canvas must start without pre-built animal parts");
+}
+if ((appRoot.innerHTML.match(/class="material-rail"/g) || []).length !== 1) {
+  throw new Error("Imagine materials must render as one continuous aligned grid");
+}
 if (!appRoot.innerHTML.includes("/static/assets/imagine/builder/bodies/")) {
   throw new Error("Imagine view must render the supplied custom animal assets");
 }
 if (!appRoot.innerHTML.includes("/static/assets/imagine/builder/heads/")) {
   throw new Error("Imagine view must render the separated head assets");
 }
+if (!appRoot.innerHTML.includes("/static/assets/imagine/builder/tail/")) {
+  throw new Error("Imagine view must render the uploaded tail assets");
+}
+if (!appRoot.innerHTML.includes("/static/assets/imagine/builder/decorate/")) {
+  throw new Error("Imagine view must render the uploaded decoration assets");
+}
+if (!appRoot.innerHTML.includes("/static/assets/imagine/builder/tail/transparent/")
+    || !appRoot.innerHTML.includes("/static/assets/imagine/builder/decorate/transparent/")) {
+  throw new Error("Tail and decoration assets must use real transparent PNGs");
+}
 if (appRoot.innerHTML.includes("/static/assets/imagine/custom/")) {
   throw new Error("Imagine view must not render the retired custom animal assets");
 }
 if (appRoot.innerHTML.includes("/static/assets/imagine/parts/")) {
   throw new Error("Imagine view must not render the retired SVG animal assets");
+}
+vm.runInContext('applyCreaturePart("leftHand", "panda"); applyCreaturePart("rightFoot", "rabbit"); applyCreaturePart("tail", "curly"); applyCreaturePart("decoration", "bamboo")', context);
+if (!appRoot.innerHTML.includes('data-edit-part="leftHand"') || !appRoot.innerHTML.includes('data-edit-part="rightFoot"')) {
+  throw new Error("Left/right hands and feet must be independently placeable");
+}
+if (appRoot.innerHTML.includes('data-edit-part="rightHand"') || appRoot.innerHTML.includes('data-edit-part="leftFoot"')) {
+  throw new Error("Adding one limb must not add its opposite limb");
+}
+if (!appRoot.innerHTML.includes('data-edit-part="tail"') || !appRoot.innerHTML.includes('data-edit-part="decoration"')) {
+  throw new Error("Uploaded tails and decorations must be placeable on the canvas");
+}
+vm.runInContext('state.draftCreature.snapshot = "data:image/webp;base64,TEST"; state.creations = [{ ...clone(state.draftCreature), parts: creaturePartLabelsFromDraft(state.draftCreature), name: "缩略图测试", time: Date.now() }]; render()', context);
+if ((appRoot.innerHTML.match(/class="saved-creature-snapshot"/g) || []).length < 2) {
+  throw new Error("Captured snapshot must render in both the form thumbnail and album");
 }
 
 (async () => {

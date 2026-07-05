@@ -2061,7 +2061,28 @@ textarea {
     height: 60px;
 }
 
-/* Keep all four imagination material groups fully visible on narrow screens. */
+.route-imagine .material-part-crop {
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 60px;
+    margin: 0 auto;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.route-imagine .material-part-crop .material-img {
+    position: absolute;
+    top: 0;
+    width: 100px;
+    max-width: none;
+    height: 60px;
+}
+
+.route-imagine .material-part-crop.split-left .material-img { left: 0; }
+.route-imagine .material-part-crop.split-right .material-img { right: 0; }
+
+/* Keep imagination material groups fully visible on narrow screens. */
 .route-imagine .creator-board {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
@@ -2271,6 +2292,52 @@ textarea {
     cursor: grab;
 }
 
+.route-imagine .split-creature-asset {
+    display: block;
+    overflow: hidden;
+    cursor: grab;
+}
+
+.route-imagine .split-creature-asset > img {
+    position: absolute;
+    top: 0;
+    width: 200%;
+    max-width: none;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+}
+
+.route-imagine .asset-left-hand,
+.route-imagine .asset-right-hand {
+    z-index: 5;
+    bottom: 86px;
+    width: 105px;
+    aspect-ratio: 0.86;
+    transform: translate(var(--part-x, 0px), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+}
+
+.route-imagine .asset-left-hand,
+.route-imagine .asset-left-foot { right: 50%; }
+
+.route-imagine .asset-right-hand,
+.route-imagine .asset-right-foot { left: 50%; }
+
+.route-imagine .asset-left-hand > img,
+.route-imagine .asset-left-foot > img { left: 0; }
+
+.route-imagine .asset-right-hand > img,
+.route-imagine .asset-right-foot > img { right: 0; }
+
+.route-imagine .asset-left-foot,
+.route-imagine .asset-right-foot {
+    z-index: 6;
+    bottom: 24px;
+    width: 93px;
+    aspect-ratio: 0.86;
+    transform: translate(var(--part-x, 0px), var(--part-y, 0px)) rotate(var(--part-rotation, 0deg)) scale(var(--part-scale, 1));
+}
+
 .route-imagine .asset-decoration {
     z-index: 7;
     left: 50%;
@@ -2386,6 +2453,32 @@ textarea {
     transform: translateX(-50%);
 }
 
+.route-imagine .snapshot-left-hand,
+.route-imagine .snapshot-right-hand {
+    bottom: 22%;
+    width: 36%;
+    aspect-ratio: 0.86;
+}
+
+.route-imagine .snapshot-left-foot,
+.route-imagine .snapshot-right-foot {
+    bottom: 2%;
+    width: 31%;
+    aspect-ratio: 0.86;
+}
+
+.route-imagine .snapshot-left-hand,
+.route-imagine .snapshot-left-foot { right: 50%; }
+
+.route-imagine .snapshot-right-hand,
+.route-imagine .snapshot-right-foot { left: 50%; }
+
+.route-imagine .snapshot-left-hand > img,
+.route-imagine .snapshot-left-foot > img { left: 0; }
+
+.route-imagine .snapshot-right-hand > img,
+.route-imagine .snapshot-right-foot > img { right: 0; }
+
 .route-imagine .snapshot-decoration {
     left: 50%;
     top: 0;
@@ -2433,4 +2526,52 @@ textarea {
         width: 154px;
         bottom: 24px;
     }
+
+    .route-imagine .asset-left-hand,
+    .route-imagine .asset-right-hand {
+        width: 86px;
+        bottom: 82px;
+    }
+
+    .route-imagine .asset-left-foot,
+    .route-imagine .asset-right-foot {
+        width: 77px;
+        bottom: 24px;
+    }
+}
+
+/* Keep all numbered materials in one uninterrupted four-column grid. */
+.route-imagine .creator-board.unified-materials {
+    grid-template-areas:
+        "stage stage"
+        "materials materials";
+}
+
+.route-imagine .creator-board.unified-materials > .material-rail {
+    grid-area: materials;
+}
+
+.route-imagine .creature-snapshot {
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+}
+
+.route-imagine .saved-creature-snapshot {
+    width: 92%;
+    height: 92%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.route-imagine .album-thumb .saved-creature-snapshot {
+    width: 68px;
+    height: 68px;
+}
+
+.route-imagine .creature-snapshot-placeholder {
+    color: #9a8d78;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
 }

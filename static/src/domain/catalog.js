@@ -65,8 +65,24 @@ const creatureFeet = [
 const creatureWings = [
     { id: "golden", label: "金黄翅膀", file: "builder/wings/golden.png" }
 ];
-const creatureTails = [];
-const creatureDecorations = [];
+const creatureTails = [
+    { id: "panda", label: "熊猫尾巴", file: "builder/tail/transparent/panda.png" },
+    { id: "duck", label: "鸭鸭尾巴", file: "builder/tail/transparent/duck.png" },
+    { id: "curly", label: "卷卷尾巴", file: "builder/tail/transparent/curly.png" },
+    { id: "rabbit", label: "兔兔尾巴", file: "builder/tail/transparent/rabbit.png" },
+    { id: "striped", label: "条纹尾巴", file: "builder/tail/transparent/striped.png" },
+    { id: "fluffy", label: "蓬蓬尾巴", file: "builder/tail/transparent/fluffy.png" }
+];
+const creatureDecorations = [
+    { id: "blue-collar", label: "蓝色项圈", file: "builder/decorate/transparent/blue-collar.png" },
+    { id: "golden-bell", label: "金色铃铛", file: "builder/decorate/transparent/golden-bell.png" },
+    { id: "lily-pad", label: "小荷叶", file: "builder/decorate/transparent/lily-pad.png" },
+    { id: "bamboo", label: "翠绿竹子", file: "builder/decorate/transparent/bamboo.png" },
+    { id: "mud-splash", label: "淘气泥点", file: "builder/decorate/transparent/mud-splash.png" },
+    { id: "cloud", label: "软软云朵", file: "builder/decorate/transparent/cloud.png" },
+    { id: "bell-collar", label: "铃铛项圈", file: "builder/decorate/transparent/bell-collar.png" },
+    { id: "eggshell", label: "蛋壳帽子", file: "builder/decorate/transparent/eggshell.png" }
+];
 const animals = [
     {
         id: "panda",
@@ -610,24 +626,30 @@ const defaultState = {
     creations: [],
     stories: [],
     draftCreature: {
-        name: "云朵跳跳兽",
-        habitat: "彩虹森林",
+        canvasVersion: 2,
+        name: "",
+        habitat: "",
         mood: "好奇",
         color: "#8fc6f5",
-        head: "panda",
-        body: "panda",
-        hand: "panda",
-        foot: "panda",
-        wing: "golden",
+        head: "",
+        body: "",
+        leftHand: "",
+        rightHand: "",
+        leftFoot: "",
+        rightFoot: "",
+        wing: "",
         tail: "",
         decoration: "",
-        parts: ["hand", "foot", "wing"],
-        selectedPart: "body",
+        snapshot: "",
+        parts: [],
+        selectedPart: "",
         transforms: {
             head: { scale: 100, rotation: 0, x: 0, y: 0 },
             body: { scale: 100, rotation: 0, x: 0, y: 0 },
-            hand: { scale: 100, rotation: 0, x: 0, y: 0 },
-            foot: { scale: 100, rotation: 0, x: 0, y: 0 },
+            leftHand: { scale: 100, rotation: 0, x: 0, y: 0 },
+            rightHand: { scale: 100, rotation: 0, x: 0, y: 0 },
+            leftFoot: { scale: 100, rotation: 0, x: 0, y: 0 },
+            rightFoot: { scale: 100, rotation: 0, x: 0, y: 0 },
             wing: { scale: 100, rotation: 0, x: 0, y: 0 },
             tail: { scale: 100, rotation: 0, x: 0, y: 0 },
             decoration: { scale: 100, rotation: 0, x: 0, y: 0 }
